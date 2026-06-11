@@ -80,4 +80,17 @@ class SchemaTest extends TestCase
         $this->assertTrue(Schema::hasColumn('loan_products', 'requires_guarantor'));
         $this->assertTrue(Schema::hasColumn('loan_products', 'penalty_rate'));
     }
+
+    public function test_accounts_tables_exist(): void
+    {
+        $this->assertTrue(Schema::hasTable('deposit_accounts'));
+        $this->assertTrue(Schema::hasColumn('deposit_accounts', 'account_number'));
+        $this->assertTrue(Schema::hasColumn('deposit_accounts', 'balance'));
+        $this->assertTrue(Schema::hasColumn('deposit_accounts', 'approval_status'));
+
+        $this->assertTrue(Schema::hasTable('account_transactions'));
+        $this->assertTrue(Schema::hasColumn('account_transactions', 'transaction_type'));
+        $this->assertTrue(Schema::hasColumn('account_transactions', 'balance_after'));
+        $this->assertTrue(Schema::hasColumn('account_transactions', 'linked_transaction_id'));
+    }
 }
