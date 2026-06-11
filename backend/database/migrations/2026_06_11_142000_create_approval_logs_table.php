@@ -16,7 +16,7 @@ return new class extends Migration
             $table->enum('action', ['submitted', 'approved', 'rejected', 'flagged']);
             $table->string('from_status', 20);
             $table->string('to_status', 20);
-            $table->foreignId('performed_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignUuid('performed_by')->constrained('users')->cascadeOnDelete();
             $table->text('notes')->nullable();
             $table->timestamps();
 
