@@ -52,4 +52,20 @@ class SchemaTest extends TestCase
         $this->assertTrue(Schema::hasColumn('chart_of_accounts', 'parent_id'));
         $this->assertTrue(Schema::hasColumn('chart_of_accounts', 'is_header'));
     }
+
+    public function test_members_tables_exist(): void
+    {
+        $this->assertTrue(Schema::hasTable('members'));
+        $this->assertTrue(Schema::hasColumn('members', 'user_id'));
+        $this->assertTrue(Schema::hasColumn('members', 'member_number'));
+        $this->assertTrue(Schema::hasColumn('members', 'approval_status'));
+        $this->assertTrue(Schema::hasColumn('members', 'deleted_at'));
+
+        $this->assertTrue(Schema::hasTable('member_kins'));
+        $this->assertTrue(Schema::hasColumn('member_kins', 'relationship'));
+        $this->assertTrue(Schema::hasColumn('member_kins', 'beneficiary_percent'));
+
+        $this->assertTrue(Schema::hasTable('sacco_officials'));
+        $this->assertTrue(Schema::hasColumn('sacco_officials', 'position'));
+    }
 }
