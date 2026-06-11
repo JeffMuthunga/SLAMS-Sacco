@@ -41,4 +41,15 @@ class SchemaTest extends TestCase
         $this->assertTrue(Schema::hasColumn('periods', 'fiscal_year_id'));
         $this->assertTrue(Schema::hasColumn('periods', 'is_posted'));
     }
+
+    public function test_chart_of_accounts_tables_exist(): void
+    {
+        $this->assertTrue(Schema::hasTable('account_types'));
+        $this->assertTrue(Schema::hasColumn('account_types', 'code'));
+
+        $this->assertTrue(Schema::hasTable('chart_of_accounts'));
+        $this->assertTrue(Schema::hasColumn('chart_of_accounts', 'account_type_id'));
+        $this->assertTrue(Schema::hasColumn('chart_of_accounts', 'parent_id'));
+        $this->assertTrue(Schema::hasColumn('chart_of_accounts', 'is_header'));
+    }
 }
