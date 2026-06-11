@@ -7,8 +7,9 @@ Full-stack SACCO (Savings & Credit Cooperative) management system.
 - **Frontend:** `frontend/` — Next.js 16 (App Router, Turbopack), React 19, TypeScript
   (strict, no `any`), Tailwind CSS v4, shadcn/ui, Redux Toolkit, React Query, axios.
   Based on the NextAdmin template (sidebar/header/dark-mode chrome, ApexCharts).
-- **Backend:** Laravel 11 REST API under `/api/v1/`, Sanctum SPA cookie auth (planned — not yet scaffolded)
-- **Database:** PostgreSQL
+- **Backend:** `backend/` — Laravel 12 REST API under `/api/v1/`, Sanctum SPA cookie auth.
+  (Laravel 11 from the spec is blocked by Composer security advisories; 12 has the same skeleton.)
+- **Database:** PostgreSQL — app DB `slams_sacco` (local); legacy `sacco` DB is reference-only
 - **Roles:** Admin (SACCO staff) and Member portals, RBAC enforced at API and UI layers
 - **Multi-tenancy:** YES (decided 2026-06-11) — like the legacy DB, every tenant-owned
   table carries an org reference; a SACCO = an org. Scope all queries by org.
@@ -51,10 +52,19 @@ Full-stack SACCO (Savings & Credit Cooperative) management system.
 - React Query for all API calls; inline API validation errors on every form
 - Persistent sidebar layouts both portals; modals for simple create/edit, full pages for complex forms
 
-## Backend Conventions (when scaffolded)
+## Backend Structure & Conventions
 - PSR-12, thin controllers, business logic in Service classes
 - Laravel Form Requests for validation, Laravel Resources for all responses
-- Response envelope: `{ success, data, message, errors?, meta? }`
+- Response envelope: `{ success, data, message, errors?, meta? }` — extend
+  `App\Http\Controllers\Api\V1\ApiController` (`respond`, `respondCreated`, `respondError`)
+- Layout: controllers `app/Http/Controllers/Api/V1/`, requests `app/Http/Requests/Api/V1/`,
+  resources `app/Http/Resources/V1/`, tests `tests/Feature/Api/V1/`
+- Auth: Sanctum SPA mode — `statefulApi()` middleware in `bootstrap/app.php`;
+  CORS locked to `FRONTEND_URL` with credentials; login/register throttled 5/min.
+  Endpoints: POST `/api/v1/auth/{login,register,logout}`, GET `me`, PUT `profile`
+- Feature tests must send `Origin: http://localhost:3000` so Sanctum's stateful
+  (session) path runs — see `AuthTest::setUp()`
+- Run tests: `cd backend && php artisan test`; serve: `php artisan serve` (port 8000)
 - Monetary values: DECIMAL(15,2) in DB, bcmath/Money library in PHP — never floats
 - Queued jobs for all SMS/email notifications; PHPUnit feature tests for critical endpoints
 
@@ -78,15 +88,17 @@ Side paths: rejected, defaulted (overdue)
 
 ## Task Breakdown & Progress
 
-### Status: frontend scaffold complete (2026-06-11); backend not started
+### Status: frontend + backend scaffolds complete (2026-06-11); next: database schema (Phase 1)
 
 - [x] Legacy DB reference docs generated (`docs/db-reference/`, 2026-06-11)
 - [x] Custom components received & integrated (SelectInput, DataTable; DateInput/NumberInput/DataTablePagination built to match)
 - [x] Frontend scaffold: NextAdmin template → `frontend/`, Prisma/better-auth stripped,
       shadcn init, React Query + Redux + axios, (auth)/admin/member routing, proxy
       middleware, Laravel-shaped auth client. `npm run build` passes (17 routes).
-- [ ] Phase 1: Laravel backend scaffold + database schema & migrations
-- [ ] Phase 2: Authentication (Sanctum + wire auth pages end-to-end)
+- [x] Laravel 12 backend scaffold: PostgreSQL (`slams_sacco`), Sanctum SPA + CORS,
+      `/api/v1/auth/*` endpoints with envelope responses, 9 passing feature tests
+- [ ] Phase 1: Database schema & migrations (UUID PKs, soft deletes, org scoping)
+- [ ] Phase 2: Authentication polish (role-aware redirects, wire auth pages end-to-end in browser)
 - [ ] Phase 3: RBAC (roles, permissions, middleware; role-aware redirects)
 - [ ] Phase 4: Configurations module
 - [ ] Phase 5: Members module
