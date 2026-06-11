@@ -68,4 +68,16 @@ class SchemaTest extends TestCase
         $this->assertTrue(Schema::hasTable('sacco_officials'));
         $this->assertTrue(Schema::hasColumn('sacco_officials', 'position'));
     }
+
+    public function test_products_tables_exist(): void
+    {
+        $this->assertTrue(Schema::hasTable('saving_products'));
+        $this->assertTrue(Schema::hasColumn('saving_products', 'interest_rate'));
+        $this->assertTrue(Schema::hasColumn('saving_products', 'withdrawal_frequency'));
+
+        $this->assertTrue(Schema::hasTable('loan_products'));
+        $this->assertTrue(Schema::hasColumn('loan_products', 'interest_method'));
+        $this->assertTrue(Schema::hasColumn('loan_products', 'requires_guarantor'));
+        $this->assertTrue(Schema::hasColumn('loan_products', 'penalty_rate'));
+    }
 }
