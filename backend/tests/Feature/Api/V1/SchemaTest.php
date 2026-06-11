@@ -129,4 +129,19 @@ class SchemaTest extends TestCase
         $this->assertTrue(Schema::hasColumn('journal_lines', 'debit'));
         $this->assertTrue(Schema::hasColumn('journal_lines', 'credit'));
     }
+
+    public function test_petty_cash_tables_exist(): void
+    {
+        $this->assertTrue(Schema::hasTable('petty_cash_categories'));
+        $this->assertTrue(Schema::hasTable('petty_cash_items'));
+        $this->assertTrue(Schema::hasColumn('petty_cash_items', 'default_price'));
+
+        $this->assertTrue(Schema::hasTable('petty_cash_allocations'));
+        $this->assertTrue(Schema::hasColumn('petty_cash_allocations', 'spent'));
+        $this->assertTrue(Schema::hasColumn('petty_cash_allocations', 'approval_status'));
+
+        $this->assertTrue(Schema::hasTable('petty_cash_requests'));
+        $this->assertTrue(Schema::hasColumn('petty_cash_requests', 'unit_price'));
+        $this->assertTrue(Schema::hasColumn('petty_cash_requests', 'receipt_number'));
+    }
 }
