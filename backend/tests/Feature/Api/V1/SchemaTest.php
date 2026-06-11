@@ -26,4 +26,19 @@ class SchemaTest extends TestCase
         $this->assertTrue(Schema::hasColumn('approval_logs', 'approvable_id'));
         $this->assertTrue(Schema::hasColumn('approval_logs', 'action'));
     }
+
+    public function test_finance_foundation_tables_exist(): void
+    {
+        $this->assertTrue(Schema::hasTable('currencies'));
+        $this->assertTrue(Schema::hasColumn('currencies', 'code'));
+        $this->assertTrue(Schema::hasColumn('currencies', 'is_default'));
+
+        $this->assertTrue(Schema::hasTable('fiscal_years'));
+        $this->assertTrue(Schema::hasColumn('fiscal_years', 'start_date'));
+        $this->assertTrue(Schema::hasColumn('fiscal_years', 'is_closed'));
+
+        $this->assertTrue(Schema::hasTable('periods'));
+        $this->assertTrue(Schema::hasColumn('periods', 'fiscal_year_id'));
+        $this->assertTrue(Schema::hasColumn('periods', 'is_posted'));
+    }
 }
