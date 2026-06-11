@@ -93,4 +93,25 @@ class SchemaTest extends TestCase
         $this->assertTrue(Schema::hasColumn('account_transactions', 'balance_after'));
         $this->assertTrue(Schema::hasColumn('account_transactions', 'linked_transaction_id'));
     }
+
+    public function test_loans_tables_exist(): void
+    {
+        $this->assertTrue(Schema::hasTable('loans'));
+        $this->assertTrue(Schema::hasColumn('loans', 'loan_status'));
+        $this->assertTrue(Schema::hasColumn('loans', 'outstanding_balance'));
+        $this->assertTrue(Schema::hasColumn('loans', 'disburse_account_id'));
+
+        $this->assertTrue(Schema::hasTable('loan_guarantees'));
+        $this->assertTrue(Schema::hasColumn('loan_guarantees', 'guaranteed_amount'));
+
+        $this->assertTrue(Schema::hasTable('loan_collaterals'));
+        $this->assertTrue(Schema::hasColumn('loan_collaterals', 'estimated_value'));
+
+        $this->assertTrue(Schema::hasTable('loan_repayments'));
+        $this->assertTrue(Schema::hasColumn('loan_repayments', 'principal_due'));
+        $this->assertTrue(Schema::hasColumn('loan_repayments', 'repayment_status'));
+
+        $this->assertTrue(Schema::hasTable('loan_notes'));
+        $this->assertTrue(Schema::hasColumn('loan_notes', 'note'));
+    }
 }
