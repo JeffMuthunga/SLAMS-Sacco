@@ -6,6 +6,7 @@ use App\Http\Requests\Api\V1\Auth\LoginRequest;
 use App\Http\Requests\Api\V1\Auth\RegisterRequest;
 use App\Http\Requests\Api\V1\Auth\UpdateProfileRequest;
 use App\Http\Resources\V1\UserResource;
+use App\Models\Org;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,10 +30,14 @@ class AuthController extends ApiController
 
     public function register(RegisterRequest $request): JsonResponse
     {
+        $defaultOrg = Org::where('is_default', true)->first();
+
         $user = User::create([
             'name' => $request->validated('name'),
             'email' => $request->validated('email'),
             'password' => Hash::make($request->validated('password')),
+            'role' => 'member',
+            'org_id' => $defaultOrg?->id,
         ]);
 
         Auth::login($user);

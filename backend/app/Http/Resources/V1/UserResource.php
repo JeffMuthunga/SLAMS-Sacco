@@ -16,8 +16,9 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            // TODO(rbac): replace with real role once roles/permissions land
-            'role' => $this->role ?? 'admin',
+            'org_id' => $this->org_id,
+            // Interim column-based role; replaced by RBAC tables in Phase 3
+            'role' => $this->role,
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

@@ -13,8 +13,9 @@ export interface SessionUser {
   id: string;
   name: string;
   email: string;
-  image?: string | null;
+  org_id?: string | null;
   role?: "admin" | "member";
+  image?: string | null;
   bio?: string | null;
   phoneNumber?: string | number | null;
   [key: string]: unknown;
