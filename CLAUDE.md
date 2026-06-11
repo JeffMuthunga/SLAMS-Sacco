@@ -1,0 +1,109 @@
+# SLAMS SACCO Management System
+
+Full-stack SACCO (Savings & Credit Cooperative) management system.
+
+## Tech Stack
+
+- **Frontend:** `frontend/` — Next.js 16 (App Router, Turbopack), React 19, TypeScript
+  (strict, no `any`), Tailwind CSS v4, shadcn/ui, Redux Toolkit, React Query, axios.
+  Based on the NextAdmin template (sidebar/header/dark-mode chrome, ApexCharts).
+- **Backend:** Laravel 11 REST API under `/api/v1/`, Sanctum SPA cookie auth (planned — not yet scaffolded)
+- **Database:** PostgreSQL
+- **Roles:** Admin (SACCO staff) and Member portals, RBAC enforced at API and UI layers
+- **Multi-tenancy:** YES (decided 2026-06-11) — like the legacy DB, every tenant-owned
+  table carries an org reference; a SACCO = an org. Scope all queries by org.
+
+## Frontend Structure & Conventions
+
+### Routing (real path segments, not route groups)
+- `(auth)` group → `/login`, `/register` (no sidebar layout)
+- `/admin/*` — admin portal, layout uses `Sidebar` (default `ADMIN_NAV_DATA`)
+- `/member/*` — member portal, layout uses `MemberSidebar` client wrapper
+  (nav data contains icon functions → cannot cross server→client prop boundary)
+- `src/proxy.ts` — Next 16 middleware (renamed from middleware.ts): presence check on
+  `laravel_session` cookie; redirects unauthenticated → /login. API is the real authority.
+- Template demo pages kept under `/admin/{calendar,forms,tables,charts,ui-elements,pages/settings,profile}`
+  as living component reference — labeled "TEMPLATE REFERENCE" in sidebar; remove before production.
+
+### Key frontend files
+- `src/lib/api.ts` — axios client (`api`), envelope types, `ensureCsrfCookie()`,
+  `extractApiError()`, `extractFieldErrors()` (422 → inline form errors)
+- `src/lib/auth/auth-client.ts` — Laravel-backed auth keeping better-auth's surface:
+  `signIn.email`, `signUp.email`, `signOut`, `useSession` (React Query), `getSession`,
+  `authClient.updateUser`. Server-side: `src/lib/auth/index.ts` (`auth.api.getSession`).
+- `src/store/` — Redux Toolkit store; `app` slice holds `activeOrgId` (multi-tenancy)
+- `src/config/branding.ts` — org branding for print/PDF exports (per-org via API later)
+- `src/components/Layouts/sidebar/data/index.ts` — `ADMIN_NAV_DATA`, `MEMBER_NAV_DATA`
+- `.env.example` — `NEXT_PUBLIC_API_URL` (Laravel base URL, client appends `/api/v1`)
+
+### Components
+- shadcn/ui is the base (`src/components/ui/` — button, input, dropdown-menu added;
+  template's table.tsx is already shadcn-compatible). Custom components override shadcn:
+  - `src/components/DataTable.tsx` — user's TanStack table (filters, resizing, column
+    visibility, Excel/CSV/PDF/JSON export, branded print). Toasts via **sonner** (template's
+    toaster; react-toastify was swapped out). Client-side pagination — revisit for
+    server-side pagination on large datasets.
+  - `src/components/Forms/SelectInput.tsx` — user's react-select wrapper (green theme)
+  - `src/components/Forms/DateInput.tsx` — flatpickr wrapper (built to match DataTable's API)
+  - `src/components/Forms/NumberInput.tsx`, `src/components/data-table-helpers/DataTablePagination.tsx`
+- shadcn theme tokens appended to `src/css/style.css`; the template's `--color-primary`
+  (#5750f1) is intentionally kept as shadcn's primary — don't add a competing mapping.
+- React Query for all API calls; inline API validation errors on every form
+- Persistent sidebar layouts both portals; modals for simple create/edit, full pages for complex forms
+
+## Backend Conventions (when scaffolded)
+- PSR-12, thin controllers, business logic in Service classes
+- Laravel Form Requests for validation, Laravel Resources for all responses
+- Response envelope: `{ success, data, message, errors?, meta? }`
+- Monetary values: DECIMAL(15,2) in DB, bcmath/Money library in PHP — never floats
+- Queued jobs for all SMS/email notifications; PHPUnit feature tests for critical endpoints
+
+## Database
+- The legacy `sacco` PostgreSQL database (local, 151 base tables + 127 views) is a
+  **functional reference only** — we map concepts and relationships from it, not table
+  names. New Laravel migrations follow this project's conventions: UUID PKs, soft
+  deletes, clean domain-prefixed names (`members`, `loan_products`, `petty_cash_requests`
+  — not `entitys`, `loan_configs`, `pc_*`).
+- **Schema reference docs:** `docs/db-reference/` — one compact file per domain.
+  When building a module, read ONLY the relevant domain file (1–6 KB each), never the
+  whole set. See `docs/db-reference/INDEX.md`. Regenerate with
+  `python3 scripts/generate-db-reference.py`.
+- For ambiguous columns, query the live DB directly (e.g. sample rows, distinct values).
+- Write migrations for every schema change — no manual DB edits
+
+## Loan Lifecycle
+
+draft → applied → (guarantors confirm) → approved → disbursed/active → repaid
+Side paths: rejected, defaulted (overdue)
+
+## Task Breakdown & Progress
+
+### Status: frontend scaffold complete (2026-06-11); backend not started
+
+- [x] Legacy DB reference docs generated (`docs/db-reference/`, 2026-06-11)
+- [x] Custom components received & integrated (SelectInput, DataTable; DateInput/NumberInput/DataTablePagination built to match)
+- [x] Frontend scaffold: NextAdmin template → `frontend/`, Prisma/better-auth stripped,
+      shadcn init, React Query + Redux + axios, (auth)/admin/member routing, proxy
+      middleware, Laravel-shaped auth client. `npm run build` passes (17 routes).
+- [ ] Phase 1: Laravel backend scaffold + database schema & migrations
+- [ ] Phase 2: Authentication (Sanctum + wire auth pages end-to-end)
+- [ ] Phase 3: RBAC (roles, permissions, middleware; role-aware redirects)
+- [ ] Phase 4: Configurations module
+- [ ] Phase 5: Members module
+- [ ] Phase 6: SACCO accounts & transactions
+- [ ] Phase 7: Loans module (application → approval → disbursement → repayment)
+- [ ] Phase 8: Contributions module
+- [ ] Phase 9: Journals & ledger (Operations)
+- [ ] Phase 10: Petty cash module
+- [ ] Phase 11: Issue tracking
+- [ ] Phase 12: Member portal (service desk, statements, guarantees)
+- [ ] Phase 13: Reports (filters + PDF/CSV export)
+- [ ] Phase 14: SMS & email notifications
+- [ ] Phase 15: Member exit workflow
+- [ ] Phase 16: Testing, performance tuning, final QA
+
+### Known follow-ups
+- Replace placeholder branding values in `src/config/branding.ts` with real SACCO details
+- Role-aware landing: `/` currently redirects to `/admin/dashboard` unconditionally
+- `authClient.updateUser` points at `PUT /auth/profile` (TODO: real endpoint)
+- Remove "TEMPLATE REFERENCE" demo pages before production
