@@ -114,4 +114,19 @@ class SchemaTest extends TestCase
         $this->assertTrue(Schema::hasTable('loan_notes'));
         $this->assertTrue(Schema::hasColumn('loan_notes', 'note'));
     }
+
+    public function test_contributions_and_journals_tables_exist(): void
+    {
+        $this->assertTrue(Schema::hasTable('contributions'));
+        $this->assertTrue(Schema::hasColumn('contributions', 'expected_amount'));
+        $this->assertTrue(Schema::hasColumn('contributions', 'status'));
+
+        $this->assertTrue(Schema::hasTable('journals'));
+        $this->assertTrue(Schema::hasColumn('journals', 'is_posted'));
+        $this->assertTrue(Schema::hasColumn('journals', 'is_reversed'));
+
+        $this->assertTrue(Schema::hasTable('journal_lines'));
+        $this->assertTrue(Schema::hasColumn('journal_lines', 'debit'));
+        $this->assertTrue(Schema::hasColumn('journal_lines', 'credit'));
+    }
 }
