@@ -22,7 +22,8 @@ Full-stack SACCO (Savings & Credit Cooperative) management system.
 - `/member/*` — member portal, layout uses `MemberSidebar` client wrapper
   (nav data contains icon functions → cannot cross server→client prop boundary)
 - `src/proxy.ts` — Next 16 middleware (renamed from middleware.ts): presence check on
-  `laravel_session` cookie; redirects unauthenticated → /login. API is the real authority.
+  `slams_session` cookie (configurable via `NEXT_PUBLIC_SESSION_COOKIE`); redirects
+  unauthenticated → /login with `callbackUrl`. API is the real authority.
 - Template demo pages kept under `/admin/{calendar,forms,tables,charts,ui-elements,pages/settings,profile}`
   as living component reference — labeled "TEMPLATE REFERENCE" in sidebar; remove before production.
 
@@ -35,7 +36,8 @@ Full-stack SACCO (Savings & Credit Cooperative) management system.
 - `src/store/` — Redux Toolkit store; `app` slice holds `activeOrgId` (multi-tenancy)
 - `src/config/branding.ts` — org branding for print/PDF exports (per-org via API later)
 - `src/components/Layouts/sidebar/data/index.ts` — `ADMIN_NAV_DATA`, `MEMBER_NAV_DATA`
-- `.env.example` — `NEXT_PUBLIC_API_URL` (Laravel base URL, client appends `/api/v1`)
+- `.env.example` — `NEXT_PUBLIC_API_URL` (Laravel base URL, client appends `/api/v1`),
+  `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_SESSION_COOKIE` (must match backend `SESSION_COOKIE`)
 
 ### Components
 - shadcn/ui is the base (`src/components/ui/` — button, input, dropdown-menu added;
@@ -88,7 +90,7 @@ Side paths: rejected, defaulted (overdue)
 
 ## Task Breakdown & Progress
 
-### Status: frontend + backend scaffolds complete (2026-06-11); next: database schema (Phase 1)
+### Status: auth scaffold complete with role-aware routing (2026-06-11); next: full database schema (Phase 1)
 
 - [x] Legacy DB reference docs generated (`docs/db-reference/`, 2026-06-11)
 - [x] Custom components received & integrated (SelectInput, DataTable; DateInput/NumberInput/DataTablePagination built to match)
@@ -97,9 +99,19 @@ Side paths: rejected, defaulted (overdue)
       middleware, Laravel-shaped auth client. `npm run build` passes (17 routes).
 - [x] Laravel 12 backend scaffold: PostgreSQL (`slams_sacco`), Sanctum SPA + CORS,
       `/api/v1/auth/*` endpoints with envelope responses, 9 passing feature tests
-- [ ] Phase 1: Database schema & migrations (UUID PKs, soft deletes, org scoping)
-- [ ] Phase 2: Authentication polish (role-aware redirects, wire auth pages end-to-end in browser)
-- [ ] Phase 3: RBAC (roles, permissions, middleware; role-aware redirects)
+- [x] Auth scaffold extras (2026-06-11):
+      - Interim `role` column on `users` table (migration); `admin` + `member` demo seeds
+      - `UserResource` exposes `role`; `User` model fills `role`
+      - Root `/` does role-aware redirect (member → `/member/dashboard`, admin → `/admin/dashboard`)
+      - `auth/index.ts` server-side session forwards cookies to Laravel and reads `role`
+      - `proxy.ts` corrected to `slams_session` cookie; adds `callbackUrl` on login redirect
+      - `api.ts` — `ApiMeta` type added; `withXSRFToken: true` for cross-origin Sanctum CSRF
+      - Both `.env.example` files aligned with `SESSION_COOKIE`/`NEXT_PUBLIC_SESSION_COOKIE`
+      - `/admin/members` and `/admin/members/archived` placeholder pages (unblock nav 404s)
+- [x] Phase 1: Database schema & migrations — 27 migrations, 26 models, UUID PKs,
+      soft deletes, org scoping, approval_logs audit table (2026-06-11)
+- [ ] Phase 2: Authentication polish (wire login/register pages end-to-end in browser)
+- [ ] Phase 3: RBAC (roles, permissions, middleware; supersedes interim `role` column)
 - [ ] Phase 4: Configurations module
 - [ ] Phase 5: Members module
 - [ ] Phase 6: SACCO accounts & transactions
@@ -116,6 +128,5 @@ Side paths: rejected, defaulted (overdue)
 
 ### Known follow-ups
 - Replace placeholder branding values in `src/config/branding.ts` with real SACCO details
-- Role-aware landing: `/` currently redirects to `/admin/dashboard` unconditionally
 - `authClient.updateUser` points at `PUT /auth/profile` (TODO: real endpoint)
 - Remove "TEMPLATE REFERENCE" demo pages before production
