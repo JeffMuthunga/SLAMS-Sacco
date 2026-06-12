@@ -6,7 +6,7 @@ import {
   DropdownContent,
   DropdownTrigger,
 } from "@/components/ui/dropdown";
-import { signOut, useSession } from "@/lib/auth/auth-client";
+import { signOut, useSession, useInvalidateSession } from "@/lib/auth/auth-client";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,6 +19,7 @@ export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const session = useSession();
+  const invalidateSession = useInvalidateSession();
 
   async function handleLogout() {
     setIsOpen(false);
@@ -26,6 +27,7 @@ export function UserInfo() {
 
     try {
       await signOut();
+      await invalidateSession();
       router.push("/login");
       toast.success("Logged out successfully");
     } catch {
