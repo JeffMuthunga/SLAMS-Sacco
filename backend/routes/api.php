@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\AccountTransactionController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\ContributionController;
 use App\Http\Controllers\Api\V1\LoanController;
 use App\Http\Controllers\Api\V1\LoanRepaymentController;
 use App\Http\Controllers\Api\V1\MemberController;
@@ -50,6 +51,13 @@ Route::prefix('v1')->group(function () {
         Route::get('loans/{loan}/repayments',    [LoanRepaymentController::class, 'index']);
         Route::get('loan-repayments',            [LoanRepaymentController::class, 'index']);
         Route::apiResource('loans', LoanController::class)->except(['update']);
+    });
+
+    Route::middleware(['auth:sanctum', 'permission:manage_contributions'])->group(function () {
+        Route::post('contributions/generate',            [ContributionController::class, 'generate']);
+        Route::post('contributions/{contribution}/pay',  [ContributionController::class, 'pay']);
+        Route::post('contributions/{contribution}/waive',[ContributionController::class, 'waive']);
+        Route::apiResource('contributions', ContributionController::class)->only(['index', 'show']);
     });
 
     Route::middleware(['auth:sanctum', 'permission:manage_configurations'])->prefix('configurations')->group(function () {
