@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\AccountTransactionController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\LoanController;
+use App\Http\Controllers\Api\V1\LoanRepaymentController;
 use App\Http\Controllers\Api\V1\MemberController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +38,18 @@ Route::prefix('v1')->group(function () {
         Route::post('accounts/{account}/reject',    [AccountController::class, 'reject']);
         Route::apiResource('accounts', AccountController::class);
         Route::apiResource('account-transactions', AccountTransactionController::class)->only(['index', 'show', 'store']);
+    });
+
+    Route::middleware(['auth:sanctum', 'permission:manage_loans'])->group(function () {
+        Route::post('loans/{loan}/approve',      [LoanController::class, 'approve']);
+        Route::post('loans/{loan}/reject',       [LoanController::class, 'reject']);
+        Route::post('loans/{loan}/disburse',     [LoanController::class, 'disburse']);
+        Route::post('loans/{loan}/default',      [LoanController::class, 'markDefaulted']);
+        Route::post('loans/{loan}/notes',        [LoanController::class, 'addNote']);
+        Route::post('loans/{loan}/repayments/{repayment}/pay', [LoanRepaymentController::class, 'store']);
+        Route::get('loans/{loan}/repayments',    [LoanRepaymentController::class, 'index']);
+        Route::get('loan-repayments',            [LoanRepaymentController::class, 'index']);
+        Route::apiResource('loans', LoanController::class)->except(['update']);
     });
 
     Route::middleware(['auth:sanctum', 'permission:manage_configurations'])->prefix('configurations')->group(function () {
