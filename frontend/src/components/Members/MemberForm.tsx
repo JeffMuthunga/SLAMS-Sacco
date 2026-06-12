@@ -126,10 +126,11 @@ export default function MemberForm({ defaultValues, memberId }: Props) {
   );
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
-  const [submitting, setSubmitting] = useState(false);
 
   const createMutation = useCreateMember();
   const updateMutation = useUpdateMember(memberId ?? "");
+
+  const submitting = createMutation.isPending || updateMutation.isPending;
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
@@ -138,13 +139,14 @@ export default function MemberForm({ defaultValues, memberId }: Props) {
 
   const buildPayload = () => ({
     ...form,
+    monthly_salary: form.monthly_salary || null,
+    monthly_net_income: form.monthly_net_income || null,
     kins: kins.map(({ _key, ...rest }) => rest),
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFieldErrors({});
-    setSubmitting(true);
 
     try {
       let member: Member;
@@ -158,9 +160,11 @@ export default function MemberForm({ defaultValues, memberId }: Props) {
       if (photoFile) {
         const fd = new FormData();
         fd.append("photo", photoFile);
-        await api.post(`/members/${member.id}/photo`, fd, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        try {
+          await api.post(`/members/${member.id}/photo`, fd);
+        } catch {
+          toast.warning("Member saved but photo upload failed. You can re-upload from the profile page.");
+        }
       }
 
       toast.success(isEdit ? "Member updated." : "Member created — pending approval.");
@@ -172,8 +176,6 @@ export default function MemberForm({ defaultValues, memberId }: Props) {
       } else {
         toast.error(extractApiError(error));
       }
-    } finally {
-      setSubmitting(false);
     }
   };
 

@@ -205,8 +205,7 @@ export function useUploadMemberPhoto(memberId: string) {
       formData.append("photo", file);
       const { data } = await api.post<ApiEnvelope<Member>>(
         `/members/${memberId}/photo`,
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        formData
       );
       return data.data;
     },
