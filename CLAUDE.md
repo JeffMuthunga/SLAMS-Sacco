@@ -119,7 +119,7 @@ Side paths: rejected, defaulted (overdue)
 - [x] Phase 3: RBAC — Spatie permissions, `manage_members` + `manage_configurations`, CASL UI gating (2026-06-12)
 - [x] Phase 4: Configurations module — 6 new migrations/models, BaseCrudController, 13 API controllers, 38+ frontend hooks, 14 admin pages (2026-06-12)
 - [x] Phase 5: Members module — MemberService, full CRUD controller, approval workflow, photo upload, kins; 4 frontend components, 5 pages (2026-06-12)
-- [ ] Phase 6: SACCO accounts & transactions
+- [x] Phase 6: SACCO accounts & transactions — AccountService, DepositAccountController, AccountTransactionController, full frontend CRUD + transaction posting, transfer support (2026-06-12)
 - [ ] Phase 7: Loans module (application → approval → disbursement → repayment)
 - [ ] Phase 8: Contributions module
 - [ ] Phase 9: Journals & ledger (Operations)
