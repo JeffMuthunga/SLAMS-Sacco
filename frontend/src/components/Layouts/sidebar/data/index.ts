@@ -61,21 +61,8 @@ export const ADMIN_NAV_DATA: NavSection[] = [
         title: "Loans",
         icon: Icons.Table,
         items: [
-          { title: "Active Loans", url: "/admin/loans/active" },
-          { title: "Applied Loans", url: "/admin/loans/applied" },
-          { title: "Re-Paid Loans", url: "/admin/loans/repaid" },
-          { title: "Rejected Loans", url: "/admin/loans/rejected" },
-          { title: "Defaulted Loans", url: "/admin/loans/defaulted" },
-          { title: "Draft Loans", url: "/admin/loans/draft" },
-          { title: "Member Loans Desk", url: "/admin/loans/desk" },
-        ],
-      },
-      {
-        title: "Loan Approval",
-        icon: Icons.Authentication,
-        items: [
-          { title: "Applied Loans", url: "/admin/loan-approval/queue" },
-          { title: "Disbursement", url: "/admin/loan-approval/disbursement" },
+          { title: "All Loans", url: "/admin/loans" },
+          { title: "New Application", url: "/admin/loans/create" },
         ],
       },
       {
