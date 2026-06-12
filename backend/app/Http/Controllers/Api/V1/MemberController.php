@@ -37,7 +37,7 @@ class MemberController extends ApiController
         return $this->respond(null, 'TODO');
     }
 
-    public function restore(Request $request, string $id): JsonResponse
+    public function restore(Request $request, string $member): JsonResponse
     {
         return $this->respond(null, 'TODO');
     }

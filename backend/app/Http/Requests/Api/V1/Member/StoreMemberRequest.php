@@ -9,7 +9,7 @@ class StoreMemberRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return true; // TODO(Phase 3): enforce admin role via RBAC policy
     }
 
     public function rules(): array
@@ -17,7 +17,7 @@ class StoreMemberRequest extends FormRequest
         $orgId = $this->user()->org_id;
 
         return [
-            'full_name'          => ['required', 'string', 'max:200'],
+            'full_name'          => ['required', 'string', 'max:150'],
             'id_number'          => ['required', 'string', 'max:50',
                                      Rule::unique('members', 'id_number')->where('org_id', $orgId)],
             'id_type'            => ['required', Rule::in(['national', 'passport', 'alien', 'military'])],
@@ -25,7 +25,7 @@ class StoreMemberRequest extends FormRequest
             'date_of_birth'      => ['required', 'date'],
             'entry_date'         => ['required', 'date'],
             'title'              => ['nullable', Rule::in(['Mr', 'Mrs', 'Miss', 'Dr', 'Prof', 'Rev'])],
-            'email'              => ['nullable', 'email', 'max:200'],
+            'email'              => ['nullable', 'email', 'max:120'],
             'phone2'             => ['nullable', 'string', 'max:20'],
             'gender'             => ['nullable', Rule::in(['M', 'F'])],
             'nationality'        => ['nullable', 'string', 'max:3'],
@@ -35,19 +35,19 @@ class StoreMemberRequest extends FormRequest
             'postal_code'        => ['nullable', 'string', 'max:20'],
             'employed'           => ['nullable', 'boolean'],
             'self_employed'      => ['nullable', 'boolean'],
-            'employer_name'      => ['nullable', 'string', 'max:200'],
-            'monthly_salary'     => ['nullable', 'numeric', 'min:0'],
-            'monthly_net_income' => ['nullable', 'numeric', 'min:0'],
+            'employer_name'      => ['nullable', 'string', 'max:120'],
+            'monthly_salary'     => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
+            'monthly_net_income' => ['nullable', 'numeric', 'decimal:0,2', 'min:0'],
             'kins'               => ['nullable', 'array'],
-            'kins.*.full_name'            => ['required', 'string', 'max:200'],
-            'kins.*.relationship'         => ['required', 'string', 'max:50'],
+            'kins.*.full_name'            => ['required', 'string', 'max:150'],
+            'kins.*.relationship'         => ['required', Rule::in(['spouse', 'child', 'parent', 'sibling', 'other'])],
             'kins.*.date_of_birth'        => ['nullable', 'date'],
             'kins.*.id_number'            => ['nullable', 'string', 'max:50'],
             'kins.*.id_type'              => ['nullable', Rule::in(['national', 'passport', 'alien', 'military'])],
             'kins.*.phone'                => ['nullable', 'string', 'max:20'],
             'kins.*.is_emergency_contact' => ['nullable', 'boolean'],
             'kins.*.is_beneficiary'       => ['nullable', 'boolean'],
-            'kins.*.beneficiary_percent'  => ['nullable', 'numeric', 'min:0', 'max:100',
+            'kins.*.beneficiary_percent'  => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'max:100',
                                               'required_if:kins.*.is_beneficiary,true'],
         ];
     }
