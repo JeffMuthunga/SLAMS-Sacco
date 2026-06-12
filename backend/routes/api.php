@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\JournalController;
 use App\Http\Controllers\Api\V1\LoanController;
 use App\Http\Controllers\Api\V1\LoanRepaymentController;
 use App\Http\Controllers\Api\V1\MemberController;
+use App\Http\Controllers\Api\V1\MemberPortalController;
 use App\Http\Controllers\Api\V1\IssueController;
 use App\Http\Controllers\Api\V1\PettyCashAllocationController;
 use App\Http\Controllers\Api\V1\PettyCashRequestController;
@@ -114,5 +115,23 @@ Route::prefix('v1')->group(function () {
         Route::post('petty-cash-requests/{pettyCashRequest}/approve', [PettyCashRequestController::class, 'approve']);
         Route::post('petty-cash-requests/{pettyCashRequest}/reject',  [PettyCashRequestController::class, 'reject']);
         Route::apiResource('petty-cash-requests', PettyCashRequestController::class)->except(['update']);
+    });
+
+    // Member portal — scoped to the authenticated user's member record
+    Route::middleware('auth:sanctum')->prefix('me')->group(function () {
+        Route::get('dashboard',      [MemberPortalController::class, 'dashboard']);
+        Route::get('profile',        [MemberPortalController::class, 'profile']);
+        Route::get('accounts',       [MemberPortalController::class, 'accounts']);
+        Route::get('accounts/{accountId}/statement', [MemberPortalController::class, 'accountStatement']);
+        Route::get('loans',          [MemberPortalController::class, 'loans']);
+        Route::get('loans/{loanId}', [MemberPortalController::class, 'loanDetail']);
+        Route::get('contributions',  [MemberPortalController::class, 'contributions']);
+        Route::get('guarantees',     [MemberPortalController::class, 'guarantees']);
+        Route::get('issues',         [MemberPortalController::class, 'issues']);
+        Route::post('issues',        [MemberPortalController::class, 'createIssue']);
+        Route::post('issues/{issueId}/comments', [MemberPortalController::class, 'addIssueComment']);
+        Route::get('transactions',   [MemberPortalController::class, 'allTransactions']);
+        Route::get('petty-cash/allocations', [MemberPortalController::class, 'myAllocations']);
+        Route::get('petty-cash/requests',    [MemberPortalController::class, 'myRequests']);
     });
 });
