@@ -1,8 +1,8 @@
 "use client";
 
 import { EmailIcon, PasswordIcon } from "@/assets/icons";
-import { signIn } from "@/lib/auth/auth-client";
-import Link from "next/link";
+import { signIn, useInvalidateSession } from "@/lib/auth/auth-client";
+import { extractApiError, extractFieldErrors } from "@/lib/api";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
@@ -12,98 +12,95 @@ import { Checkbox } from "../FormElements/checkbox";
 export default function SigninWithPassword() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const invalidateSession = useInvalidateSession();
+
   const [data, setData] = useState({
     email: process.env.NEXT_PUBLIC_DEMO_USER_MAIL || "",
     password: process.env.NEXT_PUBLIC_DEMO_USER_PASS || "",
     remember: false,
   });
-
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setData({
-      ...data,
-      [e.target.name]: e.target.value,
-    });
+    setData({ ...data, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
+    setFieldErrors({});
     setLoading(true);
 
     try {
       const callbackURL = searchParams.get("callbackUrl") || "/";
 
-      const result = await signIn.email({
+      await signIn.email({
         email: data.email,
         password: data.password,
         rememberMe: data.remember,
       });
 
-      if (!result.data) {
-        throw new Error(result.error?.message || "Failed to sign in");
-      }
-
+      await invalidateSession();
       router.push(callbackURL);
       router.refresh();
       toast.success("Sign in successful");
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Sign in failed");
-      toast.error(
-        `Error: ${err instanceof Error ? err.message : (err as { error?: { message?: string } }).error?.message}`,
-      );
+    } catch (error) {
+      const fe = extractFieldErrors(error);
+      if (fe) {
+        setFieldErrors(fe);
+      } else {
+        toast.error(extractApiError(error));
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  const err = (field: string) => fieldErrors[field]?.[0];
+
   return (
     <form onSubmit={handleSubmit}>
-      <InputGroup
-        type="email"
-        label="Email"
-        className="mb-4 [&_input]:py-3.75"
-        placeholder="Enter your email"
-        name="email"
-        handleChange={handleChange}
-        value={data.email}
-        icon={<EmailIcon />}
-      />
+      <div className="mb-4">
+        <InputGroup
+          type="email"
+          label="Email"
+          className="[&_input]:py-3.75"
+          placeholder="Enter your email"
+          name="email"
+          handleChange={handleChange}
+          value={data.email}
+          icon={<EmailIcon />}
+        />
+        {err("email") && (
+          <p className="mt-1 text-sm text-red-500">{err("email")}</p>
+        )}
+      </div>
 
-      <InputGroup
-        type="password"
-        label="Password"
-        className="mb-5 [&_input]:py-3.75"
-        placeholder="Enter your password"
-        name="password"
-        handleChange={handleChange}
-        value={data.password}
-        icon={<PasswordIcon />}
-      />
+      <div className="mb-5">
+        <InputGroup
+          type="password"
+          label="Password"
+          className="[&_input]:py-3.75"
+          placeholder="Enter your password"
+          name="password"
+          handleChange={handleChange}
+          value={data.password}
+          icon={<PasswordIcon />}
+        />
+        {err("password") && (
+          <p className="mt-1 text-sm text-red-500">{err("password")}</p>
+        )}
+      </div>
 
-      <div className="mb-6 flex items-center justify-between gap-2 py-2 font-medium">
+      <div className="mb-6 flex items-center py-2 font-medium">
         <Checkbox
           label="Remember me"
           name="remember"
           withIcon="check"
           minimal
           radius="md"
-          onChange={(e) =>
-            setData({
-              ...data,
-              remember: e.target.checked,
-            })
-          }
+          onChange={(e) => setData({ ...data, remember: e.target.checked })}
         />
-
-        <Link
-          href="/"
-          className="ring-primary outline-0 hover:text-primary focus-visible:text-primary focus-visible:ring dark:text-white dark:hover:text-primary"
-        >
-          Forgot Password?
-        </Link>
       </div>
 
       <div className="mb-4.5">
@@ -118,7 +115,6 @@ export default function SigninWithPassword() {
           )}
         </button>
       </div>
-      {error && <p className="text-sm text-red-500">{error}</p>}
     </form>
   );
 }
