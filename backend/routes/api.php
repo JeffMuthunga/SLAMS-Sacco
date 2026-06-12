@@ -44,5 +44,12 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('activity-types',   \App\Http\Controllers\Api\V1\Configurations\ActivityTypeController::class);
         Route::apiResource('banks',            \App\Http\Controllers\Api\V1\Configurations\BankController::class);
         Route::apiResource('departments',      \App\Http\Controllers\Api\V1\Configurations\DepartmentController::class);
+
+        Route::get('sacco-settings', [\App\Http\Controllers\Api\V1\Configurations\SaccoSettingsController::class, 'show']);
+        Route::put('sacco-settings', [\App\Http\Controllers\Api\V1\Configurations\SaccoSettingsController::class, 'update']);
+
+        Route::apiResource('bank-accounts',   \App\Http\Controllers\Api\V1\Configurations\BankAccountController::class)->except(['show']);
+        Route::apiResource('loan-products',   \App\Http\Controllers\Api\V1\Configurations\LoanProductController::class);
+        Route::apiResource('saving-products', \App\Http\Controllers\Api\V1\Configurations\SavingProductController::class);
     });
 });
