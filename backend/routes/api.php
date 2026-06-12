@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\AccountTransactionController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ContributionController;
+use App\Http\Controllers\Api\V1\JournalController;
 use App\Http\Controllers\Api\V1\LoanController;
 use App\Http\Controllers\Api\V1\LoanRepaymentController;
 use App\Http\Controllers\Api\V1\MemberController;
@@ -80,8 +81,17 @@ Route::prefix('v1')->group(function () {
         Route::get('sacco-settings', [\App\Http\Controllers\Api\V1\Configurations\SaccoSettingsController::class, 'show']);
         Route::put('sacco-settings', [\App\Http\Controllers\Api\V1\Configurations\SaccoSettingsController::class, 'update']);
 
-        Route::apiResource('bank-accounts',   \App\Http\Controllers\Api\V1\Configurations\BankAccountController::class)->except(['show']);
-        Route::apiResource('loan-products',   \App\Http\Controllers\Api\V1\Configurations\LoanProductController::class);
-        Route::apiResource('saving-products', \App\Http\Controllers\Api\V1\Configurations\SavingProductController::class);
+        Route::apiResource('bank-accounts',       \App\Http\Controllers\Api\V1\Configurations\BankAccountController::class)->except(['show']);
+        Route::apiResource('loan-products',       \App\Http\Controllers\Api\V1\Configurations\LoanProductController::class);
+        Route::apiResource('saving-products',     \App\Http\Controllers\Api\V1\Configurations\SavingProductController::class);
+        Route::apiResource('account-types',       \App\Http\Controllers\Api\V1\Configurations\AccountTypeController::class)->except(['show']);
+        Route::apiResource('chart-of-accounts',   \App\Http\Controllers\Api\V1\Configurations\ChartOfAccountController::class)->except(['show']);
+    });
+
+    Route::middleware(['auth:sanctum', 'permission:manage_journals'])->group(function () {
+        Route::get('ledger',                        [JournalController::class, 'ledger']);
+        Route::post('journals/{journal}/post',      [JournalController::class, 'post']);
+        Route::post('journals/{journal}/reverse',   [JournalController::class, 'reverse']);
+        Route::apiResource('journals', JournalController::class)->except(['update']);
     });
 });
