@@ -19,6 +19,28 @@ export interface NavSection {
 
 export const ADMIN_NAV_DATA: NavSection[] = [
   {
+    label: "CONFIGURATIONS",
+    items: [
+      {
+        title: "Configurations",
+        icon: Icons.FourCircle,
+        items: [
+          { title: "Org Profile", url: "/admin/configurations/org-profile" },
+          { title: "SACCO Settings", url: "/admin/configurations/sacco-settings" },
+          { title: "Currencies", url: "/admin/configurations/currencies" },
+          { title: "Loan Products", url: "/admin/configurations/loan-products" },
+          { title: "Saving Products", url: "/admin/configurations/saving-products" },
+          { title: "Collateral Types", url: "/admin/configurations/collateral-types" },
+          { title: "Activity Types", url: "/admin/configurations/activity-types" },
+          { title: "Banks", url: "/admin/configurations/banks" },
+          { title: "Bank Accounts", url: "/admin/configurations/bank-accounts" },
+          { title: "Departments", url: "/admin/configurations/departments" },
+          { title: "Fiscal Years", url: "/admin/configurations/fiscal-years" },
+        ],
+      },
+    ],
+  },
+  {
     label: "MAIN MENU",
     items: [
       {
@@ -92,19 +114,6 @@ export const ADMIN_NAV_DATA: NavSection[] = [
           { title: "Approvals", url: "/admin/administration/approvals" },
           { title: "Member Exit", url: "/admin/administration/member-exit" },
           { title: "Error Messages", url: "/admin/administration/errors" },
-        ],
-      },
-      {
-        title: "Configurations",
-        icon: Icons.FourCircle,
-        items: [
-          { title: "Products", url: "/admin/configurations/products" },
-          { title: "Commodities", url: "/admin/configurations/commodities" },
-          { title: "SACCO Definitions", url: "/admin/configurations/definitions" },
-          { title: "SMS / Emails / News", url: "/admin/configurations/communications" },
-          { title: "Items", url: "/admin/configurations/items" },
-          { title: "Chart of Accounts", url: "/admin/configurations/chart-of-accounts" },
-          { title: "Workflows", url: "/admin/configurations/workflows" },
         ],
       },
       {
