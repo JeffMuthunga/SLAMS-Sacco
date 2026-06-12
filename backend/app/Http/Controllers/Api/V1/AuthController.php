@@ -33,12 +33,13 @@ class AuthController extends ApiController
         $defaultOrg = Org::where('is_default', true)->first();
 
         $user = User::create([
-            'name' => $request->validated('name'),
-            'email' => $request->validated('email'),
+            'name'     => $request->validated('name'),
+            'email'    => $request->validated('email'),
             'password' => Hash::make($request->validated('password')),
-            'role' => 'member',
-            'org_id' => $defaultOrg?->id,
+            'org_id'   => $defaultOrg?->id,
         ]);
+
+        $user->assignRole('member');
 
         Auth::login($user);
         $request->session()->regenerate();

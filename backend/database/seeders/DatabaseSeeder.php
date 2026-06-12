@@ -39,14 +39,12 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name'   => 'SACCO Admin',
             'email'  => 'admin@slamssacco.co.ke',
-            'role'   => 'admin',
             'org_id' => $org->id,
         ])->assignRole('admin');
 
         User::factory()->create([
             'name'   => 'Demo Member',
             'email'  => 'member@slamssacco.co.ke',
-            'role'   => 'member',
             'org_id' => $org->id,
         ])->assignRole('member');
     }

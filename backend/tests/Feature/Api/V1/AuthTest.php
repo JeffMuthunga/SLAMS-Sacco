@@ -16,6 +16,10 @@ class AuthTest extends TestCase
 
         // Simulate requests from the SPA so Sanctum's stateful (session) path runs
         $this->withHeader('Origin', 'http://localhost:3000');
+
+        // RbacSeeder must run so AuthController::register can assignRole('member')
+        $this->seed(\Database\Seeders\RbacSeeder::class);
+        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
     public function test_register_creates_user_and_signs_in(): void
