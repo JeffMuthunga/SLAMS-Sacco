@@ -15,37 +15,39 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $org = Org::create([
-            'name' => 'SLAMS SACCO',
-            'full_name' => 'SLAMS Savings and Credit Cooperative Society',
-            'suffix' => 'SACCO',
-            'email' => 'info@slamssacco.co.ke',
-            'country_code' => 'KEN',
+            'name'          => 'SLAMS SACCO',
+            'full_name'     => 'SLAMS Savings and Credit Cooperative Society',
+            'suffix'        => 'SACCO',
+            'email'         => 'info@slamssacco.co.ke',
+            'country_code'  => 'KEN',
             'currency_code' => 'KES',
-            'is_active' => true,
-            'is_default' => true,
+            'is_active'     => true,
+            'is_default'    => true,
         ]);
 
         Currency::create([
-            'org_id' => $org->id,
-            'code' => 'KES',
-            'name' => 'Kenyan Shilling',
-            'symbol' => 'KSh',
+            'org_id'     => $org->id,
+            'code'       => 'KES',
+            'name'       => 'Kenyan Shilling',
+            'symbol'     => 'KSh',
             'is_default' => true,
         ]);
 
+        $this->call(RbacSeeder::class);
+
         // Demo logins (password: "password")
         User::factory()->create([
-            'name' => 'SACCO Admin',
-            'email' => 'admin@slamssacco.co.ke',
-            'role' => 'admin',
+            'name'   => 'SACCO Admin',
+            'email'  => 'admin@slamssacco.co.ke',
+            'role'   => 'admin',
             'org_id' => $org->id,
-        ]);
+        ])->assignRole('admin');
 
         User::factory()->create([
-            'name' => 'Demo Member',
-            'email' => 'member@slamssacco.co.ke',
-            'role' => 'member',
+            'name'   => 'Demo Member',
+            'email'  => 'member@slamssacco.co.ke',
+            'role'   => 'member',
             'org_id' => $org->id,
-        ]);
+        ])->assignRole('member');
     }
 }
