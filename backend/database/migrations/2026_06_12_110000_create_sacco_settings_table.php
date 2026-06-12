@@ -15,6 +15,7 @@ return new class extends Migration
             $table->decimal('min_share_capital', 15, 2)->default(0);
             $table->decimal('min_monthly_contribution', 15, 2)->default(0);
             $table->decimal('loan_limit_multiplier', 5, 2)->default(3.00);
+            $table->unique('org_id');
             $table->timestamps();
         });
     }
