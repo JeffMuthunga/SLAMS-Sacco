@@ -6,6 +6,7 @@ use App\Models\Member;
 use App\Models\Org;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class MemberTest extends TestCase
@@ -93,10 +94,15 @@ class MemberTest extends TestCase
     public function test_update_syncs_kins(): void
     {
         $member = Member::factory()->create(['org_id' => $this->org->id]);
-        $kin = $member->kins()->create([
+        $kinToKeep = $member->kins()->create([
             'org_id'       => $this->org->id,
             'full_name'    => 'Old Kin',
             'relationship' => 'parent',
+        ]);
+        $kinToRemove = $member->kins()->create([
+            'org_id'       => $this->org->id,
+            'full_name'    => 'Kin To Remove',
+            'relationship' => 'sibling',
         ]);
 
         $response = $this->actingAs($this->admin)
@@ -105,7 +111,7 @@ class MemberTest extends TestCase
                 [
                     'kins' => [
                         [
-                            'id'           => $kin->id,
+                            'id'           => $kinToKeep->id,
                             'full_name'    => 'Updated Kin',
                             'relationship' => 'parent',
                         ],
@@ -118,8 +124,9 @@ class MemberTest extends TestCase
             ));
 
         $response->assertOk()->assertJsonCount(2, 'data.kins');
-        $this->assertDatabaseHas('member_kins', ['id' => $kin->id, 'full_name' => 'Updated Kin']);
+        $this->assertDatabaseHas('member_kins', ['id' => $kinToKeep->id, 'full_name' => 'Updated Kin']);
         $this->assertDatabaseHas('member_kins', ['full_name' => 'New Kin']);
+        $this->assertSoftDeleted('member_kins', ['id' => $kinToRemove->id]);
     }
 
     public function test_approve_member(): void
@@ -243,6 +250,7 @@ class MemberTest extends TestCase
 
     public function test_photo_upload(): void
     {
+        Storage::fake('public');
         $member = Member::factory()->create(['org_id' => $this->org->id]);
 
         $file = \Illuminate\Http\UploadedFile::fake()->image('photo.jpg');
