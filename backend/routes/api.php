@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\LoanController;
 use App\Http\Controllers\Api\V1\LoanRepaymentController;
 use App\Http\Controllers\Api\V1\MemberController;
 use App\Http\Controllers\Api\V1\MemberPortalController;
+use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\IssueController;
 use App\Http\Controllers\Api\V1\PettyCashAllocationController;
 use App\Http\Controllers\Api\V1\PettyCashRequestController;
@@ -115,6 +116,17 @@ Route::prefix('v1')->group(function () {
         Route::post('petty-cash-requests/{pettyCashRequest}/approve', [PettyCashRequestController::class, 'approve']);
         Route::post('petty-cash-requests/{pettyCashRequest}/reject',  [PettyCashRequestController::class, 'reject']);
         Route::apiResource('petty-cash-requests', PettyCashRequestController::class)->except(['update']);
+    });
+
+    // Reports — accessible to any authenticated admin (permission: manage_members or above)
+    Route::middleware(['auth:sanctum', 'permission:manage_members'])->prefix('reports')->group(function () {
+        Route::get('members',      [ReportController::class, 'members']);
+        Route::get('loans',        [ReportController::class, 'loans']);
+        Route::get('contributions',[ReportController::class, 'contributions']);
+        Route::get('accounts',     [ReportController::class, 'accounts']);
+        Route::get('transactions', [ReportController::class, 'transactions']);
+        Route::get('issues',       [ReportController::class, 'issues']);
+        Route::get('petty-cash',   [ReportController::class, 'pettyCash']);
     });
 
     // Member portal — scoped to the authenticated user's member record
