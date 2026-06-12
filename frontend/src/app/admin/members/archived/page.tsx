@@ -9,7 +9,7 @@ import { Member, useArchivedMembers, useRestoreMember } from "@/lib/api/members"
 import { extractApiError } from "@/lib/api";
 
 export default function ArchivedMembersPage() {
-  const { data, isLoading } = useArchivedMembers({ per_page: 100 });
+  const { data, isLoading, error } = useArchivedMembers({ per_page: 100 });
   const restoreMutation = useRestoreMember();
 
   const handleRestore = useCallback(async (member: Member) => {
@@ -20,7 +20,7 @@ export default function ArchivedMembersPage() {
     } catch (err) {
       toast.error(extractApiError(err));
     }
-  }, [restoreMutation]);
+  }, [restoreMutation.mutateAsync]);
 
   const columns = useMemo<ColumnDef<Member>[]>(() => [
     { accessorKey: "member_number", header: "Member #" },
@@ -52,6 +52,7 @@ export default function ArchivedMembersPage() {
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold text-dark dark:text-white">Archived Members</h1>
       {isLoading && <p className="text-sm text-gray-500">Loading…</p>}
+      {error && <p className="text-sm text-red-500">{extractApiError(error)}</p>}
       <DataTable columns={columns} data={data?.data ?? []} heading="Archived Members" />
     </div>
   );

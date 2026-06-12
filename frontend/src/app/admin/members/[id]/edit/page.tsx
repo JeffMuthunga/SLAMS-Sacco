@@ -9,9 +9,10 @@ export default function EditMemberPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
 
-  const { data: member, isLoading } = useMember(id);
+  const { data: member, isLoading, error } = useMember(id);
 
   if (isLoading) return <p className="text-gray-500">Loading…</p>;
+  if (error) return <p className="text-red-500">Failed to load member.</p>;
   if (!member) return <p className="text-red-500">Member not found.</p>;
 
   return (

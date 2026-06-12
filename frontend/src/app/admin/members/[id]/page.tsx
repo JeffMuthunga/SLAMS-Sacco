@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -63,7 +64,8 @@ export default function MemberDetailPage() {
   };
 
   if (isLoading) return <p className="text-gray-500">Loading…</p>;
-  if (error || !member) return <p className="text-red-500">Member not found.</p>;
+  if (error) return <p className="text-red-500">Failed to load member.</p>;
+  if (!member) return <p className="text-red-500">Member not found.</p>;
 
   return (
     <div className="flex flex-col gap-6">
@@ -116,7 +118,13 @@ export default function MemberDetailPage() {
         <div className="rounded-xl border border-stroke bg-white p-6 shadow-sm dark:border-dark-3 dark:bg-gray-dark">
           <h2 className="mb-4 text-base font-semibold text-dark dark:text-white">Personal Details</h2>
           {member.photo_url && (
-            <img src={member.photo_url} alt="Member photo" className="mb-4 h-24 w-24 rounded-full object-cover" />
+            <Image
+              src={member.photo_url}
+              alt="Member photo"
+              width={96}
+              height={96}
+              className="mb-4 rounded-full object-cover"
+            />
           )}
           <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
             <dt className="font-medium text-gray-500">ID Type</dt>
@@ -144,7 +152,7 @@ export default function MemberDetailPage() {
             {member.gender && (
               <>
                 <dt className="font-medium text-gray-500">Gender</dt>
-                <dd className="text-gray-900 dark:text-gray-100">{member.gender === "M" ? "Male" : "Female"}</dd>
+                <dd className="text-gray-900 dark:text-gray-100">{{ M: "Male", F: "Female" }[member.gender] ?? member.gender}</dd>
               </>
             )}
             {member.nationality && (
