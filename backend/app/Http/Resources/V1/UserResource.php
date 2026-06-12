@@ -13,13 +13,13 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email,
-            'org_id' => $this->org_id,
-            // Interim column-based role; replaced by RBAC tables in Phase 3
-            'role' => $this->role,
-            'created_at' => $this->created_at?->toIso8601String(),
+            'id'          => $this->id,
+            'name'        => $this->name,
+            'email'       => $this->email,
+            'org_id'      => $this->org_id,
+            'role'        => $this->getRoleNames()->first(),
+            'permissions' => $this->getAllPermissions()->pluck('name')->values(),
+            'created_at'  => $this->created_at?->toIso8601String(),
         ];
     }
 }

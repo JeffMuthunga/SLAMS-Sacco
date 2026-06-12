@@ -71,4 +71,24 @@ class RbacTest extends TestCase
             ->postJson("/api/v1/members/{$target->id}/approve")
             ->assertForbidden();
     }
+
+    public function test_me_returns_role_and_permissions_for_admin(): void
+    {
+        $response = $this->actingAs($this->admin)
+            ->getJson('/api/v1/auth/me')
+            ->assertOk();
+
+        $response->assertJsonPath('data.role', 'admin')
+                 ->assertJsonPath('data.permissions.0', 'manage_members');
+    }
+
+    public function test_me_returns_role_and_permissions_for_member(): void
+    {
+        $response = $this->actingAs($this->member)
+            ->getJson('/api/v1/auth/me')
+            ->assertOk();
+
+        $response->assertJsonPath('data.role', 'member')
+                 ->assertJsonPath('data.permissions.0', 'view_own_data');
+    }
 }
