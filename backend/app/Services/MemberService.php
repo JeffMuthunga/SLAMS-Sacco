@@ -66,6 +66,7 @@ class MemberService
             $incomingKins = $validated['kins'] ?? [];
             $incomingIds  = array_values(array_filter(array_column($incomingKins, 'id')));
 
+            // Empty $incomingIds means all kins were removed; whereNotIn([]) deletes all.
             $member->kins()->whereNotIn('id', $incomingIds)->delete();
 
             foreach ($incomingKins as $kinData) {
@@ -108,7 +109,7 @@ class MemberService
 
         ApprovalLog::create([
             'org_id'          => $member->org_id,
-            'approvable_type' => 'member',
+            'approvable_type' => Member::class,
             'approvable_id'   => $member->id,
             'action'          => 'approved',
             'from_status'     => $old,
@@ -125,7 +126,7 @@ class MemberService
 
         ApprovalLog::create([
             'org_id'          => $member->org_id,
-            'approvable_type' => 'member',
+            'approvable_type' => Member::class,
             'approvable_id'   => $member->id,
             'action'          => 'rejected',
             'from_status'     => $old,
