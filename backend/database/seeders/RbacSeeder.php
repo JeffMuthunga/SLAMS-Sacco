@@ -21,9 +21,10 @@ class RbacSeeder extends Seeder
         $manageLoans          = Permission::firstOrCreate(['name' => 'manage_loans',          'guard_name' => 'web']);
         $manageContributions  = Permission::firstOrCreate(['name' => 'manage_contributions',  'guard_name' => 'web']);
         $manageJournals       = Permission::firstOrCreate(['name' => 'manage_journals',       'guard_name' => 'web']);
+        $managePettyCash      = Permission::firstOrCreate(['name' => 'manage_petty_cash',     'guard_name' => 'web']);
         $viewOwn              = Permission::firstOrCreate(['name' => 'view_own_data',         'guard_name' => 'web']);
 
-        $admin->syncPermissions([$manageMembers, $manageConfigurations, $manageAccounts, $manageLoans, $manageContributions, $manageJournals]);
+        $admin->syncPermissions([$manageMembers, $manageConfigurations, $manageAccounts, $manageLoans, $manageContributions, $manageJournals, $managePettyCash]);
         $member->syncPermissions([$viewOwn]);
     }
 }

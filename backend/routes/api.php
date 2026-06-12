@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\V1\JournalController;
 use App\Http\Controllers\Api\V1\LoanController;
 use App\Http\Controllers\Api\V1\LoanRepaymentController;
 use App\Http\Controllers\Api\V1\MemberController;
+use App\Http\Controllers\Api\V1\PettyCashAllocationController;
+use App\Http\Controllers\Api\V1\PettyCashRequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -84,8 +86,10 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('bank-accounts',       \App\Http\Controllers\Api\V1\Configurations\BankAccountController::class)->except(['show']);
         Route::apiResource('loan-products',       \App\Http\Controllers\Api\V1\Configurations\LoanProductController::class);
         Route::apiResource('saving-products',     \App\Http\Controllers\Api\V1\Configurations\SavingProductController::class);
-        Route::apiResource('account-types',       \App\Http\Controllers\Api\V1\Configurations\AccountTypeController::class)->except(['show']);
-        Route::apiResource('chart-of-accounts',   \App\Http\Controllers\Api\V1\Configurations\ChartOfAccountController::class)->except(['show']);
+        Route::apiResource('account-types',         \App\Http\Controllers\Api\V1\Configurations\AccountTypeController::class)->except(['show']);
+        Route::apiResource('chart-of-accounts',     \App\Http\Controllers\Api\V1\Configurations\ChartOfAccountController::class)->except(['show']);
+        Route::apiResource('petty-cash-categories', \App\Http\Controllers\Api\V1\Configurations\PettyCashCategoryController::class)->except(['show']);
+        Route::apiResource('petty-cash-items',      \App\Http\Controllers\Api\V1\Configurations\PettyCashItemController::class)->except(['show']);
     });
 
     Route::middleware(['auth:sanctum', 'permission:manage_journals'])->group(function () {
@@ -93,5 +97,15 @@ Route::prefix('v1')->group(function () {
         Route::post('journals/{journal}/post',      [JournalController::class, 'post']);
         Route::post('journals/{journal}/reverse',   [JournalController::class, 'reverse']);
         Route::apiResource('journals', JournalController::class)->except(['update']);
+    });
+
+    Route::middleware(['auth:sanctum', 'permission:manage_petty_cash'])->group(function () {
+        Route::post('petty-cash-allocations/{pettyCashAllocation}/approve', [PettyCashAllocationController::class, 'approve']);
+        Route::post('petty-cash-allocations/{pettyCashAllocation}/reject',  [PettyCashAllocationController::class, 'reject']);
+        Route::apiResource('petty-cash-allocations', PettyCashAllocationController::class)->except(['update']);
+
+        Route::post('petty-cash-requests/{pettyCashRequest}/approve', [PettyCashRequestController::class, 'approve']);
+        Route::post('petty-cash-requests/{pettyCashRequest}/reject',  [PettyCashRequestController::class, 'reject']);
+        Route::apiResource('petty-cash-requests', PettyCashRequestController::class)->except(['update']);
     });
 });

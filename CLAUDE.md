@@ -123,7 +123,7 @@ Side paths: rejected, defaulted (overdue)
 - [x] Phase 7: Loans module — LoanService, full lifecycle (apply/approve/disburse/repay/default), repayment schedule generation (flat + reducing balance), frontend CRUD + schedule table with inline payment (2026-06-12)
 - [x] Phase 8: Contributions module — ContributionService (generate/pay/waive), ContributionController, frontend table with inline pay/waive + generate modal (FY → Period picker) (2026-06-12)
 - [x] Phase 9: Journals & ledger — AccountType + ChartOfAccount CRUD (under configurations), JournalService (balanced entry validation, post, reverse), JournalController + ledger endpoint, frontend: chart-of-accounts page, journal list/create/detail pages, ledger view with running balance (2026-06-12)
-- [ ] Phase 10: Petty cash module
+- [x] Phase 10: Petty cash module — categories + items (under configurations), PettyCashService (allocate, approve/reject allocation, create/approve/reject request with bcmath balance tracking), allocation + request controllers; frontend: allocations list, create allocation, allocation detail with inline request form + approve/reject, all-requests page (2026-06-12)
 - [ ] Phase 11: Issue tracking
 - [ ] Phase 12: Member portal (service desk, statements, guarantees)
 - [ ] Phase 13: Reports (filters + PDF/CSV export)
