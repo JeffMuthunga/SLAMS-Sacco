@@ -21,11 +21,12 @@ class MemberTest extends TestCase
         parent::setUp();
         $this->withHeader('Origin', 'http://localhost:3000');
 
-        $this->org = Org::factory()->create();
-        $this->admin = User::factory()->create([
-            'org_id' => $this->org->id,
-            'role'   => 'admin',
-        ]);
+        $this->seed(\Database\Seeders\RbacSeeder::class);
+        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
+        $this->org   = Org::factory()->create();
+        $this->admin = User::factory()->create(['org_id' => $this->org->id]);
+        $this->admin->assignRole('admin');
     }
 
     private function memberPayload(array $overrides = []): array
@@ -227,7 +228,8 @@ class MemberTest extends TestCase
     public function test_org_scoping(): void
     {
         $otherOrg  = Org::factory()->create();
-        $otherUser = User::factory()->create(['org_id' => $otherOrg->id, 'role' => 'admin']);
+        $otherUser = User::factory()->create(['org_id' => $otherOrg->id]);
+        $otherUser->assignRole('admin');
         $member    = Member::factory()->create(['org_id' => $this->org->id]);
 
         $this->actingAs($otherUser)

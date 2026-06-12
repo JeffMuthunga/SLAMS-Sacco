@@ -14,7 +14,26 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Sanctum SPA cookie auth for the Next.js frontend
         $middleware->statefulApi();
+
+        // Spatie role/permission middleware aliases
+        $middleware->alias([
+            'role'               => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission'         => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Return standard API envelope on permission denial
+        $exceptions->render(function (
+            \Spatie\Permission\Exceptions\UnauthorizedException $e,
+            \Illuminate\Http\Request $request
+        ) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Forbidden.',
+                    'data'    => null,
+                ], 403);
+            }
+        });
     })->create();
