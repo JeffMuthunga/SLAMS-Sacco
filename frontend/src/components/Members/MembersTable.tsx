@@ -1,7 +1,7 @@
 // frontend/src/components/Members/MembersTable.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -19,10 +19,12 @@ const STATUS_OPTIONS = [
 ];
 
 export default function MembersTable() {
-  const [search, setSearch]   = useState("");
-  const [status, setStatus]   = useState("");
+  const [search, setSearch]             = useState("");
+  const [status, setStatus]             = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // TODO: switch to server-side pagination when member count grows (ApiMeta has total/last_page)
   const { data, isLoading, error } = useMembers({
     search: debouncedSearch || undefined,
     status: status || undefined,
@@ -31,13 +33,17 @@ export default function MembersTable() {
 
   const deleteMutation = useDeleteMember();
 
+  useEffect(() => () => {
+    if (debounceRef.current !== null) clearTimeout(debounceRef.current);
+  }, []);
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-    clearTimeout((handleSearchChange as any)._timer);
-    (handleSearchChange as any)._timer = setTimeout(() => setDebouncedSearch(e.target.value), 400);
+    if (debounceRef.current !== null) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setDebouncedSearch(e.target.value), 400);
   };
 
-  const handleArchive = async (member: Member) => {
+  const handleArchive = useCallback(async (member: Member) => {
     if (!window.confirm(`Archive ${member.full_name}?`)) return;
     try {
       await deleteMutation.mutateAsync(member.id);
@@ -45,9 +51,9 @@ export default function MembersTable() {
     } catch (err) {
       toast.error(extractApiError(err));
     }
-  };
+  }, [deleteMutation]);
 
-  const columns: ColumnDef<Member>[] = [
+  const columns = useMemo<ColumnDef<Member>[]>(() => [
     {
       accessorKey: "member_number",
       header: "Member #",
@@ -72,22 +78,25 @@ export default function MembersTable() {
     {
       accessorKey: "approval_status",
       header: "Status",
-      cell: ({ getValue }) => <ApprovalStatusBadge status={getValue<string>()} />,
+      cell: ({ getValue }) => (
+        <ApprovalStatusBadge status={getValue<Member["approval_status"]>()} />
+      ),
     },
     {
       accessorKey: "is_active",
       header: "Active",
-      cell: ({ getValue }) => (
-        <span
-          className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-            getValue<boolean>()
-              ? "bg-green-100 text-green-700"
-              : "bg-gray-100 text-gray-500"
-          }`}
-        >
-          {getValue<boolean>() ? "Yes" : "No"}
-        </span>
-      ),
+      cell: ({ getValue }) => {
+        const active = getValue<boolean>();
+        return (
+          <span
+            className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+              active ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"
+            }`}
+          >
+            {active ? "Yes" : "No"}
+          </span>
+        );
+      },
     },
     {
       id: "actions",
@@ -118,7 +127,7 @@ export default function MembersTable() {
         );
       },
     },
-  ];
+  ], [handleArchive]);
 
   return (
     <div className="flex flex-col gap-4">
