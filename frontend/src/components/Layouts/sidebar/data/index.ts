@@ -70,8 +70,8 @@ export const ADMIN_NAV_DATA: NavSection[] = [
         icon: Icons.PieChart,
         items: [
           { title: "Deposit Accounts", url: "/admin/accounts" },
+          { title: "Contributions", url: "/admin/contributions" },
           { title: "SACCO Core Accounts", url: "/admin/transactions/core-accounts" },
-          { title: "Contribution Accounts", url: "/admin/transactions/contributions" },
           { title: "Other Accounts", url: "/admin/transactions/other" },
         ],
       },
