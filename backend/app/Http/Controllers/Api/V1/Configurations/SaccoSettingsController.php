@@ -30,9 +30,10 @@ class SaccoSettingsController extends ApiController
     public function update(UpdateSaccoSettingRequest $request): JsonResponse
     {
         $org = $request->user()->org;
-        $settings = SaccoSetting::firstOrCreate(['org_id' => $org->id]);
-
-        $settings->update($request->validated());
+        $settings = SaccoSetting::updateOrCreate(
+            ['org_id' => $org->id],
+            $request->validated()
+        );
 
         return $this->respond(new SaccoSettingResource($settings), 'SACCO settings updated.');
     }
