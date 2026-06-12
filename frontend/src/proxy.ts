@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
  */
 const AUTH_ONLY_PATHS = ["/login", "/register"];
 const SESSION_COOKIE_NAME =
-  process.env.NEXT_PUBLIC_SESSION_COOKIE ?? "laravel_session";
+  process.env.NEXT_PUBLIC_SESSION_COOKIE ?? "slams_session";
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

@@ -26,6 +26,9 @@ export interface ApiEnvelope<T> {
 export const api = axios.create({
   baseURL: `${API_BASE_URL}/api/v1`,
   withCredentials: true,
+  // Required since axios 1.6.2: mirror the XSRF-TOKEN cookie into the
+  // X-XSRF-TOKEN header on cross-origin requests (3000 → 8000).
+  withXSRFToken: true,
   headers: { Accept: "application/json" },
 });
 

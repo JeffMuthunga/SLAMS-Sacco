@@ -17,7 +17,14 @@ export const auth = {
       if (!cookie) return null;
       try {
         const res = await fetch(`${API_BASE_URL}/api/v1/auth/me`, {
-          headers: { cookie, Accept: "application/json" },
+          headers: {
+            cookie,
+            Accept: "application/json",
+            // Sanctum only authenticates session cookies on requests that
+            // identify as coming from a stateful (frontend) origin.
+            Referer:
+              process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+          },
           cache: "no-store",
         });
         if (!res.ok) return null;
