@@ -15,10 +15,11 @@ class RbacSeeder extends Seeder
         $admin  = Role::firstOrCreate(['name' => 'admin',  'guard_name' => 'web']);
         $member = Role::firstOrCreate(['name' => 'member', 'guard_name' => 'web']);
 
-        $manageMembers = Permission::firstOrCreate(['name' => 'manage_members', 'guard_name' => 'web']);
-        $viewOwn       = Permission::firstOrCreate(['name' => 'view_own_data',  'guard_name' => 'web']);
+        $manageMembers        = Permission::firstOrCreate(['name' => 'manage_members',        'guard_name' => 'web']);
+        $manageConfigurations = Permission::firstOrCreate(['name' => 'manage_configurations', 'guard_name' => 'web']);
+        $viewOwn              = Permission::firstOrCreate(['name' => 'view_own_data',         'guard_name' => 'web']);
 
-        $admin->syncPermissions([$manageMembers]);
+        $admin->syncPermissions([$manageMembers, $manageConfigurations]);
         $member->syncPermissions([$viewOwn]);
     }
 }

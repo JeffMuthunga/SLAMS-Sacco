@@ -27,4 +27,17 @@ Route::prefix('v1')->group(function () {
         Route::post('members/{member}/reject',  [MemberController::class, 'reject']);
         Route::apiResource('members', MemberController::class);
     });
+
+    Route::middleware(['auth:sanctum', 'permission:manage_configurations'])->prefix('configurations')->group(function () {
+        Route::get('org', [\App\Http\Controllers\Api\V1\Configurations\OrgController::class, 'show']);
+        Route::put('org', [\App\Http\Controllers\Api\V1\Configurations\OrgController::class, 'update']);
+        Route::post('org/logo', [\App\Http\Controllers\Api\V1\Configurations\OrgController::class, 'uploadLogo']);
+
+        Route::apiResource('currencies', \App\Http\Controllers\Api\V1\Configurations\CurrencyController::class)->except(['show']);
+
+        Route::post('fiscal-years/{fiscal_year}/close', [\App\Http\Controllers\Api\V1\Configurations\FiscalYearController::class, 'close']);
+        Route::apiResource('fiscal-years', \App\Http\Controllers\Api\V1\Configurations\FiscalYearController::class)->except(['show', 'destroy']);
+
+        Route::patch('periods/{period}/status', [\App\Http\Controllers\Api\V1\Configurations\PeriodController::class, 'updateStatus']);
+    });
 });
