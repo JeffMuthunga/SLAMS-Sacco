@@ -17,7 +17,7 @@ class CollateralTypeController extends BaseCrudController
         return CollateralTypeResource::class;
     }
 
-    protected function storeRules(): array
+    protected function storeRules(string $orgId): array
     {
         return [
             'name'        => ['required', 'string', 'max:120'],
@@ -26,7 +26,7 @@ class CollateralTypeController extends BaseCrudController
         ];
     }
 
-    protected function updateRules(string $id): array
+    protected function updateRules(string $id, string $orgId): array
     {
         return [
             'name'        => ['required', 'string', 'max:120'],

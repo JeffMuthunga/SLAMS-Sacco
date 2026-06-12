@@ -18,10 +18,8 @@ class ActivityTypeController extends BaseCrudController
         return ActivityTypeResource::class;
     }
 
-    protected function storeRules(): array
+    protected function storeRules(string $orgId): array
     {
-        $orgId = request()->user()->org_id;
-
         return [
             'name'      => ['required', 'string', 'max:120'],
             'code'      => [
@@ -30,16 +28,14 @@ class ActivityTypeController extends BaseCrudController
                 'max:50',
                 Rule::unique('activity_types', 'code')
                     ->where('org_id', $orgId)
-                    ->whereNull('deleted_at'),
+                    ->withoutTrashed(),
             ],
             'is_active' => ['sometimes', 'boolean'],
         ];
     }
 
-    protected function updateRules(string $id): array
+    protected function updateRules(string $id, string $orgId): array
     {
-        $orgId = request()->user()->org_id;
-
         return [
             'name'      => ['required', 'string', 'max:120'],
             'code'      => [
@@ -48,7 +44,7 @@ class ActivityTypeController extends BaseCrudController
                 'max:50',
                 Rule::unique('activity_types', 'code')
                     ->where('org_id', $orgId)
-                    ->whereNull('deleted_at')
+                    ->withoutTrashed()
                     ->ignore($id),
             ],
             'is_active' => ['sometimes', 'boolean'],
