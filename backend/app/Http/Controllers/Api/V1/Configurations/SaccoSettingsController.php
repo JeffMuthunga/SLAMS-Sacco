@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Configurations;
 
 use App\Http\Controllers\Api\V1\ApiController;
+use App\Http\Requests\Api\V1\Configurations\UpdateSaccoSettingRequest;
 use App\Http\Resources\V1\Configurations\SaccoSettingResource;
 use App\Models\SaccoSetting;
 use Illuminate\Http\JsonResponse;
@@ -26,19 +27,12 @@ class SaccoSettingsController extends ApiController
         return $this->respond(new SaccoSettingResource($settings), 'SACCO settings retrieved.');
     }
 
-    public function update(Request $request): JsonResponse
+    public function update(UpdateSaccoSettingRequest $request): JsonResponse
     {
         $org = $request->user()->org;
         $settings = SaccoSetting::firstOrCreate(['org_id' => $org->id]);
 
-        $data = $request->validate([
-            'registration_fee'         => ['sometimes', 'numeric', 'min:0'],
-            'min_share_capital'        => ['sometimes', 'numeric', 'min:0'],
-            'min_monthly_contribution' => ['sometimes', 'numeric', 'min:0'],
-            'loan_limit_multiplier'    => ['sometimes', 'numeric', 'min:1', 'max:10'],
-        ]);
-
-        $settings->update($data);
+        $settings->update($request->validated());
 
         return $this->respond(new SaccoSettingResource($settings), 'SACCO settings updated.');
     }
