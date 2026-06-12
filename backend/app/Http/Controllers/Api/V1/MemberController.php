@@ -21,10 +21,11 @@ class MemberController extends ApiController
             ->with('kins');
 
         if ($search = $request->query('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('full_name', 'ilike', "%{$search}%")
-                  ->orWhere('member_number', 'ilike', "%{$search}%")
-                  ->orWhere('id_number', 'ilike', "%{$search}%");
+            $term = strtolower($search);
+            $query->where(function ($q) use ($term) {
+                $q->whereRaw('LOWER(full_name) LIKE ?', ["%{$term}%"])
+                  ->orWhereRaw('LOWER(member_number) LIKE ?', ["%{$term}%"])
+                  ->orWhereRaw('LOWER(id_number) LIKE ?', ["%{$term}%"]);
             });
         }
 
@@ -89,10 +90,11 @@ class MemberController extends ApiController
             ->where('org_id', $request->user()->org_id);
 
         if ($search = $request->query('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('full_name', 'ilike', "%{$search}%")
-                  ->orWhere('member_number', 'ilike', "%{$search}%")
-                  ->orWhere('id_number', 'ilike', "%{$search}%");
+            $term = strtolower($search);
+            $query->where(function ($q) use ($term) {
+                $q->whereRaw('LOWER(full_name) LIKE ?', ["%{$term}%"])
+                  ->orWhereRaw('LOWER(member_number) LIKE ?', ["%{$term}%"])
+                  ->orWhereRaw('LOWER(id_number) LIKE ?', ["%{$term}%"]);
             });
         }
 

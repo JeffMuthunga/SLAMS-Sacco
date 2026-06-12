@@ -11,6 +11,8 @@ class MemberKin extends Model
 {
     use HasUuids, SoftDeletes;
 
+    protected $table = 'member_kins';
+
     protected $fillable = [
         'org_id', 'member_id', 'full_name', 'relationship',
         'date_of_birth', 'id_number', 'id_type', 'phone',
