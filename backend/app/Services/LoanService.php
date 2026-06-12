@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\DB;
 
 class LoanService
 {
+    public function __construct(private NotificationService $notifications) {}
+
     public function generateLoanNumber(string $orgId): string
     {
         $year   = now()->year;
@@ -113,6 +115,9 @@ class LoanService
             'approved_by'     => $user->id,
             'approved_at'     => now(),
         ]);
+
+        $loan->load('member');
+        $this->notifications->loanApproved($loan);
     }
 
     public function reject(Loan $loan, string $reason, $user): void
@@ -130,6 +135,9 @@ class LoanService
             'note'       => "Rejected: {$reason}",
             'created_by' => $user->id,
         ]);
+
+        $loan->load('member');
+        $this->notifications->loanRejected($loan, $reason);
     }
 
     public function disburse(Loan $loan, array $data, $user): Loan
@@ -179,7 +187,9 @@ class LoanService
             // Generate repayment schedule
             $this->generateRepaymentSchedule($loan, $disburseDate, $user);
 
-            return $loan->fresh()->load(['member', 'loanProduct', 'repayments', 'guarantees', 'collaterals']);
+            $fresh = $loan->fresh()->load(['member', 'loanProduct', 'repayments', 'guarantees', 'collaterals']);
+            $this->notifications->loanDisbursed($fresh);
+            return $fresh;
         });
     }
 
@@ -290,6 +300,9 @@ class LoanService
             ->whereIn('repayment_status', ['pending', 'partial'])
             ->where('due_date', '<', now()->toDateString())
             ->update(['repayment_status' => 'overdue']);
+
+        $loan->load('member');
+        $this->notifications->loanDefaulted($loan);
     }
 
     public function addNote(Loan $loan, string $note, $user): LoanNote

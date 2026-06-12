@@ -7,6 +7,8 @@ use App\Models\IssueComment;
 
 class IssueService
 {
+    public function __construct(private NotificationService $notifications) {}
+
     public function generateReference(string $orgId): string
     {
         $prefix = 'ISSUE-' . now()->format('Ym') . '-';
@@ -25,7 +27,7 @@ class IssueService
 
     public function create(array $data, string $orgId, object $user): Issue
     {
-        return Issue::create([
+        $issue = Issue::create([
             'org_id'           => $orgId,
             'reference_number' => $this->generateReference($orgId),
             'category_id'      => $data['category_id'],
@@ -37,6 +39,10 @@ class IssueService
             'priority'         => $data['priority'] ?? 'medium',
             'status'           => 'open',
         ]);
+
+        $this->notifications->issueCreated($issue->load(['assignee', 'member']));
+
+        return $issue;
     }
 
     public function update(Issue $issue, array $data): Issue
@@ -59,7 +65,13 @@ class IssueService
             }
         }
 
+        $wasResolved = isset($data['status']) && $data['status'] === 'resolved' && $issue->status !== 'resolved';
+
         $issue->update($updates);
+
+        if ($wasResolved) {
+            $this->notifications->issueResolved($issue->load('member'));
+        }
 
         return $issue;
     }

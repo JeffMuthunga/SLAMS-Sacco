@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Storage;
 
 class MemberService
 {
+    public function __construct(private NotificationService $notifications) {}
+
     public function generateMemberNumber(string $orgId): string
     {
         $year   = now()->year;
@@ -116,6 +118,8 @@ class MemberService
             'to_status'       => 'approved',
             'performed_by'    => $by->id,
         ]);
+
+        $this->notifications->memberApproved($member);
     }
 
     public function reject(Member $member, string $reason, User $by): void
@@ -134,5 +138,7 @@ class MemberService
             'performed_by'    => $by->id,
             'notes'           => $reason,
         ]);
+
+        $this->notifications->memberRejected($member, $reason);
     }
 }

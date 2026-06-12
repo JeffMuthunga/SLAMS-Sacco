@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 
 class PettyCashService
 {
+    public function __construct(private NotificationService $notifications) {}
+
     public function createAllocation(array $data, string $orgId): PettyCashAllocation
     {
         $amount = (string) $data['amount'];
@@ -87,6 +89,8 @@ class PettyCashService
                 }
             }
 
+            $this->notifications->pettyCashRequestApproved($pcRequest->load(['allocation.allocatedTo', 'item']));
+
             return $pcRequest;
         });
     }
@@ -98,6 +102,8 @@ class PettyCashService
             'approved_by'     => $user->id,
             'approved_at'     => now(),
         ]);
+
+        $this->notifications->pettyCashRequestRejected($pcRequest->load(['allocation.allocatedTo', 'item']));
 
         return $pcRequest;
     }
