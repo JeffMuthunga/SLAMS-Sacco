@@ -110,7 +110,7 @@ Side paths: rejected, defaulted (overdue)
       - `/admin/members` and `/admin/members/archived` placeholder pages (unblock nav 404s)
 - [x] Phase 1: Database schema & migrations — 27 migrations, 26 models, UUID PKs,
       soft deletes, org scoping, approval_logs audit table (2026-06-11)
-- [ ] Phase 2: Authentication polish (wire login/register pages end-to-end in browser)
+- [x] Phase 2: Authentication polish — inline field errors, session invalidation on login/logout, register page removed (2026-06-12)
 - [ ] Phase 3: RBAC (roles, permissions, middleware; supersedes interim `role` column)
 - [ ] Phase 4: Configurations module
 - [ ] Phase 5: Members module
