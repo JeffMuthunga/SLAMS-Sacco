@@ -10,10 +10,13 @@ class Currency extends Model
 {
     use HasUuids, SoftDeletes;
 
-    protected $fillable = ['org_id', 'code', 'name', 'symbol', 'is_default'];
+    protected $fillable = ['org_id', 'code', 'name', 'symbol', 'exchange_rate', 'is_default'];
 
     protected function casts(): array
     {
-        return ['is_default' => 'boolean'];
+        return [
+            'exchange_rate' => 'string',
+            'is_default' => 'boolean',
+        ];
     }
 }

@@ -113,6 +113,11 @@ Side paths: rejected, defaulted (overdue)
 - [x] Phase 2: Authentication polish — inline field errors, session invalidation on login/logout, register page removed (2026-06-12)
 - [ ] Phase 3: RBAC (roles, permissions, middleware; supersedes interim `role` column)
 - [ ] Phase 4: Configurations module
+      - [ ] Migrations & Models: `sacco_settings`, `collateral_types`, `activity_types`, `banks`, `bank_accounts`, `departments`
+      - [ ] Permission Seeding: Seed `manage_configurations` permission & assign to admin
+      - [ ] Backend API: Controllers and requests for Org Profile, SACCO Settings, products (Loan/Saving), reference tables, and Fiscal calendar/Periods
+      - [ ] Frontend API: API client hooks for all configurations entities
+      - [ ] Frontend UI Pages: Sidebar group, Org Profile, SACCO Settings, Loan/Saving Products, Reference Data tables (CRUD modals), and Fiscal calendar management
 - [ ] Phase 5: Members module
 - [ ] Phase 6: SACCO accounts & transactions
 - [ ] Phase 7: Loans module (application → approval → disbursement → repayment)
