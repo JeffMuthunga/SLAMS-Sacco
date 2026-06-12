@@ -2,6 +2,7 @@
 
 import { EmailIcon, PasswordIcon } from "@/assets/icons";
 import { signUp } from "@/lib/auth/auth-client";
+import { extractApiError, extractFieldErrors } from "@/lib/api";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
@@ -16,77 +17,89 @@ export default function SignupWithPassword() {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setData({
-      ...data,
-      [e.target.name]: e.target.value,
-    });
+    setData({ ...data, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
+    setFieldErrors({});
     setLoading(true);
 
     try {
       const callbackURL = searchParams.get("callbackUrl") || "/";
-
-      const result = await signUp.email({
+      await signUp.email({
         name: data.name,
         email: data.email,
         password: data.password,
       });
-
-      if (!result.data) {
-        throw new Error(result.error?.message || "Registration failed");
-      }
-
       router.push(callbackURL);
       router.refresh();
       toast.success("Account created successfully");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign up failed");
-      toast.error(err instanceof Error ? err.message : "Sign up failed");
+    } catch (error) {
+      const fe = extractFieldErrors(error);
+      if (fe) {
+        setFieldErrors(fe);
+      } else {
+        toast.error(extractApiError(error));
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  const err = (field: string) => fieldErrors[field]?.[0];
+
   return (
     <form onSubmit={handleSubmit}>
-      <InputGroup
-        type="text"
-        label="Name"
-        className="mb-4 [&_input]:py-3.75"
-        placeholder="Enter your name"
-        name="name"
-        handleChange={handleChange}
-        value={data.name}
-      />
+      <div className="mb-4">
+        <InputGroup
+          type="text"
+          label="Name"
+          className="[&_input]:py-3.75"
+          placeholder="Enter your name"
+          name="name"
+          handleChange={handleChange}
+          value={data.name}
+        />
+        {err("name") && (
+          <p className="mt-1 text-sm text-red-500">{err("name")}</p>
+        )}
+      </div>
 
-      <InputGroup
-        type="email"
-        label="Email"
-        className="mb-4 [&_input]:py-3.75"
-        placeholder="Enter your email"
-        name="email"
-        handleChange={handleChange}
-        value={data.email}
-        icon={<EmailIcon />}
-      />
+      <div className="mb-4">
+        <InputGroup
+          type="email"
+          label="Email"
+          className="[&_input]:py-3.75"
+          placeholder="Enter your email"
+          name="email"
+          handleChange={handleChange}
+          value={data.email}
+          icon={<EmailIcon />}
+        />
+        {err("email") && (
+          <p className="mt-1 text-sm text-red-500">{err("email")}</p>
+        )}
+      </div>
 
-      <InputGroup
-        type="password"
-        label="Password"
-        className="mb-5 [&_input]:py-3.75"
-        placeholder="Create a password"
-        name="password"
-        handleChange={handleChange}
-        value={data.password}
-        icon={<PasswordIcon />}
-      />
+      <div className="mb-5">
+        <InputGroup
+          type="password"
+          label="Password"
+          className="[&_input]:py-3.75"
+          placeholder="Create a password"
+          name="password"
+          handleChange={handleChange}
+          value={data.password}
+          icon={<PasswordIcon />}
+        />
+        {err("password") && (
+          <p className="mt-1 text-sm text-red-500">{err("password")}</p>
+        )}
+      </div>
 
       <div className="mb-4.5">
         <button
@@ -100,8 +113,6 @@ export default function SignupWithPassword() {
           )}
         </button>
       </div>
-
-      {error && <p className="text-sm text-red-500">{error}</p>}
     </form>
   );
 }
