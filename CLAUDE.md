@@ -130,3 +130,4 @@ Side paths: rejected, defaulted (overdue)
 - Replace placeholder branding values in `src/config/branding.ts` with real SACCO details
 - `authClient.updateUser` points at `PUT /auth/profile` (TODO: real endpoint)
 - Remove "TEMPLATE REFERENCE" demo pages before production
+- Password reset flow (forgot-password + reset-password with email) — deferred; requires email infrastructure (Phase 14)
