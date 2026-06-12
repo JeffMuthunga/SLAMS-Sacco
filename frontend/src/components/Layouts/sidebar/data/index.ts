@@ -38,6 +38,7 @@ export const ADMIN_NAV_DATA: NavSection[] = [
           { title: "Fiscal Years", url: "/admin/configurations/fiscal-years" },
           { title: "Chart of Accounts", url: "/admin/chart-of-accounts" },
           { title: "Petty Cash Categories", url: "/admin/configurations/petty-cash-categories" },
+          { title: "Issue Categories", url: "/admin/configurations/issue-categories" },
         ],
       },
     ],
@@ -84,8 +85,8 @@ export const ADMIN_NAV_DATA: NavSection[] = [
           { title: "Journals", url: "/admin/journals" },
           { title: "Transactions Ledger", url: "/admin/ledger" },
           { title: "Petty Cash", url: "/admin/petty-cash" },
+          { title: "Issue Tracking", url: "/admin/issues" },
           { title: "Emails & News", url: "/admin/operations/emails-news" },
-          { title: "Issue Tracking", url: "/admin/operations/issues" },
         ],
       },
       {

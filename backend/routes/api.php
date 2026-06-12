@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\JournalController;
 use App\Http\Controllers\Api\V1\LoanController;
 use App\Http\Controllers\Api\V1\LoanRepaymentController;
 use App\Http\Controllers\Api\V1\MemberController;
+use App\Http\Controllers\Api\V1\IssueController;
 use App\Http\Controllers\Api\V1\PettyCashAllocationController;
 use App\Http\Controllers\Api\V1\PettyCashRequestController;
 use Illuminate\Support\Facades\Route;
@@ -90,6 +91,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('chart-of-accounts',     \App\Http\Controllers\Api\V1\Configurations\ChartOfAccountController::class)->except(['show']);
         Route::apiResource('petty-cash-categories', \App\Http\Controllers\Api\V1\Configurations\PettyCashCategoryController::class)->except(['show']);
         Route::apiResource('petty-cash-items',      \App\Http\Controllers\Api\V1\Configurations\PettyCashItemController::class)->except(['show']);
+        Route::apiResource('issue-categories',      \App\Http\Controllers\Api\V1\Configurations\IssueCategoryController::class)->except(['show']);
     });
 
     Route::middleware(['auth:sanctum', 'permission:manage_journals'])->group(function () {
@@ -97,6 +99,11 @@ Route::prefix('v1')->group(function () {
         Route::post('journals/{journal}/post',      [JournalController::class, 'post']);
         Route::post('journals/{journal}/reverse',   [JournalController::class, 'reverse']);
         Route::apiResource('journals', JournalController::class)->except(['update']);
+    });
+
+    Route::middleware(['auth:sanctum', 'permission:manage_issues'])->group(function () {
+        Route::post('issues/{issue}/comments', [IssueController::class, 'addComment']);
+        Route::apiResource('issues', IssueController::class);
     });
 
     Route::middleware(['auth:sanctum', 'permission:manage_petty_cash'])->group(function () {
