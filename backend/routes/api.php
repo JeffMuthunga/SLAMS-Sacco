@@ -39,5 +39,10 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('fiscal-years', \App\Http\Controllers\Api\V1\Configurations\FiscalYearController::class)->except(['show', 'destroy']);
 
         Route::patch('periods/{period}/status', [\App\Http\Controllers\Api\V1\Configurations\PeriodController::class, 'updateStatus']);
+
+        Route::apiResource('collateral-types', \App\Http\Controllers\Api\V1\Configurations\CollateralTypeController::class);
+        Route::apiResource('activity-types',   \App\Http\Controllers\Api\V1\Configurations\ActivityTypeController::class);
+        Route::apiResource('banks',            \App\Http\Controllers\Api\V1\Configurations\BankController::class);
+        Route::apiResource('departments',      \App\Http\Controllers\Api\V1\Configurations\DepartmentController::class);
     });
 });
