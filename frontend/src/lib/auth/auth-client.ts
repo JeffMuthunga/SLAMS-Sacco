@@ -1,13 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { api, ensureCsrfCookie, extractApiError } from "../api";
-
-/**
- * Laravel-backed auth client. Replaces the template's better-auth client while
- * keeping the same call surface so existing components keep working:
- * signIn.email, signUp.email, signOut, useSession, getSession, authClient.updateUser
- */
+import { api, ensureCsrfCookie } from "../api";
 
 export interface SessionUser {
   id: string;
@@ -25,10 +19,6 @@ export interface Session {
   user: SessionUser;
 }
 
-type AuthResult<T> =
-  | { data: T; error: null }
-  | { data: null; error: { message: string } };
-
 export const SESSION_QUERY_KEY = ["auth", "session"] as const;
 
 export async function getSession(): Promise<Session | null> {
@@ -45,18 +35,14 @@ export const signIn = {
     email: string;
     password: string;
     rememberMe?: boolean;
-  }): Promise<AuthResult<Session>> => {
-    try {
-      await ensureCsrfCookie();
-      const { data } = await api.post("/auth/login", {
-        email: payload.email,
-        password: payload.password,
-        remember: payload.rememberMe ?? false,
-      });
-      return { data: { user: data.data as SessionUser }, error: null };
-    } catch (error) {
-      return { data: null, error: { message: extractApiError(error) } };
-    }
+  }): Promise<Session> => {
+    await ensureCsrfCookie();
+    const { data } = await api.post("/auth/login", {
+      email: payload.email,
+      password: payload.password,
+      remember: payload.rememberMe ?? false,
+    });
+    return { user: data.data as SessionUser };
   },
 };
 
@@ -66,14 +52,10 @@ export const signUp = {
     email: string;
     password: string;
     [key: string]: unknown;
-  }): Promise<AuthResult<Session>> => {
-    try {
-      await ensureCsrfCookie();
-      const { data } = await api.post("/auth/register", payload);
-      return { data: { user: data.data as SessionUser }, error: null };
-    } catch (error) {
-      return { data: null, error: { message: extractApiError(error) } };
-    }
+  }): Promise<Session> => {
+    await ensureCsrfCookie();
+    const { data } = await api.post("/auth/register", payload);
+    return { user: data.data as SessionUser };
   },
 };
 
@@ -105,7 +87,6 @@ export function useInvalidateSession(): () => Promise<void> {
 }
 
 export const authClient = {
-  /** TODO(auth): point at the real profile endpoint once the Laravel backend exists. */
   updateUser: async (payload: Record<string, unknown>) => {
     const { data } = await api.put("/auth/profile", payload);
     return data;
