@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AccountController;
+use App\Http\Controllers\Api\V1\AccountTransactionController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\MemberController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +28,14 @@ Route::prefix('v1')->group(function () {
         Route::post('members/{member}/approve', [MemberController::class, 'approve']);
         Route::post('members/{member}/reject',  [MemberController::class, 'reject']);
         Route::apiResource('members', MemberController::class);
+    });
+
+    Route::middleware(['auth:sanctum', 'permission:manage_accounts'])->group(function () {
+        Route::get('accounts/{account}/statement',  [AccountController::class, 'statement']);
+        Route::post('accounts/{account}/approve',   [AccountController::class, 'approve']);
+        Route::post('accounts/{account}/reject',    [AccountController::class, 'reject']);
+        Route::apiResource('accounts', AccountController::class);
+        Route::apiResource('account-transactions', AccountTransactionController::class)->only(['index', 'show', 'store']);
     });
 
     Route::middleware(['auth:sanctum', 'permission:manage_configurations'])->prefix('configurations')->group(function () {
