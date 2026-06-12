@@ -13,6 +13,7 @@ import {
   useDeleteMember,
 } from "@/lib/api/members";
 import { extractApiError } from "@/lib/api";
+import { Can } from "@/lib/AbilityContext";
 
 export default function MemberDetailPage() {
   const params = useParams<{ id: string }>();
@@ -78,38 +79,40 @@ export default function MemberDetailPage() {
             <ApprovalStatusBadge status={member.approval_status} />
           </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {member.approval_status === "pending" && (
-            <>
-              <button
-                onClick={handleApprove}
-                disabled={approveMutation.isPending}
-                className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-60"
-              >
-                Approve
-              </button>
-              <button
-                onClick={() => setShowRejectModal(true)}
-                className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600"
-              >
-                Reject
-              </button>
-            </>
-          )}
-          <Link
-            href={`/admin/members/${id}/edit`}
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Edit
-          </Link>
-          <button
-            onClick={handleArchive}
-            disabled={deleteMutation.isPending}
-            className="rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-60"
-          >
-            Archive
-          </button>
-        </div>
+        <Can I="manage_members" a="all">
+          <div className="flex flex-wrap gap-2">
+            {member.approval_status === "pending" && (
+              <>
+                <button
+                  onClick={handleApprove}
+                  disabled={approveMutation.isPending}
+                  className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-60"
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => setShowRejectModal(true)}
+                  className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600"
+                >
+                  Reject
+                </button>
+              </>
+            )}
+            <Link
+              href={`/admin/members/${id}/edit`}
+              className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Edit
+            </Link>
+            <button
+              onClick={handleArchive}
+              disabled={deleteMutation.isPending}
+              className="rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-60"
+            >
+              Archive
+            </button>
+          </div>
+        </Can>
       </div>
 
       {/* Details grid */}
