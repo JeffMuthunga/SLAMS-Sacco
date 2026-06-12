@@ -9,6 +9,7 @@ export interface SessionUser {
   email: string;
   org_id?: string | null;
   role?: "admin" | "member";
+  permissions?: string[];
   image?: string | null;
   bio?: string | null;
   phoneNumber?: string | number | null;
