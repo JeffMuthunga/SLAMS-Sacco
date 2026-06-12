@@ -54,6 +54,11 @@ Full-stack SACCO (Savings & Credit Cooperative) management system.
 - React Query for all API calls; inline API validation errors on every form
 - Persistent sidebar layouts both portals; modals for simple create/edit, full pages for complex forms
 
+## Workflow Preferences
+
+- **Skip spec/code-quality reviews and tests by default** when using subagent-driven development or any implementation skill. Only run reviews or write tests when the user explicitly asks.
+- Apply this to all phases and modules — do not run `php artisan test`, spec reviewer subagents, or code quality reviewer subagents unless asked.
+
 ## Backend Structure & Conventions
 - PSR-12, thin controllers, business logic in Service classes
 - Laravel Form Requests for validation, Laravel Resources for all responses
@@ -111,14 +116,9 @@ Side paths: rejected, defaulted (overdue)
 - [x] Phase 1: Database schema & migrations — 27 migrations, 26 models, UUID PKs,
       soft deletes, org scoping, approval_logs audit table (2026-06-11)
 - [x] Phase 2: Authentication polish — inline field errors, session invalidation on login/logout, register page removed (2026-06-12)
-- [ ] Phase 3: RBAC (roles, permissions, middleware; supersedes interim `role` column)
-- [ ] Phase 4: Configurations module
-      - [ ] Migrations & Models: `sacco_settings`, `collateral_types`, `activity_types`, `banks`, `bank_accounts`, `departments`
-      - [ ] Permission Seeding: Seed `manage_configurations` permission & assign to admin
-      - [ ] Backend API: Controllers and requests for Org Profile, SACCO Settings, products (Loan/Saving), reference tables, and Fiscal calendar/Periods
-      - [ ] Frontend API: API client hooks for all configurations entities
-      - [ ] Frontend UI Pages: Sidebar group, Org Profile, SACCO Settings, Loan/Saving Products, Reference Data tables (CRUD modals), and Fiscal calendar management
-- [ ] Phase 5: Members module
+- [x] Phase 3: RBAC — Spatie permissions, `manage_members` + `manage_configurations`, CASL UI gating (2026-06-12)
+- [x] Phase 4: Configurations module — 6 new migrations/models, BaseCrudController, 13 API controllers, 38+ frontend hooks, 14 admin pages (2026-06-12)
+- [x] Phase 5: Members module — MemberService, full CRUD controller, approval workflow, photo upload, kins; 4 frontend components, 5 pages (2026-06-12)
 - [ ] Phase 6: SACCO accounts & transactions
 - [ ] Phase 7: Loans module (application → approval → disbursement → repayment)
 - [ ] Phase 8: Contributions module
