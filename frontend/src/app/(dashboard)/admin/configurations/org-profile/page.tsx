@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   useOrg,
   useUpdateOrg,
+  useUploadOrgLogo,
   type UpdateOrgPayload,
 } from "@/lib/api/configurations";
 
@@ -28,6 +30,9 @@ type FormValues = {
 export default function OrgProfilePage() {
   const { data: org, isLoading } = useOrg();
   const updateOrg = useUpdateOrg();
+  const uploadLogo = useUploadOrgLogo();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [colorForm, setColorForm] = useState({ primary: "#5750f1", secondary: "#10b981" });
 
   const {
     register,
@@ -67,6 +72,25 @@ export default function OrgProfilePage() {
       });
     }
   }, [org, reset]);
+
+  useEffect(() => {
+    if (org) {
+      setColorForm({
+        primary: org.primary_color ?? "#5750f1",
+        secondary: org.secondary_color ?? "#10b981",
+      });
+    }
+  }, [org]);
+
+  function saveColors() {
+    updateOrg.mutate(
+      { primary_color: colorForm.primary, secondary_color: colorForm.secondary } as any,
+      {
+        onSuccess: () => toast.success("Brand colors updated."),
+        onError: () => toast.error("Failed to save colors."),
+      }
+    );
+  }
 
   function onSubmit(values: FormValues) {
     const payload: UpdateOrgPayload = {
@@ -244,6 +268,114 @@ export default function OrgProfilePage() {
           </Button>
         </div>
       </form>
+
+      {/* Logo Upload */}
+      <div className="mt-6 space-y-6 bg-white p-6 rounded-lg shadow-sm ring-1 ring-gray-900/5">
+        <h3 className="text-base font-semibold text-gray-900">Organisation Logo</h3>
+        <div className="flex items-center gap-6">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 overflow-hidden">
+            {org?.logo_url ? (
+              <Image
+                src={org.logo_url}
+                alt="Org logo"
+                width={80}
+                height={80}
+                className="object-contain"
+              />
+            ) : (
+              <span className="text-xs text-gray-400 text-center px-1">No logo</span>
+            )}
+          </div>
+          <div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file)
+                  uploadLogo.mutate(file, {
+                    onSuccess: () => toast.success("Logo updated."),
+                    onError: () => toast.error("Failed to upload logo."),
+                  });
+              }}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadLogo.isPending}
+            >
+              {uploadLogo.isPending ? "Uploading..." : "Upload Logo"}
+            </Button>
+            <p className="mt-1.5 text-xs text-gray-500">PNG, JPG, SVG — max 2 MB</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Brand Colors */}
+      <div className="mt-6 space-y-6 bg-white p-6 rounded-lg shadow-sm ring-1 ring-gray-900/5">
+        <h3 className="text-base font-semibold text-gray-900">Brand Colors</h3>
+        <p className="text-sm text-gray-500">
+          These colors are applied to the sidebar and UI elements across the system.
+        </p>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Primary Color
+            </label>
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={colorForm.primary}
+                onChange={(e) =>
+                  setColorForm((p) => ({ ...p, primary: e.target.value }))
+                }
+                className="h-10 w-14 cursor-pointer rounded border border-gray-300 p-1"
+              />
+              <Input
+                value={colorForm.primary}
+                onChange={(e) =>
+                  setColorForm((p) => ({ ...p, primary: e.target.value }))
+                }
+                maxLength={7}
+                placeholder="#5750f1"
+                className="font-mono"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Secondary Color
+            </label>
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={colorForm.secondary}
+                onChange={(e) =>
+                  setColorForm((p) => ({ ...p, secondary: e.target.value }))
+                }
+                className="h-10 w-14 cursor-pointer rounded border border-gray-300 p-1"
+              />
+              <Input
+                value={colorForm.secondary}
+                onChange={(e) =>
+                  setColorForm((p) => ({ ...p, secondary: e.target.value }))
+                }
+                maxLength={7}
+                placeholder="#10b981"
+                className="font-mono"
+              />
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-end border-t border-gray-900/10 pt-4">
+          <Button type="button" onClick={saveColors} disabled={updateOrg.isPending}>
+            {updateOrg.isPending ? "Saving..." : "Save Colors"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

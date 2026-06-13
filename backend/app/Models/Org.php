@@ -14,7 +14,7 @@ class Org extends Model
 
     protected $fillable = [
         'name', 'full_name', 'suffix', 'email', 'phone', 'website',
-        'logo_path', 'address', 'town', 'country_code', 'currency_code',
+        'logo_path', 'primary_color', 'secondary_color', 'address', 'town', 'country_code', 'currency_code',
         'pin', 'reg_number', 'member_limit', 'is_active', 'is_default',
     ];
 

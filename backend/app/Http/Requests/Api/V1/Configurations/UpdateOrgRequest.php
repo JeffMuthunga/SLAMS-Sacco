@@ -26,7 +26,9 @@ class UpdateOrgRequest extends FormRequest
             'currency_code' => ['nullable', 'string', 'size:3'],
             'pin'           => ['nullable', 'string', 'max:50'],
             'reg_number'    => ['nullable', 'string', 'max:100'],
-            'member_limit'  => ['nullable', 'integer', 'min:0'],
+            'member_limit'    => ['nullable', 'integer', 'min:0'],
+            'primary_color'   => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'secondary_color' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
         ];
     }
 }

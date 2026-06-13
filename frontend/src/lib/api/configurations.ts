@@ -22,6 +22,8 @@ export interface Org {
   member_limit: number | null;
   is_active: boolean;
   is_default: boolean;
+  primary_color: string | null;
+  secondary_color: string | null;
 }
 export type UpdateOrgPayload = Partial<
   Omit<Org, "id" | "logo_url" | "is_active" | "is_default">
@@ -834,5 +836,20 @@ export function useUpdatePeriodStatus() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: FISCAL_YEARS_KEY });
     },
+  });
+}
+
+// ── Org Logo Upload ────────────────────────────────────────────────────
+
+export function useUploadOrgLogo() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (file: File) => {
+      const fd = new FormData();
+      fd.append("logo", file);
+      const { data } = await api.post<ApiEnvelope<Org>>("/configurations/org/logo", fd);
+      return data.data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ORG_KEY }),
   });
 }

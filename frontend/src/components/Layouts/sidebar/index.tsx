@@ -1,8 +1,8 @@
 "use client";
 
-import { Logo } from "@/components/logo";
+import { useOrgBranding } from "@/components/BrandingProvider";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NAV_DATA, type NavSection } from "./data";
@@ -14,6 +14,12 @@ export function Sidebar({ navData = NAV_DATA }: { navData?: NavSection[] }) {
   const pathname = usePathname();
   const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const { logoUrl, orgName, primaryColor } = useOrgBranding();
+  const gradientStyle = {
+    background: primaryColor
+      ? `linear-gradient(135deg, ${primaryColor}dd 0%, ${primaryColor}99 100%)`
+      : "linear-gradient(135deg, #5750f1dd 0%, #5750f199 100%)",
+  };
 
   const toggleExpanded = (title: string) => {
     setExpandedItems((prev) => (prev.includes(title) ? [] : [title]));
@@ -64,32 +70,46 @@ export function Sidebar({ navData = NAV_DATA }: { navData?: NavSection[] }) {
         inert={!isOpen}
       >
         <div className="flex h-full flex-col py-10 pl-[25px] pr-[7px]">
-          <div className="relative pr-4.5">
-            <Link
-              href={"/"}
-              onClick={() => isMobile && toggleSidebar()}
-              className="px-0 py-2.5 min-[850px]:py-0"
-            >
-              <Logo />
-            </Link>
-
+          <div
+            className="-mx-[25px] -mt-10 mb-6 flex items-center gap-3 px-[25px] py-5 relative"
+            style={gradientStyle}
+          >
+            {logoUrl ? (
+              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-white/20">
+                <Image
+                  src={logoUrl}
+                  alt={orgName ?? "Logo"}
+                  fill
+                  className="object-contain p-1"
+                />
+              </div>
+            ) : (
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20">
+                <span className="text-lg font-bold text-white">S</span>
+              </div>
+            )}
+            <div className="min-w-0">
+              <p className="truncate text-sm font-bold text-white leading-tight">
+                {orgName ?? "SLAMS SACCO"}
+              </p>
+              <p className="text-xs text-white/70">Management System</p>
+            </div>
             {isMobile && (
               <button
                 onClick={toggleSidebar}
-                className="absolute left-3/4 right-4.5 top-1/2 -translate-y-1/2 text-right"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white"
               >
                 <span className="sr-only">Close Menu</span>
-
-                <ArrowLeftIcon className="ml-auto size-7" />
+                <ArrowLeftIcon className="size-6" />
               </button>
             )}
           </div>
 
           {/* Navigation */}
-          <div className="custom-scrollbar mt-6 flex-1 overflow-y-auto pr-3 min-[850px]:mt-10">
+          <div className="custom-scrollbar flex-1 overflow-y-auto pr-3">
             {navData.map((section) => (
               <div key={section.label} className="mb-6">
-                <h2 className="mb-5 text-sm font-medium text-dark-4 dark:text-dark-6">
+                <h2 className="mb-5 text-xs font-semibold uppercase tracking-wider text-primary/60 dark:text-primary/40">
                   {section.label}
                 </h2>
 
