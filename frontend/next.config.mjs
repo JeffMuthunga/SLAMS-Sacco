@@ -6,6 +6,19 @@ const nextConfig = {
   images: {
     qualities: [75, 100],
     remotePatterns: [
+      // Laravel backend storage (dev + any self-hosted deployment)
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "8000",
+        pathname: "/storage/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**",
+        pathname: "/storage/**",
+      },
+      // Legacy template patterns
       {
         protocol: "https",
         hostname: "cdn.sanity.io",

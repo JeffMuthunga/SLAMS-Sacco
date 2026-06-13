@@ -250,6 +250,7 @@ export function useUpdateOrg() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ORG_KEY });
+      qc.invalidateQueries({ queryKey: ["org-branding"] });
     },
   });
 }
@@ -850,6 +851,9 @@ export function useUploadOrgLogo() {
       const { data } = await api.post<ApiEnvelope<Org>>("/configurations/org/logo", fd);
       return data.data;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ORG_KEY }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ORG_KEY });
+      qc.invalidateQueries({ queryKey: ["org-branding"] });
+    },
   });
 }

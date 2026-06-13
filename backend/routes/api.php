@@ -119,6 +119,11 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('petty-cash-requests', PettyCashRequestController::class)->except(['update']);
     });
 
+    // Public org branding — any authenticated user (admins + members)
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('org/branding', [\App\Http\Controllers\Api\V1\Configurations\OrgController::class, 'branding']);
+    });
+
     // Admin dashboard
     Route::middleware(['auth:sanctum', 'permission:manage_members'])->group(function () {
         Route::get('admin/dashboard', [AdminDashboardController::class, 'stats']);

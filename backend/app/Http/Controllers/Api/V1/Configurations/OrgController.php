@@ -10,6 +10,22 @@ use Illuminate\Http\Request;
 
 class OrgController extends ApiController
 {
+    public function branding(Request $request): JsonResponse
+    {
+        $org = $request->user()->org;
+
+        if (!$org) {
+            return $this->respondError('Organization not found.', 404);
+        }
+
+        return $this->respond([
+            'name'            => $org->name,
+            'logo_url'        => $org->logo_path ? \Illuminate\Support\Facades\Storage::url($org->logo_path) : null,
+            'primary_color'   => $org->primary_color,
+            'secondary_color' => $org->secondary_color,
+        ]);
+    }
+
     public function show(Request $request): JsonResponse
     {
         $org = $request->user()->org;
