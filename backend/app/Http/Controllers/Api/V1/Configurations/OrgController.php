@@ -20,9 +20,16 @@ class OrgController extends ApiController
 
         return $this->respond([
             'name'            => $org->name,
+            'full_name'       => $org->full_name,
             'logo_url'        => $org->logo_path ? \Illuminate\Support\Facades\Storage::url($org->logo_path) : null,
             'primary_color'   => $org->primary_color,
             'secondary_color' => $org->secondary_color,
+            'email'           => $org->email,
+            'phone'           => $org->phone,
+            'website'         => $org->website,
+            'address'         => $org->address,
+            'town'            => $org->town,
+            'country_code'    => $org->country_code,
         ]);
     }
 
