@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\JournalController;
 use App\Http\Controllers\Api\V1\LoanController;
 use App\Http\Controllers\Api\V1\LoanRepaymentController;
 use App\Http\Controllers\Api\V1\MemberController;
+use App\Http\Controllers\Api\V1\MemberExitController;
 use App\Http\Controllers\Api\V1\MemberPortalController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\IssueController;
@@ -38,6 +39,12 @@ Route::prefix('v1')->group(function () {
         Route::post('members/{member}/approve', [MemberController::class, 'approve']);
         Route::post('members/{member}/reject',  [MemberController::class, 'reject']);
         Route::apiResource('members', MemberController::class);
+    });
+
+    Route::middleware(['auth:sanctum', 'permission:manage_members'])->group(function () {
+        Route::post('member-exits/{memberExit}/approve', [MemberExitController::class, 'approve']);
+        Route::post('member-exits/{memberExit}/reject',  [MemberExitController::class, 'reject']);
+        Route::apiResource('member-exits', MemberExitController::class)->only(['index', 'show', 'store']);
     });
 
     Route::middleware(['auth:sanctum', 'permission:manage_accounts'])->group(function () {

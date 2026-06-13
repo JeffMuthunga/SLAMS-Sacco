@@ -4,10 +4,11 @@ namespace App\Services;
 
 use App\Jobs\SendEmailJob;
 use App\Jobs\SendSmsJob;
+use App\Models\Issue;
 use App\Models\Loan;
 use App\Models\Member;
+use App\Models\MemberExit;
 use App\Models\PettyCashRequest;
-use App\Models\Issue;
 
 class NotificationService
 {
@@ -230,6 +231,56 @@ class NotificationService
         $sms = "Dear {$member->full_name}, your issue ({$ref}) has been resolved. Contact us if you need further assistance.";
 
         $this->dispatch($member, "Issue Resolved: {$ref}", $body, $sms);
+    }
+
+    // ── Member exit notifications ──────────────────────────────────────
+
+    public function memberExitRequested(MemberExit $exit): void
+    {
+        if (!$exit->member) return;
+        $name = $exit->member->full_name ?? 'Member';
+        $ref  = $exit->reference_number;
+
+        $body = "<p>Dear {$name},</p>
+                 <p>Your exit request <strong>{$ref}</strong> has been received and is pending review.</p>
+                 <p>You will be notified once a decision has been made.</p>";
+
+        $sms = "Dear {$name}, your exit request {$ref} has been received and is pending review.";
+
+        $this->dispatch($exit->member, "Exit Request Received – {$ref}", $body, $sms);
+    }
+
+    public function memberExitApproved(MemberExit $exit): void
+    {
+        if (!$exit->member) return;
+        $name = $exit->member->full_name ?? 'Member';
+        $ref  = $exit->reference_number;
+        $date = $exit->exit_date ? $exit->exit_date->toFormattedDateString() : '';
+
+        $body = "<p>Dear {$name},</p>
+                 <p>Your exit request <strong>{$ref}</strong> has been approved.</p>
+                 <p>Your membership has been deactivated effective <strong>{$date}</strong>.</p>";
+
+        $sms = "Dear {$name}, your exit request {$ref} has been approved. Your membership has been deactivated.";
+
+        $this->dispatch($exit->member, "Exit Request Approved – {$ref}", $body, $sms);
+    }
+
+    public function memberExitRejected(MemberExit $exit): void
+    {
+        if (!$exit->member) return;
+        $name   = $exit->member->full_name ?? 'Member';
+        $ref    = $exit->reference_number;
+        $reason = $exit->rejection_reason ?? 'No reason provided';
+
+        $body = "<p>Dear {$name},</p>
+                 <p>Your exit request <strong>{$ref}</strong> has been rejected.</p>
+                 <p><strong>Reason:</strong> {$reason}</p>
+                 <p>Please contact us if you have any questions.</p>";
+
+        $sms = "Dear {$name}, your exit request {$ref} has been rejected. Reason: {$reason}";
+
+        $this->dispatch($exit->member, "Exit Request Rejected – {$ref}", $body, $sms);
     }
 
     // ── Private helpers ────────────────────────────────────────────────
