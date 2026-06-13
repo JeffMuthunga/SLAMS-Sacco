@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AccountController;
+use App\Http\Controllers\Api\V1\AdminDashboardController;
 use App\Http\Controllers\Api\V1\AccountTransactionController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ContributionController;
@@ -116,6 +117,11 @@ Route::prefix('v1')->group(function () {
         Route::post('petty-cash-requests/{pettyCashRequest}/approve', [PettyCashRequestController::class, 'approve']);
         Route::post('petty-cash-requests/{pettyCashRequest}/reject',  [PettyCashRequestController::class, 'reject']);
         Route::apiResource('petty-cash-requests', PettyCashRequestController::class)->except(['update']);
+    });
+
+    // Admin dashboard
+    Route::middleware(['auth:sanctum', 'permission:manage_members'])->group(function () {
+        Route::get('admin/dashboard', [AdminDashboardController::class, 'stats']);
     });
 
     // Reports — accessible to any authenticated admin (permission: manage_members or above)

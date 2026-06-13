@@ -74,8 +74,6 @@ export const ADMIN_NAV_DATA: NavSection[] = [
         items: [
           { title: "Deposit Accounts", url: "/admin/accounts" },
           { title: "Contributions", url: "/admin/contributions" },
-          { title: "SACCO Core Accounts", url: "/admin/transactions/core-accounts" },
-          { title: "Other Accounts", url: "/admin/transactions/other" },
         ],
       },
       {
@@ -86,23 +84,13 @@ export const ADMIN_NAV_DATA: NavSection[] = [
           { title: "Transactions Ledger", url: "/admin/ledger" },
           { title: "Petty Cash", url: "/admin/petty-cash" },
           { title: "Issue Tracking", url: "/admin/issues" },
-          { title: "Emails & News", url: "/admin/operations/emails-news" },
         ],
-      },
-      {
-        title: "Processing",
-        icon: Icons.Calendar,
-        items: [{ title: "Periods", url: "/admin/processing/periods" }],
       },
       {
         title: "Administration",
         icon: Icons.Alphabet,
         items: [
-          { title: "SACCO Entities", url: "/admin/administration/entities" },
-          { title: "Loan Configs", url: "/admin/administration/loan-configs" },
-          { title: "Approvals", url: "/admin/administration/approvals" },
-          { title: "Member Exit", url: "/admin/administration/member-exit" },
-          { title: "Error Messages", url: "/admin/administration/errors" },
+          { title: "Member Exit", url: "/admin/member-exit" },
         ],
       },
       {
@@ -111,55 +99,6 @@ export const ADMIN_NAV_DATA: NavSection[] = [
         items: [
           { title: "SACCO Reports", url: "/admin/reports/sacco" },
           { title: "Operations Reports", url: "/admin/reports/operations" },
-        ],
-      },
-    ],
-  },
-  {
-    // Template demo pages kept as living component reference — remove before production
-    label: "TEMPLATE REFERENCE",
-    items: [
-      {
-        title: "Calendar",
-        url: "/admin/calendar",
-        icon: Icons.Calendar,
-        items: [],
-      },
-      {
-        title: "Profile",
-        url: "/admin/profile",
-        icon: Icons.User,
-        items: [],
-      },
-      {
-        title: "Forms",
-        icon: Icons.Alphabet,
-        items: [
-          { title: "Form Elements", url: "/admin/forms/form-elements" },
-          { title: "Form Layout", url: "/admin/forms/form-layout" },
-        ],
-      },
-      {
-        title: "Tables",
-        icon: Icons.Table,
-        items: [{ title: "Tables", url: "/admin/tables" }],
-      },
-      {
-        title: "Settings",
-        icon: Icons.Alphabet,
-        items: [{ title: "Settings", url: "/admin/pages/settings" }],
-      },
-      {
-        title: "Charts",
-        icon: Icons.PieChart,
-        items: [{ title: "Basic Chart", url: "/admin/charts/basic-chart" }],
-      },
-      {
-        title: "UI Elements",
-        icon: Icons.FourCircle,
-        items: [
-          { title: "Alerts", url: "/admin/ui-elements/alerts" },
-          { title: "Buttons", url: "/admin/ui-elements/buttons" },
         ],
       },
     ],
