@@ -2,8 +2,7 @@
 
 import React, { useState } from "react";
 import { toast } from "sonner";
-import { useMemberLoans, useMemberLoan, useApplyLoan, useAddMemberLoanGuarantor, useMemberSearch, type ApplyLoanPayload } from "@/lib/api/member-portal";
-import { useLoanProducts } from "@/lib/api/configurations";
+import { useMemberLoans, useMemberLoan, useApplyLoan, useAddMemberLoanGuarantor, useMemberSearch, useMemberLoanProducts, type ApplyLoanPayload } from "@/lib/api/member-portal";
 import { extractApiError } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import SelectInput from "@/components/Forms/SelectInput";
@@ -76,7 +75,7 @@ function GuarantorPickerRow({ onAdd }: { onAdd: (row: GuarantorRow) => void }) {
 // ── Apply loan form ──────────────────────────────────────────────────────
 
 function ApplyLoanForm({ onClose }: { onClose: () => void }) {
-  const { data: allProducts = [] } = useLoanProducts();
+  const { data: allProducts = [] } = useMemberLoanProducts();
   const products = allProducts.filter((p) => p.is_active);
   const applyLoan = useApplyLoan();
 

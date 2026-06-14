@@ -6,6 +6,7 @@ import type { Loan } from "./loans";
 import type { Contribution } from "./contributions";
 import type { Issue, IssueComment } from "./issues";
 import type { PettyCashAllocation, PettyCashRequest } from "./petty-cash";
+import type { LoanProduct } from "./configurations";
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -337,5 +338,18 @@ export function useMemberSearch(q: string) {
     },
     enabled: q.length >= 2,
     staleTime: 30_000,
+  });
+}
+
+export const ME_LOAN_PRODUCTS_KEY = ["me", "loan-products"] as const;
+
+export function useMemberLoanProducts() {
+  return useQuery<LoanProduct[]>({
+    queryKey: ME_LOAN_PRODUCTS_KEY,
+    queryFn: async () => {
+      const { data } = await api.get<ApiEnvelope<LoanProduct[]>>("/me/loan-products");
+      return data.data;
+    },
+    staleTime: 300_000,
   });
 }

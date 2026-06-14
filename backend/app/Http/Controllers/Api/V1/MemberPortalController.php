@@ -12,9 +12,11 @@ use App\Http\Resources\V1\PettyCashAllocationResource;
 use App\Http\Resources\V1\PettyCashRequestResource;
 use App\Http\Requests\Api\V1\Issue\StoreIssueRequest;
 use App\Http\Requests\Api\V1\MemberPortal\ApplyLoanRequest;
+use App\Http\Resources\V1\Configurations\LoanProductResource;
 use App\Models\DepositAccount;
 use App\Models\Loan;
 use App\Models\LoanGuarantee;
+use App\Models\LoanProduct;
 use App\Models\Member;
 use App\Models\AccountTransaction;
 use App\Models\Contribution;
@@ -321,6 +323,16 @@ class MemberPortalController extends ApiController
         return $this->respond(
             AccountTransactionResource::collection($transactions)->response()->getData(true)
         );
+    }
+
+    public function loanProducts(Request $request): JsonResponse
+    {
+        $products = LoanProduct::where('org_id', $request->user()->org_id)
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        return $this->respond(LoanProductResource::collection($products));
     }
 
     public function applyLoan(ApplyLoanRequest $request): JsonResponse

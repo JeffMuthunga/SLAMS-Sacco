@@ -158,6 +158,7 @@ Route::prefix('v1')->group(function () {
         Route::get('profile',        [MemberPortalController::class, 'profile']);
         Route::get('accounts',       [MemberPortalController::class, 'accounts']);
         Route::get('accounts/{accountId}/statement', [MemberPortalController::class, 'accountStatement']);
+        Route::get('loan-products',  [MemberPortalController::class, 'loanProducts']);
         Route::get('loans',          [MemberPortalController::class, 'loans']);
         Route::get('loans/{loanId}', [MemberPortalController::class, 'loanDetail']);
         Route::post('loans',                                  [MemberPortalController::class, 'applyLoan']);
