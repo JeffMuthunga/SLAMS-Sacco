@@ -30,12 +30,16 @@ export default function MemberDashboardPage() {
       </div>
 
       {isLoading ? (
-        <p className="text-sm text-gray-500">Loading…</p>
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-24 animate-pulse rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800" />
+          ))}
+        </div>
       ) : (
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <StatCard
             label="Total Savings Balance"
-            value={stats ? `KES ${Number(stats.total_balance).toLocaleString("en-KE", { minimumFractionDigits: 2 })}` : "—"}
+            value={stats ? `BWP ${Number(stats.total_balance).toLocaleString("en-BW", { minimumFractionDigits: 2 })}` : "—"}
             href="/member/service-desk/accounts"
           />
           <StatCard
@@ -45,7 +49,7 @@ export default function MemberDashboardPage() {
           />
           <StatCard
             label="Outstanding Loan Balance"
-            value={stats ? `KES ${Number(stats.outstanding_loan_balance).toLocaleString("en-KE", { minimumFractionDigits: 2 })}` : "—"}
+            value={stats ? `BWP ${Number(stats.outstanding_loan_balance).toLocaleString("en-BW", { minimumFractionDigits: 2 })}` : "—"}
             href="/member/service-desk/loans"
           />
           <StatCard

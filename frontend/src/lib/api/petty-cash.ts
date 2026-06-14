@@ -168,6 +168,18 @@ export interface AllocationsParams {
   page?: number;
 }
 
+export function usePettyCashAllocation(id: string) {
+  return useQuery<PettyCashAllocation>({
+    queryKey: [...PC_ALLOCATIONS_KEY, id],
+    queryFn: async () => {
+      const { data } = await api.get<ApiEnvelope<PettyCashAllocation>>(`/petty-cash-allocations/${id}`);
+      return data.data;
+    },
+    staleTime: 30_000,
+    enabled: !!id,
+  });
+}
+
 export function usePettyCashAllocations(params?: AllocationsParams) {
   return useQuery<PaginatedResponse<PettyCashAllocation>>({
     queryKey: [...PC_ALLOCATIONS_KEY, params],

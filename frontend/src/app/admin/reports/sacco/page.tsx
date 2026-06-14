@@ -36,7 +36,7 @@ function fmt(v: string | number | null | undefined, currency = false): string {
   if (v === null || v === undefined) return "—";
   const n = Number(v);
   if (isNaN(n)) return String(v);
-  return currency ? `KES ${n.toLocaleString("en-KE", { minimumFractionDigits: 2 })}` : n.toLocaleString("en-KE");
+  return currency ? `BWP ${n.toLocaleString("en-BW", { minimumFractionDigits: 2 })}` : n.toLocaleString("en-BW");
 }
 
 // ── Members ────────────────────────────────────────────────────────────
@@ -159,8 +159,8 @@ function LoansReport() {
     { accessorKey: "outstanding_balance", header: "Outstanding", cell: ({ getValue }) => fmt(getValue<string>(), true) },
     { accessorKey: "interest_rate",   header: "Rate %",   cell: ({ getValue }) => `${getValue<string>()}%` },
     { accessorKey: "loan_status",     header: "Status",   cell: ({ getValue }) => STATUS_LABELS[getValue<LoanStatus>()] ?? getValue<string>() },
-    { accessorKey: "disbursed_date",  header: "Disbursed",cell: ({ getValue }) => getValue<string>() ? new Date(getValue<string>()).toLocaleDateString("en-KE") : "—" },
-    { accessorKey: "maturity_date",   header: "Maturity", cell: ({ getValue }) => getValue<string>() ? new Date(getValue<string>()).toLocaleDateString("en-KE") : "—" },
+    { accessorKey: "disbursed_date",  header: "Disbursed",cell: ({ getValue }) => getValue<string>() ? new Date(getValue<string>()).toLocaleDateString("en-BW") : "—" },
+    { accessorKey: "maturity_date",   header: "Maturity", cell: ({ getValue }) => getValue<string>() ? new Date(getValue<string>()).toLocaleDateString("en-BW") : "—" },
   ], []);
 
   return (
@@ -234,7 +234,7 @@ function ContributionsReport() {
     { id: "member",            header: "Member",   cell: ({ row }) => row.original.member?.full_name ?? "—" },
     { id: "member_number",     header: "Memb. #",  cell: ({ row }) => row.original.member?.member_number ?? "—" },
     { id: "period",            header: "Period",   cell: ({ row }) => row.original.period?.name ?? "—" },
-    { accessorKey: "due_date", header: "Due Date", cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-KE") },
+    { accessorKey: "due_date", header: "Due Date", cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-BW") },
     { accessorKey: "expected_amount", header: "Expected", cell: ({ getValue }) => fmt(getValue<string>(), true) },
     { accessorKey: "paid_amount",     header: "Paid",     cell: ({ getValue }) => fmt(getValue<string>(), true) },
     {
@@ -245,7 +245,7 @@ function ContributionsReport() {
         return <span className={`capitalize font-medium ${STATUS_CFG[s] ?? ""}`}>{s}</span>;
       },
     },
-    { accessorKey: "paid_date", header: "Paid Date", cell: ({ getValue }) => getValue<string>() ? new Date(getValue<string>()).toLocaleDateString("en-KE") : "—" },
+    { accessorKey: "paid_date", header: "Paid Date", cell: ({ getValue }) => getValue<string>() ? new Date(getValue<string>()).toLocaleDateString("en-BW") : "—" },
   ], []);
 
   const apply = () => setParams({ ...draft, fiscal_year_id: fyId || undefined });
@@ -326,7 +326,7 @@ function AccountsReport() {
     { id: "product",                 header: "Product",   cell: ({ row }) => (row.original.product as { name?: string } | null)?.name ?? "—" },
     { accessorKey: "balance",        header: "Balance",   cell: ({ getValue }) => fmt(getValue<string>(), true) },
     { accessorKey: "interest_rate",  header: "Rate %",   cell: ({ getValue }) => `${getValue<string>()}%` },
-    { accessorKey: "opening_date",   header: "Opened",   cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-KE") },
+    { accessorKey: "opening_date",   header: "Opened",   cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-BW") },
     {
       accessorKey: "approval_status",
       header: "Status",

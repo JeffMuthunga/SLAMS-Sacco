@@ -67,8 +67,8 @@ export default function MyDetailsPage() {
             <Row label="Employed"          value={member.employed} />
             <Row label="Self-Employed"     value={member.self_employed} />
             <Row label="Employer Name"     value={member.employer_name} />
-            <Row label="Monthly Salary"    value={member.monthly_salary ? `KES ${Number(member.monthly_salary).toLocaleString("en-KE", { minimumFractionDigits: 2 })}` : null} />
-            <Row label="Monthly Net Income" value={member.monthly_net_income ? `KES ${Number(member.monthly_net_income).toLocaleString("en-KE", { minimumFractionDigits: 2 })}` : null} />
+            <Row label="Monthly Salary"    value={member.monthly_salary ? `BWP ${Number(member.monthly_salary).toLocaleString("en-BW", { minimumFractionDigits: 2 })}` : null} />
+            <Row label="Monthly Net Income" value={member.monthly_net_income ? `BWP ${Number(member.monthly_net_income).toLocaleString("en-BW", { minimumFractionDigits: 2 })}` : null} />
           </dl>
         </div>
 

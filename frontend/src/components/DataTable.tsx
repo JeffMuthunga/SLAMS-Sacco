@@ -159,7 +159,7 @@ export function DataTable<TData, TValue>({
         }
 
         const printColumns = Object.keys(exportData[0]);
-        const currentDate = new Date().toLocaleDateString('en-KE', {
+        const currentDate = new Date().toLocaleDateString('en-BW', {
             weekday: 'long',
             year: 'numeric',
             month: 'long',

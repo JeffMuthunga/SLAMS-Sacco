@@ -37,7 +37,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function fmt(v: string) {
-  return parseFloat(v).toLocaleString("en-KE", { minimumFractionDigits: 2 });
+  return parseFloat(v).toLocaleString("en-BW", { minimumFractionDigits: 2 });
 }
 
 export default function PettyCashRequestsPage() {
@@ -86,7 +86,7 @@ export default function PettyCashRequestsPage() {
     {
       accessorKey: "expense_date",
       header: "Date",
-      cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-KE"),
+      cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-BW"),
     },
     {
       accessorKey: "amount",
@@ -157,14 +157,14 @@ export default function PettyCashRequestsPage() {
 
       {error && <p className="text-sm text-red-500">{extractApiError(error)}</p>}
 
+      {isLoading && <p className="text-center text-sm text-gray-500">Loading…</p>}
+
       <DataTable
         columns={columns}
         data={data?.data ?? []}
         heading="Petty Cash Requests"
         showExportButton
       />
-
-      {isLoading && <p className="text-center text-sm text-gray-500">Loading…</p>}
     </div>
   );
 }

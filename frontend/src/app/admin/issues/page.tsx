@@ -103,7 +103,7 @@ export default function IssuesPage() {
     {
       accessorKey: "created_at",
       header: "Opened",
-      cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-KE"),
+      cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-BW"),
     },
     {
       id: "actions",
@@ -169,14 +169,14 @@ export default function IssuesPage() {
 
       {error && <p className="text-sm text-red-500">{extractApiError(error)}</p>}
 
+      {isLoading && <p className="text-center text-sm text-gray-500">Loading…</p>}
+
       <DataTable
         columns={columns}
         data={data?.data ?? []}
         heading="Issues"
         showExportButton
       />
-
-      {isLoading && <p className="text-center text-sm text-gray-500">Loading…</p>}
     </div>
   );
 }

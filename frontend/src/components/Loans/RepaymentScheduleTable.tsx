@@ -9,7 +9,7 @@ import { LoanRepayment, useRecordRepayment } from "@/lib/api/loans";
 import { extractApiError } from "@/lib/api";
 
 function fmt(v: string) {
-  return parseFloat(v).toLocaleString("en-KE", { minimumFractionDigits: 2 });
+  return parseFloat(v).toLocaleString("en-BW", { minimumFractionDigits: 2 });
 }
 
 interface Props {
@@ -46,7 +46,7 @@ export default function RepaymentScheduleTable({ loanId, data, isActive }: Props
     {
       accessorKey: "due_date",
       header: "Due Date",
-      cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-KE"),
+      cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-BW"),
     },
     {
       accessorKey: "total_due",
@@ -68,7 +68,7 @@ export default function RepaymentScheduleTable({ loanId, data, isActive }: Props
       header: "Paid Date",
       cell: ({ getValue }) => {
         const v = getValue<string | null>();
-        return v ? new Date(v).toLocaleDateString("en-KE") : "—";
+        return v ? new Date(v).toLocaleDateString("en-BW") : "—";
       },
     },
     {

@@ -34,7 +34,7 @@ function fmt(v: string | number | null | undefined, currency = false): string {
   if (v === null || v === undefined) return "—";
   const n = Number(v);
   if (isNaN(n)) return String(v);
-  return currency ? `KES ${n.toLocaleString("en-KE", { minimumFractionDigits: 2 })}` : n.toLocaleString("en-KE");
+  return currency ? `BWP ${n.toLocaleString("en-BW", { minimumFractionDigits: 2 })}` : n.toLocaleString("en-BW");
 }
 
 const CREDIT_TYPES = new Set(["deposit","interest_credit","transfer_in","loan_disbursement","contribution"]);
@@ -54,7 +54,7 @@ function TransactionsReport() {
   const summary = data?.meta?.summary as TransactionsSummary | undefined;
 
   const columns = useMemo<ColumnDef<AccountTransaction>[]>(() => [
-    { accessorKey: "transaction_date", header: "Date", cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-KE") },
+    { accessorKey: "transaction_date", header: "Date", cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-BW") },
     { accessorKey: "reference_number", header: "Reference", cell: ({ getValue }) => getValue<string>() ?? "—" },
     {
       accessorKey: "transaction_type",
@@ -156,7 +156,7 @@ function PettyCashReport() {
     { id: "item",              header: "Item",      cell: ({ row }) => (row.original.item as { name?: string } | null)?.name ?? "—" },
     { id: "requester",         header: "Requester", cell: ({ row }) => (row.original.requester as { name?: string } | null)?.name ?? "—" },
     { accessorKey: "amount",   header: "Amount",    cell: ({ getValue }) => fmt(getValue<string>(), true) },
-    { accessorKey: "expense_date", header: "Date", cell: ({ getValue }) => getValue<string>() ? new Date(getValue<string>()).toLocaleDateString("en-KE") : "—" },
+    { accessorKey: "expense_date", header: "Date", cell: ({ getValue }) => getValue<string>() ? new Date(getValue<string>()).toLocaleDateString("en-BW") : "—" },
     { accessorKey: "narration",    header: "Narration", cell: ({ getValue }) => getValue<string>() ?? "—" },
     {
       accessorKey: "approval_status",
@@ -247,7 +247,7 @@ function IssuesReport() {
         return <span className={`capitalize font-medium ${STATUS_CFG[s]?.className ?? ""}`}>{s.replace(/_/g," ")}</span>;
       },
     },
-    { accessorKey: "created_at", header: "Opened", cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-KE") },
+    { accessorKey: "created_at", header: "Opened", cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-BW") },
   ], []);
 
   return (

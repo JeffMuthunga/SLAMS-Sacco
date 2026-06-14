@@ -83,7 +83,7 @@ function CurrencyForm({
               setValueAs: (v: string) => v.toUpperCase(),
             })}
             maxLength={3}
-            placeholder="KES"
+            placeholder="BWP"
             className="text-sm uppercase"
           />
           {errors.code && (

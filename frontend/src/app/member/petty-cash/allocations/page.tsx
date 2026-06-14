@@ -45,13 +45,13 @@ export default function MemberAllocationsPage() {
                       {(a.period as { name?: string } | null)?.name ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-right font-medium">
-                      KES {Number(a.amount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+                      BWP {Number(a.amount).toLocaleString("en-BW", { minimumFractionDigits: 2 })}
                     </td>
                     <td className="px-4 py-3 text-right text-orange-600">
-                      KES {Number(a.spent).toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+                      BWP {Number(a.spent).toLocaleString("en-BW", { minimumFractionDigits: 2 })}
                     </td>
                     <td className="px-4 py-3 text-right text-green-600 font-medium">
-                      KES {Number(a.balance).toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+                      BWP {Number(a.balance).toLocaleString("en-BW", { minimumFractionDigits: 2 })}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusCfg[a.approval_status] ?? "bg-gray-100 text-gray-600"}`}>

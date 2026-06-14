@@ -136,7 +136,7 @@ function ApplyLoanForm({ onClose }: { onClose: () => void }) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Amount (KES) <span className="text-red-500">*</span>
+              Amount (BWP) <span className="text-red-500">*</span>
             </label>
             <NumberInput value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="e.g. 50000" />
           </div>
@@ -158,7 +158,7 @@ function ApplyLoanForm({ onClose }: { onClose: () => void }) {
                 {guarantors.map((g, i) => (
                   <div key={i} className="flex items-center justify-between rounded-md bg-gray-50 px-3 py-1.5 text-sm dark:bg-gray-800">
                     <span>{g.full_name} ({g.member_number})</span>
-                    <span className="font-mono">KES {parseFloat(g.guaranteed_amount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</span>
+                    <span className="font-mono">BWP {parseFloat(g.guaranteed_amount).toLocaleString("en-BW", { minimumFractionDigits: 2 })}</span>
                     <button type="button" onClick={() => removeGuarantor(i)} className="text-red-400 hover:text-red-600 text-xs ml-2">Remove</button>
                   </div>
                 ))}
@@ -248,11 +248,11 @@ function LoanCard({ loan, selected, onClick }: { loan: Loan; selected: boolean; 
         <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
           <div>
             <p className="text-gray-500">Principal</p>
-            <p className="font-medium">KES {Number(loan.principal_amount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</p>
+            <p className="font-medium">BWP {Number(loan.principal_amount).toLocaleString("en-BW", { minimumFractionDigits: 2 })}</p>
           </div>
           <div>
             <p className="text-gray-500">Outstanding</p>
-            <p className="font-medium">KES {Number(loan.outstanding_balance).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</p>
+            <p className="font-medium">BWP {Number(loan.outstanding_balance).toLocaleString("en-BW", { minimumFractionDigits: 2 })}</p>
           </div>
         </div>
       </button>
@@ -289,13 +289,13 @@ function LoanDetail({ loanId }: { loanId: string }) {
 
       <div className="grid grid-cols-2 gap-4 text-sm">
         {([
-          ["Principal",        `KES ${Number(loan.principal_amount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}`],
-          ["Outstanding",      `KES ${Number(loan.outstanding_balance).toLocaleString("en-KE", { minimumFractionDigits: 2 })}`],
+          ["Principal",        `BWP ${Number(loan.principal_amount).toLocaleString("en-BW", { minimumFractionDigits: 2 })}`],
+          ["Outstanding",      `BWP ${Number(loan.outstanding_balance).toLocaleString("en-BW", { minimumFractionDigits: 2 })}`],
           ["Interest Rate",    `${loan.interest_rate}% p.a.`],
           ["Repayment Period", `${loan.repayment_period} months`],
-          ["Repayment Amount", `KES ${Number(loan.repayment_amount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}`],
-          ["Disbursed Date",   loan.disbursed_date ? new Date(loan.disbursed_date).toLocaleDateString("en-KE") : "—"],
-          ["Maturity Date",    loan.maturity_date  ? new Date(loan.maturity_date).toLocaleDateString("en-KE")  : "—"],
+          ["Repayment Amount", `BWP ${Number(loan.repayment_amount).toLocaleString("en-BW", { minimumFractionDigits: 2 })}`],
+          ["Disbursed Date",   loan.disbursed_date ? new Date(loan.disbursed_date).toLocaleDateString("en-BW") : "—"],
+          ["Maturity Date",    loan.maturity_date  ? new Date(loan.maturity_date).toLocaleDateString("en-BW")  : "—"],
         ] as [string, string][]).map(([label, value]) => (
           <div key={label}>
             <p className="text-xs text-gray-500">{label}</p>
@@ -311,7 +311,7 @@ function LoanDetail({ loanId }: { loanId: string }) {
             {loan.guarantees.map((g) => (
               <div key={g.id} className="flex items-center justify-between text-xs border-b pb-1.5 last:border-0">
                 <span>{g.member?.full_name ?? "—"} ({g.member?.member_number ?? "—"})</span>
-                <span className="font-mono">KES {Number(g.guaranteed_amount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</span>
+                <span className="font-mono">BWP {Number(g.guaranteed_amount).toLocaleString("en-BW", { minimumFractionDigits: 2 })}</span>
                 <span className={
                   g.is_accepted ? "text-green-600" :
                   g.approval_status === "rejected" ? "text-red-500" :
@@ -347,10 +347,10 @@ function LoanDetail({ loanId }: { loanId: string }) {
                   };
                   return (
                     <tr key={r.id} className="border-b border-gray-100 dark:border-gray-700 last:border-0">
-                      <td className="py-1.5">{new Date(r.due_date).toLocaleDateString("en-KE")}</td>
-                      <td className="py-1.5 text-right">KES {Number(r.total_due).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</td>
-                      <td className="py-1.5 text-right">KES {Number(r.total_paid).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</td>
-                      <td className="py-1.5 text-right">KES {Number(r.balance).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</td>
+                      <td className="py-1.5">{new Date(r.due_date).toLocaleDateString("en-BW")}</td>
+                      <td className="py-1.5 text-right">BWP {Number(r.total_due).toLocaleString("en-BW", { minimumFractionDigits: 2 })}</td>
+                      <td className="py-1.5 text-right">BWP {Number(r.total_paid).toLocaleString("en-BW", { minimumFractionDigits: 2 })}</td>
+                      <td className="py-1.5 text-right">BWP {Number(r.balance).toLocaleString("en-BW", { minimumFractionDigits: 2 })}</td>
                       <td className={`py-1.5 capitalize font-medium ${statusCfg[r.repayment_status] ?? ""}`}>
                         {r.repayment_status}
                       </td>

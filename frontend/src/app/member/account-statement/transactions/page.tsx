@@ -81,7 +81,7 @@ export default function MemberTransactionsPage() {
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th className="pb-2 text-left text-xs text-gray-500">Date</th>
-                  <th className="pb-2 text-left text-xs text-gray-500">Account</th>
+                  <th className="pb-2 text-left text-xs text-gray-500">Reference</th>
                   <th className="pb-2 text-left text-xs text-gray-500">Type</th>
                   <th className="pb-2 text-left text-xs text-gray-500">Narration</th>
                   <th className="pb-2 text-right text-xs text-gray-500">Amount</th>
@@ -93,17 +93,17 @@ export default function MemberTransactionsPage() {
                   const isCredit = CREDIT_TYPES.has(tx.transaction_type);
                   return (
                     <tr key={tx.id} className="border-b border-gray-100 dark:border-gray-700 last:border-0">
-                      <td className="py-2 whitespace-nowrap">{new Date(tx.transaction_date).toLocaleDateString("en-KE")}</td>
+                      <td className="py-2 whitespace-nowrap">{new Date(tx.transaction_date).toLocaleDateString("en-BW")}</td>
                       <td className="py-2 font-mono text-xs text-gray-500">{tx.reference_number ?? "—"}</td>
                       <td className="py-2 capitalize text-gray-600 dark:text-gray-400">
                         {tx.transaction_type.replace(/_/g, " ")}
                       </td>
                       <td className="py-2 text-gray-600 dark:text-gray-400 max-w-[200px] truncate">{tx.narration ?? "—"}</td>
                       <td className={`py-2 text-right font-medium ${isCredit ? "text-green-600" : "text-red-500"}`}>
-                        {isCredit ? "+" : "-"}KES {Number(tx.amount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+                        {isCredit ? "+" : "-"}BWP {Number(tx.amount).toLocaleString("en-BW", { minimumFractionDigits: 2 })}
                       </td>
                       <td className="py-2 text-right">
-                        KES {Number(tx.balance_after).toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+                        BWP {Number(tx.balance_after).toLocaleString("en-BW", { minimumFractionDigits: 2 })}
                       </td>
                     </tr>
                   );

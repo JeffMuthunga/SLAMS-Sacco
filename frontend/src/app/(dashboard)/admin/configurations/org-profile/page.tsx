@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -238,7 +237,7 @@ export default function OrgProfilePage() {
             <Input
               {...register("currency_code", { maxLength: 3 })}
               maxLength={3}
-              placeholder="KES"
+              placeholder="BWP"
             />
           </div>
 
@@ -275,12 +274,11 @@ export default function OrgProfilePage() {
         <div className="flex items-center gap-6">
           <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 overflow-hidden">
             {org?.logo_url ? (
-              <Image
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
                 src={org.logo_url}
                 alt="Org logo"
-                width={80}
-                height={80}
-                className="object-contain"
+                className="h-full w-full object-contain"
               />
             ) : (
               <span className="text-xs text-gray-400 text-center px-1">No logo</span>

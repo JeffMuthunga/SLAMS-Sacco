@@ -337,7 +337,7 @@ export default function MemberExitPage() {
         header: "Requested",
         accessorFn: (row) =>
           row.requested_at
-            ? new Date(row.requested_at).toLocaleDateString("en-KE")
+            ? new Date(row.requested_at).toLocaleDateString("en-BW")
             : "—",
       },
     ];

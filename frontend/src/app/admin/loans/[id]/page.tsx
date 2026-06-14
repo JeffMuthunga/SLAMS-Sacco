@@ -24,7 +24,7 @@ import { extractApiError } from "@/lib/api";
 import NumberInput from "@/components/Forms/NumberInput";
 
 function fmt(v: string) {
-  return parseFloat(v).toLocaleString("en-KE", { minimumFractionDigits: 2 });
+  return parseFloat(v).toLocaleString("en-BW", { minimumFractionDigits: 2 });
 }
 
 export default function LoanDetailPage() {
@@ -220,8 +220,8 @@ export default function LoanDetailPage() {
           { label: "Total Payable",value: fmt(loan.total_payable) },
           { label: "Rate",         value: `${loan.interest_rate}% p.a. / ${loan.loan_product?.interest_method ?? "—"}` },
           { label: "Period",       value: `${loan.repayment_period} months (${loan.repayment_frequency})` },
-          { label: "Disbursed",    value: loan.disbursed_date ? new Date(loan.disbursed_date).toLocaleDateString("en-KE") : "—" },
-          { label: "Maturity",     value: loan.expected_maturity_date ? new Date(loan.expected_maturity_date).toLocaleDateString("en-KE") : "—" },
+          { label: "Disbursed",    value: loan.disbursed_date ? new Date(loan.disbursed_date).toLocaleDateString("en-BW") : "—" },
+          { label: "Maturity",     value: loan.expected_maturity_date ? new Date(loan.expected_maturity_date).toLocaleDateString("en-BW") : "—" },
         ].map(({ label, value }) => (
           <div key={label}>
             <p className="text-xs text-gray-500">{label}</p>
@@ -354,7 +354,7 @@ export default function LoanDetailPage() {
           <div className="flex flex-col gap-3">
             {loan.notes.map((n) => (
               <div key={n.id} className="border-b pb-3 last:border-0">
-                <p className="text-xs text-gray-400 mb-1">{n.created_at ? new Date(n.created_at).toLocaleString("en-KE") : "—"}</p>
+                <p className="text-xs text-gray-400 mb-1">{n.created_at ? new Date(n.created_at).toLocaleString("en-BW") : "—"}</p>
                 <p className="text-sm">{n.note}</p>
               </div>
             ))}

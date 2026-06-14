@@ -89,11 +89,11 @@ export default function GuaranteesPage() {
                 <div className="text-right">
                   <p className="text-xs text-gray-500">Guaranteed Amount</p>
                   <p className="text-lg font-bold text-dark dark:text-white">
-                    KES {Number(g.guaranteed_amount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+                    BWP {Number(g.guaranteed_amount).toLocaleString("en-BW", { minimumFractionDigits: 2 })}
                   </p>
                   {g.accepted_at && (
                     <p className="mt-0.5 text-xs text-gray-400">
-                      Accepted {new Date(g.accepted_at).toLocaleDateString("en-KE")}
+                      Accepted {new Date(g.accepted_at).toLocaleDateString("en-BW")}
                     </p>
                   )}
                 </div>
@@ -104,7 +104,7 @@ export default function GuaranteesPage() {
                   <p className="text-xs text-gray-500">
                     Loan Principal:{" "}
                     <span className="font-medium text-dark dark:text-white">
-                      KES {Number(g.loan.principal_amount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+                      BWP {Number(g.loan.principal_amount).toLocaleString("en-BW", { minimumFractionDigits: 2 })}
                     </span>
                   </p>
                 </div>

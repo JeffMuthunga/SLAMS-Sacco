@@ -53,8 +53,8 @@ function IssueDetail({ issue }: { issue: Issue }) {
       <dl className="grid grid-cols-2 gap-2 text-xs">
         <div><dt className="text-gray-500">Category</dt><dd className="font-medium">{issue.category?.name ?? "—"}</dd></div>
         <div><dt className="text-gray-500">Assigned To</dt><dd className="font-medium">{issue.assignee?.name ?? "Unassigned"}</dd></div>
-        <div><dt className="text-gray-500">Opened</dt><dd className="font-medium">{new Date(issue.created_at).toLocaleDateString("en-KE")}</dd></div>
-        {issue.resolved_at && <div><dt className="text-gray-500">Resolved</dt><dd className="font-medium">{new Date(issue.resolved_at).toLocaleDateString("en-KE")}</dd></div>}
+        <div><dt className="text-gray-500">Opened</dt><dd className="font-medium">{new Date(issue.created_at).toLocaleDateString("en-BW")}</dd></div>
+        {issue.resolved_at && <div><dt className="text-gray-500">Resolved</dt><dd className="font-medium">{new Date(issue.resolved_at).toLocaleDateString("en-BW")}</dd></div>}
       </dl>
 
       <div>
@@ -64,7 +64,7 @@ function IssueDetail({ issue }: { issue: Issue }) {
             <div key={c.id} className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
               <div className="flex justify-between text-xs">
                 <span className="font-medium">{c.user?.name ?? "Unknown"}</span>
-                <span className="text-gray-400">{new Date(c.created_at).toLocaleString("en-KE")}</span>
+                <span className="text-gray-400">{new Date(c.created_at).toLocaleString("en-BW")}</span>
               </div>
               <p className="mt-1 text-sm whitespace-pre-wrap text-gray-700 dark:text-gray-300">{c.body}</p>
             </div>
@@ -183,7 +183,7 @@ export default function MemberIssuesPage() {
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${pCfg.className}`}>{pCfg.label}</span>
                   </div>
                   <p className="text-sm font-medium text-dark dark:text-white line-clamp-2">{issue.title}</p>
-                  <p className="mt-0.5 text-xs text-gray-400">{new Date(issue.created_at).toLocaleDateString("en-KE")}</p>
+                  <p className="mt-0.5 text-xs text-gray-400">{new Date(issue.created_at).toLocaleDateString("en-BW")}</p>
                 </button>
               );
             })

@@ -9,7 +9,7 @@ import {
   useApprovePettyCashRequest,
   useCreatePettyCashRequest,
   useDeletePettyCashRequest,
-  usePettyCashAllocations,
+  usePettyCashAllocation,
   usePettyCashItems,
   usePettyCashRequests,
   useRejectPettyCashAllocation,
@@ -19,7 +19,7 @@ import { extractApiError, extractFieldErrors } from "@/lib/api";
 import { toast } from "sonner";
 
 function fmt(v: string) {
-  return parseFloat(v).toLocaleString("en-KE", { minimumFractionDigits: 2 });
+  return parseFloat(v).toLocaleString("en-BW", { minimumFractionDigits: 2 });
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -57,8 +57,7 @@ export default function AllocationDetailPage({ params }: { params: Promise<{ id:
   const [reqForm, setReqForm]                 = useState<RequestFormState>({ ...EMPTY_REQ });
   const [reqErrors, setReqErrors]             = useState<Record<string, string[]> | null>(null);
 
-  const { data: allocationData } = usePettyCashAllocations({ per_page: 200 });
-  const allocation = allocationData?.data.find((a) => a.id === id);
+  const { data: allocation, isLoading: allocationLoading, error: allocationError } = usePettyCashAllocation(id);
 
   const { data: items = [] }   = usePettyCashItems();
   const { data: reqData }      = usePettyCashRequests({ allocation_id: id, per_page: 100 });
@@ -133,7 +132,7 @@ export default function AllocationDetailPage({ params }: { params: Promise<{ id:
     {
       accessorKey: "expense_date",
       header: "Date",
-      cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-KE"),
+      cell: ({ getValue }) => new Date(getValue<string>()).toLocaleDateString("en-BW"),
     },
     { accessorKey: "units", header: "Units" },
     {
@@ -174,7 +173,9 @@ export default function AllocationDetailPage({ params }: { params: Promise<{ id:
     },
   ], []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!allocation) return <p className="p-6 text-gray-500">Loading…</p>;
+  if (allocationLoading) return <p className="p-6 text-gray-500">Loading…</p>;
+  if (allocationError) return <p className="p-6 text-sm text-red-600">{extractApiError(allocationError)}</p>;
+  if (!allocation) return <p className="p-6 text-gray-500">Allocation not found.</p>;
 
   return (
     <div className="flex flex-col gap-6">

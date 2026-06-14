@@ -42,14 +42,14 @@ export default function MemberPettyCashRequestsPage() {
                 return (
                   <tr key={r.id} className="border-b border-gray-100 dark:border-gray-700 last:border-0">
                     <td className="px-4 py-3 whitespace-nowrap">
-                      {r.expense_date ? new Date(r.expense_date).toLocaleDateString("en-KE") : "—"}
+                      {r.expense_date ? new Date(r.expense_date).toLocaleDateString("en-BW") : "—"}
                     </td>
                     <td className="px-4 py-3">
                       {(r.item as { name?: string } | null)?.name ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-gray-500 max-w-[200px] truncate">{r.narration ?? "—"}</td>
                     <td className="px-4 py-3 text-right font-medium">
-                      KES {Number(r.amount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+                      BWP {Number(r.amount).toLocaleString("en-BW", { minimumFractionDigits: 2 })}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusCfg[r.approval_status] ?? "bg-gray-100 text-gray-600"}`}>

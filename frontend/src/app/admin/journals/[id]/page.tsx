@@ -12,7 +12,7 @@ import { extractApiError } from "@/lib/api";
 import { toast } from "sonner";
 
 function fmt(v: string) {
-  return parseFloat(v).toLocaleString("en-KE", { minimumFractionDigits: 2 });
+  return parseFloat(v).toLocaleString("en-BW", { minimumFractionDigits: 2 });
 }
 
 function StatusBadge({ journal }: { journal: { is_posted: boolean; is_reversed: boolean } }) {
@@ -80,7 +80,7 @@ export default function JournalDetailPage({ params }: { params: Promise<{ id: st
             {journal.reference_number}
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            {new Date(journal.journal_date).toLocaleDateString("en-KE", { dateStyle: "long" })}
+            {new Date(journal.journal_date).toLocaleDateString("en-BW", { dateStyle: "long" })}
             {journal.period && <> · {journal.period.name}</>}
             {journal.fiscal_year && <> · {journal.fiscal_year.name}</>}
           </p>
@@ -168,9 +168,9 @@ export default function JournalDetailPage({ params }: { params: Promise<{ id: st
 
       {/* Timestamps */}
       <div className="flex flex-wrap gap-6 text-xs text-gray-400">
-        <span>Created: {new Date(journal.created_at).toLocaleString("en-KE")}</span>
-        {journal.posted_at && <span>Posted: {new Date(journal.posted_at).toLocaleString("en-KE")}</span>}
-        {journal.reversed_at && <span>Reversed: {new Date(journal.reversed_at).toLocaleString("en-KE")}</span>}
+        <span>Created: {new Date(journal.created_at).toLocaleString("en-BW")}</span>
+        {journal.posted_at && <span>Posted: {new Date(journal.posted_at).toLocaleString("en-BW")}</span>}
+        {journal.reversed_at && <span>Reversed: {new Date(journal.reversed_at).toLocaleString("en-BW")}</span>}
       </div>
     </div>
   );

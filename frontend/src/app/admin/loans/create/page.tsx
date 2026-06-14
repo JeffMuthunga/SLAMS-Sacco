@@ -217,7 +217,7 @@ export default function CreateLoanPage() {
           <h2 className="font-semibold text-gray-800 dark:text-white">Guarantors</h2>
           {guarantors.map((g, i) => (
             <div key={i} className="flex items-center justify-between rounded bg-gray-50 px-3 py-2 text-sm">
-              <span>{g.label} — <span className="font-mono">{parseFloat(g.guaranteed_amount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</span></span>
+              <span>{g.label} — <span className="font-mono">{parseFloat(g.guaranteed_amount).toLocaleString("en-BW", { minimumFractionDigits: 2 })}</span></span>
               <button type="button" onClick={() => setGuarantors((p) => p.filter((_, j) => j !== i))} className="text-red-500 hover:underline">Remove</button>
             </div>
           ))}
@@ -250,7 +250,7 @@ export default function CreateLoanPage() {
           <h2 className="font-semibold text-gray-800 dark:text-white">Collateral</h2>
           {collaterals.map((c, i) => (
             <div key={i} className="flex items-center justify-between rounded bg-gray-50 px-3 py-2 text-sm">
-              <span>{c.collateral_type} — <span className="font-mono">{parseFloat(c.estimated_value).toLocaleString("en-KE", { minimumFractionDigits: 2 })}</span></span>
+              <span>{c.collateral_type} — <span className="font-mono">{parseFloat(c.estimated_value).toLocaleString("en-BW", { minimumFractionDigits: 2 })}</span></span>
               <button type="button" onClick={() => setCollaterals((p) => p.filter((_, j) => j !== i))} className="text-red-500 hover:underline">Remove</button>
             </div>
           ))}

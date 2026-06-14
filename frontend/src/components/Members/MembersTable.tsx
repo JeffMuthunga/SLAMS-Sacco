@@ -72,7 +72,7 @@ export default function MembersTable() {
       header: "Entry Date",
       cell: ({ getValue }) => {
         const v = getValue<string>();
-        return v ? new Date(v).toLocaleDateString("en-KE") : "—";
+        return v ? new Date(v).toLocaleDateString("en-BW") : "—";
       },
     },
     {

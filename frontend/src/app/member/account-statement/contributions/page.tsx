@@ -27,8 +27,8 @@ export default function MemberContributionsPage() {
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[
-          { label: "Total Expected", value: `KES ${totalExpected.toLocaleString("en-KE", { minimumFractionDigits: 2 })}` },
-          { label: "Total Paid",     value: `KES ${totalPaid.toLocaleString("en-KE", { minimumFractionDigits: 2 })}` },
+          { label: "Total Expected", value: `BWP ${totalExpected.toLocaleString("en-BW", { minimumFractionDigits: 2 })}` },
+          { label: "Total Paid",     value: `BWP ${totalPaid.toLocaleString("en-BW", { minimumFractionDigits: 2 })}` },
           { label: "Pending",        value: String(contributions.filter((c) => c.status === "pending").length) },
           { label: "Paid",           value: String(contributions.filter((c) => c.status === "paid").length) },
         ].map((s) => (
@@ -76,12 +76,12 @@ export default function MemberContributionsPage() {
                   return (
                     <tr key={c.id} className="border-b border-gray-100 dark:border-gray-700 last:border-0">
                       <td className="px-4 py-3">{c.period?.name ?? "—"}</td>
-                      <td className="px-4 py-3">{new Date(c.due_date).toLocaleDateString("en-KE")}</td>
+                      <td className="px-4 py-3">{new Date(c.due_date).toLocaleDateString("en-BW")}</td>
                       <td className="px-4 py-3 text-right font-medium">
-                        KES {Number(c.expected_amount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+                        BWP {Number(c.expected_amount).toLocaleString("en-BW", { minimumFractionDigits: 2 })}
                       </td>
                       <td className="px-4 py-3 text-right font-medium text-green-600">
-                        KES {Number(c.paid_amount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+                        BWP {Number(c.paid_amount).toLocaleString("en-BW", { minimumFractionDigits: 2 })}
                       </td>
                       <td className="px-4 py-3">
                         <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${sCfg.className}`}>
@@ -89,7 +89,7 @@ export default function MemberContributionsPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-gray-500">
-                        {c.paid_date ? new Date(c.paid_date).toLocaleDateString("en-KE") : "—"}
+                        {c.paid_date ? new Date(c.paid_date).toLocaleDateString("en-BW") : "—"}
                       </td>
                     </tr>
                   );

@@ -32,7 +32,7 @@ export default function MemberTransfersPage() {
                     </p>
                   </div>
                   <p className="font-medium">
-                    KES {Number(acc.balance).toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+                    BWP {Number(acc.balance).toLocaleString("en-BW", { minimumFractionDigits: 2 })}
                   </p>
                 </div>
               ))}

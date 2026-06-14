@@ -230,7 +230,7 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
                 <div key={c.id} className="flex flex-col gap-1 rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{c.user?.name ?? "Unknown"}</span>
-                    <span className="text-xs text-gray-400">{new Date(c.created_at).toLocaleString("en-KE")}</span>
+                    <span className="text-xs text-gray-400">{new Date(c.created_at).toLocaleString("en-BW")}</span>
                   </div>
                   <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{c.body}</p>
                 </div>
@@ -285,18 +285,18 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
               </div>
               <div>
                 <dt className="text-xs text-gray-500">Opened</dt>
-                <dd className="font-medium">{new Date(issue.created_at).toLocaleDateString("en-KE")}</dd>
+                <dd className="font-medium">{new Date(issue.created_at).toLocaleDateString("en-BW")}</dd>
               </div>
               {issue.resolved_at && (
                 <div>
                   <dt className="text-xs text-gray-500">Resolved</dt>
-                  <dd className="font-medium">{new Date(issue.resolved_at).toLocaleDateString("en-KE")}</dd>
+                  <dd className="font-medium">{new Date(issue.resolved_at).toLocaleDateString("en-BW")}</dd>
                 </div>
               )}
               {issue.closed_at && (
                 <div>
                   <dt className="text-xs text-gray-500">Closed</dt>
-                  <dd className="font-medium">{new Date(issue.closed_at).toLocaleDateString("en-KE")}</dd>
+                  <dd className="font-medium">{new Date(issue.closed_at).toLocaleDateString("en-BW")}</dd>
                 </div>
               )}
             </dl>

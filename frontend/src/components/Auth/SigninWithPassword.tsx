@@ -92,7 +92,7 @@ export default function SigninWithPassword() {
         )}
       </div>
 
-      <div className="mb-6 flex items-center py-2 font-medium">
+      <div className="mb-6 flex items-center justify-between py-2 font-medium">
         <Checkbox
           label="Remember me"
           name="remember"
@@ -101,6 +101,9 @@ export default function SigninWithPassword() {
           radius="md"
           onChange={(e) => setData({ ...data, remember: e.target.checked })}
         />
+        <a href="/forgot-password" className="text-sm text-primary hover:underline">
+          Forgot password?
+        </a>
       </div>
 
       <div className="mb-4.5">

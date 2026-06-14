@@ -150,7 +150,7 @@ export default function MemberDetailPage() {
             )}
             <dt className="font-medium text-gray-500">Date of Birth</dt>
             <dd className="text-gray-900 dark:text-gray-100">
-              {member.date_of_birth ? new Date(member.date_of_birth).toLocaleDateString("en-KE") : "—"}
+              {member.date_of_birth ? new Date(member.date_of_birth).toLocaleDateString("en-BW") : "—"}
             </dd>
             {member.gender && (
               <>
@@ -191,7 +191,7 @@ export default function MemberDetailPage() {
           <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
             <dt className="font-medium text-gray-500">Entry Date</dt>
             <dd className="text-gray-900 dark:text-gray-100">
-              {member.entry_date ? new Date(member.entry_date).toLocaleDateString("en-KE") : "—"}
+              {member.entry_date ? new Date(member.entry_date).toLocaleDateString("en-BW") : "—"}
             </dd>
             <dt className="font-medium text-gray-500">Employed</dt>
             <dd className="text-gray-900 dark:text-gray-100">{member.employed ? "Yes" : "No"}</dd>
@@ -207,7 +207,7 @@ export default function MemberDetailPage() {
               <>
                 <dt className="font-medium text-gray-500">Monthly Salary</dt>
                 <dd className="text-gray-900 dark:text-gray-100">
-                  {Number(member.monthly_salary).toLocaleString("en-KE")}
+                  {Number(member.monthly_salary).toLocaleString("en-BW")}
                 </dd>
               </>
             )}
@@ -215,7 +215,7 @@ export default function MemberDetailPage() {
               <>
                 <dt className="font-medium text-gray-500">Net Income</dt>
                 <dd className="text-gray-900 dark:text-gray-100">
-                  {Number(member.monthly_net_income).toLocaleString("en-KE")}
+                  {Number(member.monthly_net_income).toLocaleString("en-BW")}
                 </dd>
               </>
             )}

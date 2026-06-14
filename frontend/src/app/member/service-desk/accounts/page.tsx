@@ -33,7 +33,7 @@ function AccountCard({
         <div className="text-right">
           <p className="text-xs text-gray-500">Balance</p>
           <p className="font-bold text-dark dark:text-white">
-            KES {Number(account.balance).toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+            BWP {Number(account.balance).toLocaleString("en-BW", { minimumFractionDigits: 2 })}
           </p>
         </div>
       </div>
@@ -99,16 +99,16 @@ function StatementTable({ accountId }: { accountId: string }) {
                 const isCredit = ["deposit", "interest_credit", "transfer_in", "loan_disbursement", "contribution"].includes(tx.transaction_type);
                 return (
                   <tr key={tx.id} className="border-b border-gray-100 dark:border-gray-700 last:border-0">
-                    <td className="py-2">{new Date(tx.transaction_date).toLocaleDateString("en-KE")}</td>
+                    <td className="py-2">{new Date(tx.transaction_date).toLocaleDateString("en-BW")}</td>
                     <td className="py-2 capitalize text-gray-600 dark:text-gray-400">
                       {tx.transaction_type.replace(/_/g, " ")}
                     </td>
                     <td className="py-2 text-gray-600 dark:text-gray-400">{tx.narration ?? "—"}</td>
                     <td className={`py-2 text-right font-medium ${isCredit ? "text-green-600" : "text-red-500"}`}>
-                      {isCredit ? "+" : "-"}KES {Number(tx.amount).toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+                      {isCredit ? "+" : "-"}BWP {Number(tx.amount).toLocaleString("en-BW", { minimumFractionDigits: 2 })}
                     </td>
                     <td className="py-2 text-right font-medium">
-                      KES {Number(tx.balance_after).toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+                      BWP {Number(tx.balance_after).toLocaleString("en-BW", { minimumFractionDigits: 2 })}
                     </td>
                   </tr>
                 );

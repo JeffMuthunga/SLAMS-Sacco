@@ -17,7 +17,7 @@ const STATUS_OPTIONS = [
 ];
 
 function formatBalance(value: string): string {
-  return parseFloat(value).toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return parseFloat(value).toLocaleString("en-BW", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 export default function AccountsTable() {
@@ -98,7 +98,7 @@ export default function AccountsTable() {
       header: "Opened",
       cell: ({ getValue }) => {
         const v = getValue<string>();
-        return v ? new Date(v).toLocaleDateString("en-KE") : "—";
+        return v ? new Date(v).toLocaleDateString("en-BW") : "—";
       },
     },
     {

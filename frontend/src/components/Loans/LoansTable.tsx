@@ -20,7 +20,7 @@ const STATUS_OPTIONS = [
 ];
 
 function fmt(v: string) {
-  return parseFloat(v).toLocaleString("en-KE", { minimumFractionDigits: 2 });
+  return parseFloat(v).toLocaleString("en-BW", { minimumFractionDigits: 2 });
 }
 
 interface Props {
@@ -88,7 +88,7 @@ export default function LoansTable({ defaultStatus = "" }: Props) {
       header: "Applied",
       cell: ({ getValue }) => {
         const v = getValue<string>();
-        return v ? new Date(v).toLocaleDateString("en-KE") : "—";
+        return v ? new Date(v).toLocaleDateString("en-BW") : "—";
       },
     },
     {

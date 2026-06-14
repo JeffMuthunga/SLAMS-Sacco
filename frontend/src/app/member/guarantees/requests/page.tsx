@@ -12,7 +12,7 @@ import { extractApiError } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 
 function fmtAmount(v: string) {
-  return parseFloat(v).toLocaleString("en-KE", { minimumFractionDigits: 2 });
+  return parseFloat(v).toLocaleString("en-BW", { minimumFractionDigits: 2 });
 }
 
 function GuaranteeRow({ guarantee }: { guarantee: Guarantee }) {
@@ -56,7 +56,7 @@ function GuaranteeRow({ guarantee }: { guarantee: Guarantee }) {
             {guarantee.loan?.loan_product?.name ?? "Loan"} · {guarantee.loan?.account_number ?? "—"}
           </p>
           <p className="mt-1 text-sm font-mono text-dark dark:text-white">
-            KES {fmtAmount(guarantee.guaranteed_amount)}
+            BWP {fmtAmount(guarantee.guaranteed_amount)}
           </p>
         </div>
 

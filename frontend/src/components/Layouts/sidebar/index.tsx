@@ -2,7 +2,6 @@
 
 import { useOrgBranding } from "@/components/BrandingProvider";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NAV_DATA, type NavSection } from "./data";
@@ -76,11 +75,11 @@ export function Sidebar({ navData = NAV_DATA }: { navData?: NavSection[] }) {
           >
             {logoUrl ? (
               <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-white/20">
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={logoUrl}
                   alt={orgName ?? "Logo"}
-                  fill
-                  className="object-contain p-1"
+                  className="h-full w-full object-contain p-1"
                 />
               </div>
             ) : (

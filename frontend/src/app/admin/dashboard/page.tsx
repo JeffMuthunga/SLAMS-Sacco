@@ -5,14 +5,15 @@ import Link from "next/link";
 import { useAdminDashboard, type RecentLoan } from "@/lib/api/dashboard";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/DataTable";
+import { extractApiError } from "@/lib/api";
 
 function fmt(v: string | number | null | undefined, currency = false): string {
   if (v === null || v === undefined) return "—";
   const n = Number(v);
   if (isNaN(n)) return String(v);
   return currency
-    ? `KES ${n.toLocaleString("en-KE", { minimumFractionDigits: 2 })}`
-    : n.toLocaleString("en-KE");
+    ? `BWP ${n.toLocaleString("en-BW", { minimumFractionDigits: 2 })}`
+    : n.toLocaleString("en-BW");
 }
 
 function StatCard({
@@ -124,13 +125,13 @@ const loanColumns: ColumnDef<RecentLoan>[] = [
     header: "Applied",
     cell: ({ getValue }) => {
       const v = getValue<string | null>();
-      return v ? new Date(v).toLocaleDateString("en-KE") : "—";
+      return v ? new Date(v).toLocaleDateString("en-BW") : "—";
     },
   },
 ];
 
 export default function AdminDashboard() {
-  const { data, isLoading } = useAdminDashboard();
+  const { data, isLoading, error } = useAdminDashboard();
 
   const stats = data?.stats;
   const recentLoans = data?.recent_loans ?? [];
@@ -141,6 +142,12 @@ export default function AdminDashboard() {
         <h1 className="text-2xl font-bold text-dark dark:text-white">Dashboard</h1>
         <p className="mt-0.5 text-sm text-gray-500">SACCO overview</p>
       </div>
+
+      {error && (
+        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+          {extractApiError(error)}
+        </p>
+      )}
 
       {/* Pending action alerts */}
       {stats && (

@@ -6,20 +6,17 @@ import {
   DropdownContent,
   DropdownTrigger,
 } from "@/components/ui/dropdown";
-import { signOut, useSession, useInvalidateSession } from "@/lib/auth/auth-client";
+import { signOut, useSession } from "@/lib/auth/auth-client";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
   const session = useSession();
-  const invalidateSession = useInvalidateSession();
 
   async function handleLogout() {
     setIsOpen(false);
@@ -27,13 +24,13 @@ export function UserInfo() {
 
     try {
       await signOut();
-      await invalidateSession();
-      router.push("/login");
-      toast.success("Logged out successfully");
-    } catch {
-      toast.error("Failed to log out");
-    } finally {
       toast.dismiss(loadingId);
+      // Full-page navigation clears all in-memory state and forces a fresh
+      // server render — router.push() would leave stale React Query cache.
+      window.location.href = "/login";
+    } catch {
+      toast.dismiss(loadingId);
+      toast.error("Failed to log out");
     }
   }
 
@@ -59,6 +56,9 @@ export function UserInfo() {
     email: session?.data?.user?.email as string,
     img: session?.data?.user?.image as string,
   };
+
+  const profileHref =
+    session?.data?.user?.role === "member" ? "/member/profile" : "/admin/profile";
 
   return (
     <Dropdown isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -128,25 +128,21 @@ export function UserInfo() {
 
         <div className="p-2 text-base text-[#4B5563] *:cursor-pointer dark:text-dark-6">
           <Link
-            href={"/admin/profile"}
+            href={profileHref}
             onClick={() => setIsOpen(false)}
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2.25 ring-primary outline-0 hover:bg-gray-2 hover:text-dark focus-visible:ring-1 dark:hover:bg-dark-3 dark:hover:text-white"
           >
             <UserIcon />
-
-            <span className="mr-auto text-base font-medium">View profile</span>
+            <span className="mr-auto text-base font-medium">Profile Settings</span>
           </Link>
 
           <Link
-            href={"/admin/pages/settings"}
+            href={`${profileHref}#password`}
             onClick={() => setIsOpen(false)}
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2.25 ring-primary outline-0 hover:bg-gray-2 hover:text-dark focus-visible:ring-1 dark:hover:bg-dark-3 dark:hover:text-white"
           >
             <SettingsIcon />
-
-            <span className="mr-auto text-base font-medium">
-              Account Settings
-            </span>
+            <span className="mr-auto text-base font-medium">Change Password</span>
           </Link>
         </div>
 

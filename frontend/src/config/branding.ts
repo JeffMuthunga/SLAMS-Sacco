@@ -26,7 +26,7 @@ const DEFAULTS: BrandingConfig = {
   phone: "",
   tollFree: "",
   logoPath: "/images/logo/logo-dark.svg",
-  locale: "en-KE",
+  locale: "en-BW",
 };
 
 let _live: BrandingConfig = { ...DEFAULTS };

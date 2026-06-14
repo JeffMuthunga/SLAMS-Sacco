@@ -6,7 +6,7 @@ import { extractApiError } from "@/lib/api";
 
 function fmt(v: string) {
   const n = parseFloat(v);
-  const abs = Math.abs(n).toLocaleString("en-KE", { minimumFractionDigits: 2 });
+  const abs = Math.abs(n).toLocaleString("en-BW", { minimumFractionDigits: 2 });
   return n < 0 ? `(${abs})` : abs;
 }
 
@@ -81,6 +81,9 @@ export default function LedgerPage() {
 
       {error && <p className="text-sm text-red-500">{extractApiError(error)}</p>}
       {isLoading && <p className="text-sm text-gray-500">Loading…</p>}
+      {!queried && !isLoading && (
+        <p className="text-sm text-gray-400">Select an account above and click View Ledger to see its transaction history.</p>
+      )}
 
       {ledger && (
         <div className="flex flex-col gap-3">
@@ -106,7 +109,7 @@ export default function LedgerPage() {
                 {ledger.lines.map((l) => (
                   <tr key={l.journal_line_id} className="border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700/30">
                     <td className="px-4 py-3 text-gray-600">
-                      {new Date(l.journal_date).toLocaleDateString("en-KE")}
+                      {new Date(l.journal_date).toLocaleDateString("en-BW")}
                     </td>
                     <td className="px-4 py-3 font-mono text-xs text-gray-600">{l.reference_number}</td>
                     <td className="px-4 py-3 text-gray-600">{l.narration ?? "—"}</td>

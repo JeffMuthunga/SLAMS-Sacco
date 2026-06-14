@@ -17,7 +17,7 @@ import {
 import { extractApiError } from "@/lib/api";
 
 function formatBalance(value: string): string {
-  return parseFloat(value).toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return parseFloat(value).toLocaleString("en-BW", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 export default function AccountDetailPage() {
@@ -158,14 +158,14 @@ export default function AccountDetailPage() {
         <div>
           <p className="text-xs text-gray-500">Opening Date</p>
           <p className="text-sm font-medium">
-            {account.opening_date ? new Date(account.opening_date).toLocaleDateString("en-KE") : "—"}
+            {account.opening_date ? new Date(account.opening_date).toLocaleDateString("en-BW") : "—"}
           </p>
         </div>
         <div>
           <p className="text-xs text-gray-500">Last Activity</p>
           <p className="text-sm font-medium">
             {account.last_activity_date
-              ? new Date(account.last_activity_date).toLocaleDateString("en-KE")
+              ? new Date(account.last_activity_date).toLocaleDateString("en-BW")
               : "—"}
           </p>
         </div>

@@ -7,7 +7,7 @@ import { TransactionTypeBadge, isDebitType } from "./AccountStatusBadge";
 import { AccountTransaction } from "@/lib/api/accounts";
 
 function formatAmount(value: string): string {
-  return parseFloat(value).toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return parseFloat(value).toLocaleString("en-BW", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 interface Props {
@@ -22,7 +22,7 @@ export default function TransactionsTable({ data, isLoading }: Props) {
       header: "Date",
       cell: ({ getValue }) => {
         const v = getValue<string>();
-        return v ? new Date(v).toLocaleDateString("en-KE") : "—";
+        return v ? new Date(v).toLocaleDateString("en-BW") : "—";
       },
       enableSorting: true,
     },

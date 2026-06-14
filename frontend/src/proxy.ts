@@ -16,15 +16,15 @@ export function proxy(request: NextRequest) {
   const isAuthOnly = AUTH_ONLY_PATHS.some((path) => pathname.startsWith(path));
   const hasSession = Boolean(request.cookies.get(SESSION_COOKIE_NAME)?.value);
 
+  // Redirect unauthenticated users away from protected routes.
+  // Auth pages (/login, /forgot-password, etc.) are always accessible — the
+  // API is the authority; a stale session cookie must not trap the user in a
+  // redirect loop after logout.
   if (!hasSession && !isAuthOnly) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("callbackUrl", `${pathname}${request.nextUrl.search}`);
     return NextResponse.redirect(url);
-  }
-
-  if (hasSession && isAuthOnly) {
-    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();
