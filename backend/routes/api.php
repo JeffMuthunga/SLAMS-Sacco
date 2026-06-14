@@ -166,6 +166,12 @@ Route::prefix('v1')->group(function () {
         Route::post('member-shares/{memberShare}/reject', [\App\Http\Controllers\Api\V1\MemberShareController::class, 'reject']);
     });
 
+    Route::middleware(['auth:sanctum', 'permission:manage_imports'])->prefix('imports')->group(function () {
+        Route::get('templates/{entity}',  [\App\Http\Controllers\Api\V1\ImportController::class, 'template']);
+        Route::post('{entity}/dry-run',   [\App\Http\Controllers\Api\V1\ImportController::class, 'dryRun']);
+        Route::post('{entity}/commit',    [\App\Http\Controllers\Api\V1\ImportController::class, 'commit']);
+    });
+
     // Public org branding — any authenticated user (admins + members)
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('org/branding', [\App\Http\Controllers\Api\V1\Configurations\OrgController::class, 'branding']);
