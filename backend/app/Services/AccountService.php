@@ -85,6 +85,16 @@ class AccountService
             $amount = (string) $data['amount'];
             $type   = $data['transaction_type'];
 
+            if (in_array($type, ['withdrawal', 'transfer_out'], true)) {
+                $product = $account->product ?? $account->load('product')->product;
+                if ($product && $product->block_withdrawal_on_active_loan) {
+                    $hasActiveLoan = \App\Models\Loan::where('member_id', $account->member_id)
+                        ->whereIn('loan_status', ['disbursed', 'active'])
+                        ->exists();
+                    abort_if($hasActiveLoan, 422, 'Withdrawals are not permitted while the member has an active loan.');
+                }
+            }
+
             $debitTypes = ['withdrawal', 'transfer_out', 'fee', 'loan_disbursement'];
 
             if (in_array($type, $debitTypes, true)) {
