@@ -148,10 +148,10 @@ function ApplyLoanForm({ onClose }: { onClose: () => void }) {
           </div>
         </div>
 
-        {(selectedProduct?.requires_guarantor || guarantors.length > 0) && (
+        {selectedProduct && (
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Guarantors{selectedProduct?.requires_guarantor ? " *" : ""}
+              Guarantors{selectedProduct.requires_guarantor ? " *" : " (optional)"}
             </label>
             {guarantors.length > 0 && (
               <div className="mb-2 flex flex-col gap-1">
