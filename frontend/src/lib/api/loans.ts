@@ -50,7 +50,7 @@ export interface LoanNote {
 }
 
 export type LoanStatus =
-  | "draft" | "applied" | "approved" | "rejected"
+  | "draft" | "applied" | "guarantors_confirmed" | "approved" | "rejected"
   | "disbursed" | "active" | "repaid" | "defaulted";
 
 export interface Loan {
