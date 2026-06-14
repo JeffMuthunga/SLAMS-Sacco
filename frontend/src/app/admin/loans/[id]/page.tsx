@@ -16,9 +16,12 @@ import {
   useMarkDefaulted,
   useAddLoanNote,
   useArchiveLoan,
+  useAddLoanGuarantor,
 } from "@/lib/api/loans";
 import { useAccounts } from "@/lib/api/accounts";
+import { useMembers } from "@/lib/api/members";
 import { extractApiError } from "@/lib/api";
+import NumberInput from "@/components/Forms/NumberInput";
 
 function fmt(v: string) {
   return parseFloat(v).toLocaleString("en-KE", { minimumFractionDigits: 2 });
@@ -46,6 +49,18 @@ export default function LoanDetailPage() {
   const [accountSearch,     setAccountSearch]     = useState("");
   const [noteText,          setNoteText]          = useState("");
   const [showNoteForm,      setShowNoteForm]       = useState(false);
+  const [showAddGuarantor,  setShowAddGuarantor]  = useState(false);
+  const [guarantorSearch,   setGuarantorSearch]   = useState("");
+  const [guarantorMemberId, setGuarantorMemberId] = useState("");
+  const [guarantorAmount,   setGuarantorAmount]   = useState("");
+  const addGuarantorMutation = useAddLoanGuarantor(id);
+  const { data: guarantorMembersData } = useMembers(
+    guarantorSearch.length >= 2 ? { search: guarantorSearch, per_page: 20 } : undefined
+  );
+  const guarantorMemberOptions = (guarantorMembersData?.data ?? []).map((m) => ({
+    value: m.id,
+    label: `${m.full_name} (${m.member_number})`,
+  }));
 
   const { data: accountsData } = useAccounts(
     accountSearch.length >= 2
@@ -102,6 +117,20 @@ export default function LoanDetailPage() {
     }
   };
 
+  const handleAddGuarantor = async () => {
+    if (!guarantorMemberId || !guarantorAmount) { toast.error("Select a member and enter an amount."); return; }
+    try {
+      await addGuarantorMutation.mutateAsync({ member_id: guarantorMemberId, guaranteed_amount: guarantorAmount });
+      toast.success("Guarantor added.");
+      setShowAddGuarantor(false);
+      setGuarantorMemberId("");
+      setGuarantorAmount("");
+      setGuarantorSearch("");
+    } catch (err) {
+      toast.error(extractApiError(err));
+    }
+  };
+
   const handleAddNote = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!noteText.trim()) return;
@@ -132,10 +161,20 @@ export default function LoanDetailPage() {
         <div className="flex flex-wrap items-center gap-2">
           {isPending && (
             <>
-              <button onClick={handleApprove} disabled={approveMutation.isPending}
-                className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-60">
-                Approve
-              </button>
+              {loan.loan_status === 'applied' ? (
+                <button
+                  disabled
+                  title="Waiting for all guarantors to confirm."
+                  className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white opacity-50 cursor-not-allowed"
+                >
+                  Approve
+                </button>
+              ) : (
+                <button onClick={handleApprove} disabled={approveMutation.isPending}
+                  className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-60">
+                  Approve
+                </button>
+              )}
               <button onClick={() => setShowRejectModal(true)}
                 className="rounded-lg border border-red-400 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50">
                 Reject
@@ -198,18 +237,66 @@ export default function LoanDetailPage() {
       {/* Guarantors */}
       {loan.guarantees.length > 0 && (
         <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-          <h2 className="mb-3 font-semibold text-dark dark:text-white">Guarantors</h2>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="font-semibold text-dark dark:text-white">Guarantors</h2>
+            {["applied", "guarantors_confirmed"].includes(loan.loan_status) &&
+              loan.guarantees.some((g) => g.approval_status === "rejected") && (
+                <button
+                  onClick={() => setShowAddGuarantor((v) => !v)}
+                  className="text-sm rounded-lg border border-gray-300 px-3 py-1.5 text-gray-700 hover:bg-gray-50"
+                >
+                  + Add Guarantor
+                </button>
+              )}
+          </div>
           <div className="flex flex-col gap-2">
             {loan.guarantees.map((g) => (
               <div key={g.id} className="flex items-center justify-between text-sm border-b pb-2 last:border-0">
                 <span>{g.member?.full_name ?? "—"} ({g.member?.member_number ?? "—"})</span>
                 <span className="font-mono">{fmt(g.guaranteed_amount)}</span>
-                <span className={g.is_accepted ? "text-green-600" : "text-yellow-600"}>
-                  {g.is_accepted ? "Accepted" : "Pending"}
+                <span className={
+                  g.is_accepted
+                    ? "text-green-600 font-medium"
+                    : g.approval_status === "rejected"
+                      ? "text-red-500 font-medium"
+                      : "text-yellow-600"
+                }>
+                  {g.is_accepted ? "✓ Accepted" : g.approval_status === "rejected" ? "✕ Declined" : "⏱ Pending"}
                 </span>
               </div>
             ))}
           </div>
+
+          {showAddGuarantor && (
+            <div className="mt-3 border-t border-gray-200 pt-3 dark:border-gray-700 flex flex-col gap-3">
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Add Replacement Guarantor</p>
+              <div className="flex flex-wrap gap-2 items-end">
+                <div className="flex-1 min-w-[200px]">
+                  <SelectInput
+                    options={guarantorMemberOptions}
+                    value={guarantorMemberOptions.find((o) => o.value === guarantorMemberId) ?? null}
+                    onChange={(opt) => setGuarantorMemberId((opt as { value: string } | null)?.value ?? "")}
+                    onInputChange={(val) => setGuarantorSearch(val)}
+                    placeholder="Search member…"
+                  />
+                </div>
+                <div className="w-36">
+                  <NumberInput
+                    value={guarantorAmount}
+                    onChange={(v) => setGuarantorAmount(v)}
+                    placeholder="Amount"
+                  />
+                </div>
+                <button
+                  onClick={handleAddGuarantor}
+                  disabled={addGuarantorMutation.isPending}
+                  className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-opacity-90 disabled:opacity-60"
+                >
+                  {addGuarantorMutation.isPending ? "Adding…" : "Add"}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
