@@ -27,6 +27,8 @@ type FormState = {
   lock_in_months: string;
   withdrawal_frequency: "any" | "daily" | "weekly" | "monthly";
   is_active: boolean;
+  is_mandatory: boolean;
+  block_withdrawal_on_active_loan: boolean;
 };
 
 const INITIAL_FORM: FormState = {
@@ -43,6 +45,8 @@ const INITIAL_FORM: FormState = {
   lock_in_months: "0",
   withdrawal_frequency: "any",
   is_active: true,
+  is_mandatory: false,
+  block_withdrawal_on_active_loan: false,
 };
 
 function SavingProductForm({
@@ -241,6 +245,7 @@ function SavingProductForm({
           </div>
 
           {/* Row 8: Is Active */}
+          {/* Is Active */}
           <div className="sm:col-span-2">
             <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
               <input
@@ -250,6 +255,32 @@ function SavingProductForm({
                 className="h-4 w-4 rounded border-gray-300 text-primary"
               />
               Is Active
+            </label>
+          </div>
+
+          {/* Is Mandatory */}
+          <div className="sm:col-span-2">
+            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.is_mandatory}
+                onChange={(e) => onChange({ is_mandatory: e.target.checked })}
+                className="h-4 w-4 rounded border-gray-300 text-primary"
+              />
+              Mandatory (all members must hold this account)
+            </label>
+          </div>
+
+          {/* Block withdrawal on active loan */}
+          <div className="sm:col-span-2">
+            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.block_withdrawal_on_active_loan}
+                onChange={(e) => onChange({ block_withdrawal_on_active_loan: e.target.checked })}
+                className="h-4 w-4 rounded border-gray-300 text-primary"
+              />
+              Block withdrawals when member has an active loan
             </label>
           </div>
         </div>
@@ -332,6 +363,8 @@ export default function SavingProductsPage() {
       lock_in_months: String(product.lock_in_months),
       withdrawal_frequency: product.withdrawal_frequency,
       is_active: product.is_active,
+      is_mandatory: product.is_mandatory,
+      block_withdrawal_on_active_loan: product.block_withdrawal_on_active_loan,
     });
     setEditingId(product.id);
     setShowForm(true);
@@ -354,6 +387,8 @@ export default function SavingProductsPage() {
       lock_in_months: parseInt(form.lock_in_months, 10),
       withdrawal_frequency: form.withdrawal_frequency,
       is_active: form.is_active,
+      is_mandatory: form.is_mandatory,
+      block_withdrawal_on_active_loan: form.block_withdrawal_on_active_loan,
     };
 
     if (editingId) {
@@ -448,6 +483,9 @@ export default function SavingProductsPage() {
                 <th className="px-3 py-3.5 text-left text-xs font-semibold text-gray-900">
                   Status
                 </th>
+                <th className="px-3 py-3.5 text-left text-xs font-semibold text-gray-900">
+                  Mandatory
+                </th>
                 <th className="relative py-3.5 pl-3 pr-4 sm:pr-6">
                   <span className="sr-only">Actions</span>
                 </th>
@@ -457,7 +495,7 @@ export default function SavingProductsPage() {
               {!products || products.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="py-8 text-center text-sm text-gray-500"
                   >
                     No saving products yet. Add one above.
@@ -479,6 +517,17 @@ export default function SavingProductsPage() {
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm">
                       <ActiveBadge active={product.is_active} />
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-4 text-sm">
+                      {product.is_mandatory ? (
+                        <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                          Mandatory
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/20">
+                          Optional
+                        </span>
+                      )}
                     </td>
                     <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                       <button

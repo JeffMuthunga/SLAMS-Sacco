@@ -201,6 +201,8 @@ export interface SavingProduct {
   lock_in_months: number;
   withdrawal_frequency: "any" | "daily" | "weekly" | "monthly";
   is_active: boolean;
+  is_mandatory: boolean;
+  block_withdrawal_on_active_loan: boolean;
   created_at: string;
   updated_at: string;
 }
