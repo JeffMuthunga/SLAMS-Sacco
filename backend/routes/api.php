@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\IssueController;
 use App\Http\Controllers\Api\V1\PettyCashAllocationController;
 use App\Http\Controllers\Api\V1\PettyCashRequestController;
+use App\Http\Controllers\Api\V1\CommodityRequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -108,6 +109,9 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('petty-cash-categories', \App\Http\Controllers\Api\V1\Configurations\PettyCashCategoryController::class)->except(['show']);
         Route::apiResource('petty-cash-items',      \App\Http\Controllers\Api\V1\Configurations\PettyCashItemController::class)->except(['show']);
         Route::apiResource('issue-categories',      \App\Http\Controllers\Api\V1\Configurations\IssueCategoryController::class)->except(['show']);
+
+        Route::apiResource('commodity-types', \App\Http\Controllers\Api\V1\Configurations\CommodityTypeController::class)->except(['show']);
+        Route::apiResource('commodities',     \App\Http\Controllers\Api\V1\Configurations\CommodityController::class)->except(['show']);
     });
 
     Route::middleware(['auth:sanctum', 'permission:manage_journals'])->group(function () {
@@ -130,6 +134,26 @@ Route::prefix('v1')->group(function () {
         Route::post('petty-cash-requests/{pettyCashRequest}/approve', [PettyCashRequestController::class, 'approve']);
         Route::post('petty-cash-requests/{pettyCashRequest}/reject',  [PettyCashRequestController::class, 'reject']);
         Route::apiResource('petty-cash-requests', PettyCashRequestController::class)->except(['update']);
+    });
+
+    Route::middleware(['auth:sanctum', 'permission:manage_commodities'])->group(function () {
+        Route::post('commodity-requests/{id}/approve',   [CommodityRequestController::class, 'approve']);
+        Route::post('commodity-requests/{id}/reject',    [CommodityRequestController::class, 'reject']);
+        Route::post('commodity-requests/{id}/issue',     [CommodityRequestController::class, 'issue']);
+        Route::post('commodity-requests/{id}/repaid',    [CommodityRequestController::class, 'markRepaid']);
+        Route::apiResource('commodity-requests', CommodityRequestController::class)->only(['index', 'show', 'store']);
+    });
+
+    // Share Products (configurations, manage_shares)
+    Route::middleware(['auth:sanctum', 'permission:manage_shares'])->prefix('configurations')->group(function () {
+        Route::apiResource('share-products', \App\Http\Controllers\Api\V1\Configurations\ShareProductController::class);
+    });
+
+    // Member Shares (manage_shares)
+    Route::middleware(['auth:sanctum', 'permission:manage_shares'])->group(function () {
+        Route::apiResource('member-shares', \App\Http\Controllers\Api\V1\MemberShareController::class)->only(['index', 'store', 'show']);
+        Route::post('member-shares/{memberShare}/approve', [\App\Http\Controllers\Api\V1\MemberShareController::class, 'approve']);
+        Route::post('member-shares/{memberShare}/reject', [\App\Http\Controllers\Api\V1\MemberShareController::class, 'reject']);
     });
 
     // Public org branding — any authenticated user (admins + members)
@@ -175,5 +199,8 @@ Route::prefix('v1')->group(function () {
         Route::get('transactions',   [MemberPortalController::class, 'allTransactions']);
         Route::get('petty-cash/allocations', [MemberPortalController::class, 'myAllocations']);
         Route::get('petty-cash/requests',    [MemberPortalController::class, 'myRequests']);
+        Route::get('commodity-requests',       [MemberPortalController::class, 'myCommodityRequests']);
+        Route::post('commodity-requests',      [MemberPortalController::class, 'createCommodityRequest']);
+        Route::get('commodities',              [MemberPortalController::class, 'availableCommodities']);
     });
 });
