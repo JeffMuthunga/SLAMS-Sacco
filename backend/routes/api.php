@@ -202,5 +202,6 @@ Route::prefix('v1')->group(function () {
         Route::get('commodity-requests',       [MemberPortalController::class, 'myCommodityRequests']);
         Route::post('commodity-requests',      [MemberPortalController::class, 'createCommodityRequest']);
         Route::get('commodities',              [MemberPortalController::class, 'availableCommodities']);
+        Route::get('shares',                   [MemberPortalController::class, 'shares']);
     });
 });

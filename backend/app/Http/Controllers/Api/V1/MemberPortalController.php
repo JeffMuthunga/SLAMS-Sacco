@@ -24,8 +24,16 @@ use App\Models\Issue;
 use App\Models\IssueComment;
 use App\Models\PettyCashAllocation;
 use App\Models\PettyCashRequest;
+use App\Models\Commodity;
+use App\Models\CommodityRequest;
+use App\Http\Resources\V1\CommodityRequestResource;
+use App\Http\Resources\V1\CommodityResource;
+use App\Http\Resources\V1\MemberShareResource;
+use App\Models\MemberShare;
+use App\Services\CommodityService;
 use App\Services\IssueService;
 use App\Services\LoanService;
+use App\Services\ShareService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -34,6 +42,8 @@ class MemberPortalController extends ApiController
     public function __construct(
         private IssueService $issueService,
         private LoanService $loanService,
+        private CommodityService $commodityService,
+        private ShareService $shareService,
     ) {}
 
     private function resolveMember(Request $request): \App\Models\Member
@@ -472,5 +482,73 @@ class MemberPortalController extends ApiController
             'full_name'     => $m->full_name,
             'member_number' => $m->member_number,
         ]));
+    }
+
+    public function availableCommodities(Request $request): JsonResponse
+    {
+        $commodities = Commodity::where('org_id', $request->user()->org_id)
+            ->where('is_active', true)
+            ->where('stock_quantity', '>', 0)
+            ->with('commodityType')
+            ->orderBy('name')
+            ->get();
+
+        return $this->respond(CommodityResource::collection($commodities));
+    }
+
+    public function myCommodityRequests(Request $request): JsonResponse
+    {
+        $member   = $this->resolveMember($request);
+        $requests = CommodityRequest::where('org_id', $request->user()->org_id)
+            ->where('member_id', $member->id)
+            ->with(['items.commodity'])
+            ->orderByDesc('created_at')
+            ->paginate($request->integer('per_page', 20));
+
+        return $this->respond(
+            CommodityRequestResource::collection($requests->items())->resolve(),
+            '',
+            200,
+            ['current_page' => $requests->currentPage(), 'per_page' => $requests->perPage(), 'total' => $requests->total(), 'last_page' => $requests->lastPage()]
+        );
+    }
+
+    public function createCommodityRequest(Request $request): JsonResponse
+    {
+        $member = $this->resolveMember($request);
+        $data   = $request->validate([
+            'items'                => ['required', 'array', 'min:1'],
+            'items.*.commodity_id' => ['required', 'uuid', 'exists:commodities,id'],
+            'items.*.quantity'     => ['required', 'integer', 'min:1'],
+            'repayment_period'     => ['nullable', 'integer', 'min:1'],
+        ]);
+
+        $req = $this->commodityService->createRequest(
+            $member,
+            $data['items'],
+            $data['repayment_period'] ?? null,
+            $request->user()->org_id
+        );
+
+        return $this->respondCreated(new CommodityRequestResource($req), 'Commodity request submitted.');
+    }
+
+    public function shares(Request $request): JsonResponse
+    {
+        $member = $this->resolveMember($request);
+        $orgId  = $request->user()->org_id;
+
+        $shares = MemberShare::where('org_id', $orgId)
+            ->where('member_id', $member->id)
+            ->with(['shareProduct'])
+            ->latest()
+            ->get();
+
+        $balance = $this->shareService->memberBalance($member->id, $orgId);
+
+        return $this->respond([
+            'shares'  => MemberShareResource::collection($shares),
+            'balance' => $balance,
+        ]);
     }
 }
