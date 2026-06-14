@@ -14,6 +14,7 @@ import {
   useUpdateMember,
 } from "@/lib/api/members";
 import { api, extractApiError, extractFieldErrors } from "@/lib/api";
+import { useEligibleEmployers } from "@/lib/api/configurations";
 
 // ── Option lists ───────────────────────────────────────────────────────
 
@@ -129,6 +130,18 @@ export default function MemberForm({ defaultValues, memberId }: Props) {
 
   const createMutation = useCreateMember();
   const updateMutation = useUpdateMember(memberId ?? "");
+
+  const { data: eligibleEmployers } = useEligibleEmployers();
+
+  const employerNotOnList =
+    !!form.employer_name &&
+    !!eligibleEmployers &&
+    eligibleEmployers.length > 0 &&
+    !eligibleEmployers.some(
+      (e) =>
+        e.is_active &&
+        e.name.toLowerCase() === form.employer_name.toLowerCase(),
+    );
 
   const submitting = createMutation.isPending || updateMutation.isPending;
 
@@ -407,6 +420,11 @@ export default function MemberForm({ defaultValues, memberId }: Props) {
                   onChange={(e) => set("employer_name", e.target.value)}
                   className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm outline-none hover:border-green-600 focus:ring-2 focus:ring-green-600"
                 />
+                {employerNotOnList && (
+                  <p className="mt-1 text-xs text-amber-600">
+                    This employer is not on the approved eligible employers list. The member application may be rejected.
+                  </p>
+                )}
               </div>
               <NumberInput
                 label="Monthly Salary"

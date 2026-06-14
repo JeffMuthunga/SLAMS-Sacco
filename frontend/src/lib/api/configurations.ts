@@ -127,6 +127,15 @@ export interface Department {
 export type CreateDepartmentPayload = Pick<Department, "name" | "is_active">;
 export type UpdateDepartmentPayload = Partial<CreateDepartmentPayload>;
 
+export interface EligibleEmployer {
+  id: string;
+  name: string;
+  is_active: boolean;
+  created_at: string;
+}
+export type CreateEligibleEmployerPayload = Pick<EligibleEmployer, "name" | "is_active">;
+export type UpdateEligibleEmployerPayload = Partial<CreateEligibleEmployerPayload>;
+
 export interface FiscalYear {
   id: string;
   org_id: string;
@@ -226,6 +235,7 @@ export const DEPARTMENTS_KEY = [...CONFIGURATIONS_KEY, "departments"] as const;
 export const FISCAL_YEARS_KEY = [...CONFIGURATIONS_KEY, "fiscal-years"] as const;
 export const LOAN_PRODUCTS_KEY = [...CONFIGURATIONS_KEY, "loan-products"] as const;
 export const SAVING_PRODUCTS_KEY = [...CONFIGURATIONS_KEY, "saving-products"] as const;
+export const ELIGIBLE_EMPLOYERS_KEY = [...CONFIGURATIONS_KEY, "eligible-employers"] as const;
 
 // ── Org ────────────────────────────────────────────────────────────────
 
@@ -856,6 +866,65 @@ export function useUploadOrgLogo() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ORG_KEY });
       qc.invalidateQueries({ queryKey: ["org-branding"] });
+    },
+  });
+}
+
+// ── Eligible Employers ─────────────────────────────────────────────────
+
+export function useEligibleEmployers() {
+  return useQuery<EligibleEmployer[]>({
+    queryKey: ELIGIBLE_EMPLOYERS_KEY,
+    queryFn: async () => {
+      const { data } = await api.get<ApiEnvelope<EligibleEmployer[]>>(
+        "/configurations/eligible-employers",
+      );
+      return data.data;
+    },
+    staleTime: 300_000,
+  });
+}
+
+export function useCreateEligibleEmployer() {
+  const qc = useQueryClient();
+  return useMutation<EligibleEmployer, Error, CreateEligibleEmployerPayload>({
+    mutationFn: async (payload) => {
+      const { data } = await api.post<ApiEnvelope<EligibleEmployer>>(
+        "/configurations/eligible-employers",
+        payload,
+      );
+      return data.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ELIGIBLE_EMPLOYERS_KEY });
+    },
+  });
+}
+
+export function useUpdateEligibleEmployer(id: string) {
+  const qc = useQueryClient();
+  return useMutation<EligibleEmployer, Error, UpdateEligibleEmployerPayload>({
+    mutationFn: async (payload) => {
+      const { data } = await api.put<ApiEnvelope<EligibleEmployer>>(
+        `/configurations/eligible-employers/${id}`,
+        payload,
+      );
+      return data.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ELIGIBLE_EMPLOYERS_KEY });
+    },
+  });
+}
+
+export function useDeleteEligibleEmployer() {
+  const qc = useQueryClient();
+  return useMutation<void, Error, string>({
+    mutationFn: async (id) => {
+      await api.delete(`/configurations/eligible-employers/${id}`);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ELIGIBLE_EMPLOYERS_KEY });
     },
   });
 }

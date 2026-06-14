@@ -35,6 +35,7 @@ export const ADMIN_NAV_DATA: NavSection[] = [
           { title: "Banks", url: "/admin/configurations/banks" },
           { title: "Bank Accounts", url: "/admin/configurations/bank-accounts" },
           { title: "Departments", url: "/admin/configurations/departments" },
+          { title: "Eligible Employers", url: "/admin/configurations/eligible-employers" },
           { title: "Fiscal Years", url: "/admin/configurations/fiscal-years" },
           { title: "Chart of Accounts", url: "/admin/chart-of-accounts" },
           { title: "Petty Cash Categories", url: "/admin/configurations/petty-cash-categories" },
@@ -91,6 +92,7 @@ export const ADMIN_NAV_DATA: NavSection[] = [
         icon: Icons.Alphabet,
         items: [
           { title: "Member Exit", url: "/admin/member-exit" },
+          { title: "Profile Settings", url: "/admin/profile" },
         ],
       },
       {
@@ -119,6 +121,12 @@ export const MEMBER_NAV_DATA: NavSection[] = [
         title: "My Details",
         url: "/member/my-details",
         icon: Icons.User,
+        items: [],
+      },
+      {
+        title: "Profile Settings",
+        url: "/member/profile",
+        icon: Icons.Authentication,
         items: [],
       },
       {
