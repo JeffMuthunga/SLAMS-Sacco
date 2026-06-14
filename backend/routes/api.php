@@ -39,8 +39,9 @@ Route::prefix('v1')->group(function () {
         Route::get('members/archived',          [MemberController::class, 'archived']);
         Route::post('members/{member}/restore', [MemberController::class, 'restore']);
         Route::post('members/{member}/photo',   [MemberController::class, 'uploadPhoto']);
-        Route::post('members/{member}/approve', [MemberController::class, 'approve']);
-        Route::post('members/{member}/reject',  [MemberController::class, 'reject']);
+        Route::post('members/{member}/approve',               [MemberController::class, 'approve']);
+        Route::post('members/{member}/reject',                [MemberController::class, 'reject']);
+        Route::post('members/{member}/create-portal-account', [MemberController::class, 'createPortalAccount']);
         Route::apiResource('members', MemberController::class);
     });
 

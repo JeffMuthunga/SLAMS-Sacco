@@ -55,7 +55,20 @@ class AuthController extends ApiController
     public function updateProfile(UpdateProfileRequest $request): JsonResponse
     {
         $user = $request->user();
-        $user->fill($request->validated())->save();
+        $validated = $request->validated();
+
+        if (isset($validated['password'])) {
+            if (! Hash::check($validated['current_password'], $user->password)) {
+                return $this->respondError('Current password is incorrect.', 422, [
+                    'current_password' => ['Current password is incorrect.'],
+                ]);
+            }
+            unset($validated['current_password']);
+        } else {
+            unset($validated['current_password'], $validated['password']);
+        }
+
+        $user->fill($validated)->save();
 
         return $this->respond(new UserResource($user), 'Profile updated successfully.');
     }

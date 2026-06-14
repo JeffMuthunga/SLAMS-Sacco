@@ -198,6 +198,19 @@ export function useRejectMember() {
   });
 }
 
+export function useCreatePortalAccount() {
+  const qc = useQueryClient();
+  return useMutation<Member, Error, string>({
+    mutationFn: async (id) => {
+      const { data } = await api.post<ApiEnvelope<Member>>(`/members/${id}/create-portal-account`);
+      return data.data;
+    },
+    onSuccess: (_data, id) => {
+      qc.invalidateQueries({ queryKey: [...MEMBERS_KEY, id] });
+    },
+  });
+}
+
 export function useUploadMemberPhoto(memberId: string) {
   const qc = useQueryClient();
   return useMutation<Member, Error, File>({

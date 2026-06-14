@@ -6,7 +6,7 @@ import { api, ApiEnvelope, ApiMeta } from "@/lib/api";
 export interface LoanGuarantee {
   id: string;
   loan_id: string;
-  member: { id: string; full_name: string; member_number: string } | null;
+  member: { id: string; full_name: string; member_number: string; has_portal_account: boolean } | null;
   guaranteed_amount: string;
   is_accepted: boolean;
   accepted_at: string | null;

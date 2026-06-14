@@ -11,6 +11,7 @@ import {
   useApproveMember,
   useRejectMember,
   useDeleteMember,
+  useCreatePortalAccount,
 } from "@/lib/api/members";
 import { extractApiError } from "@/lib/api";
 import { Can } from "@/lib/AbilityContext";
@@ -21,9 +22,10 @@ export default function MemberDetailPage() {
   const router = useRouter();
 
   const { data: member, isLoading, error } = useMember(id);
-  const approveMutation = useApproveMember();
-  const rejectMutation  = useRejectMember();
-  const deleteMutation  = useDeleteMember();
+  const approveMutation      = useApproveMember();
+  const rejectMutation       = useRejectMember();
+  const deleteMutation       = useDeleteMember();
+  const portalAccountMutation = useCreatePortalAccount();
 
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
@@ -48,6 +50,16 @@ export default function MemberDetailPage() {
       await rejectMutation.mutateAsync({ id, reason: rejectReason });
       toast.success("Member rejected.");
       setShowRejectModal(false);
+    } catch (err) {
+      toast.error(extractApiError(err));
+    }
+  };
+
+  const handleCreatePortalAccount = async () => {
+    if (!window.confirm("Create a portal account for this member? They will receive a temporary password.")) return;
+    try {
+      await portalAccountMutation.mutateAsync(id);
+      toast.success("Portal account created. Temporary password: password");
     } catch (err) {
       toast.error(extractApiError(err));
     }
@@ -97,6 +109,15 @@ export default function MemberDetailPage() {
                   Reject
                 </button>
               </>
+            )}
+            {member.approval_status === "approved" && !member.user_id && member.email && (
+              <button
+                onClick={handleCreatePortalAccount}
+                disabled={portalAccountMutation.isPending}
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+              >
+                Create Portal Account
+              </button>
             )}
             <Link
               href={`/admin/members/${id}/edit`}

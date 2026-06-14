@@ -117,7 +117,10 @@ class MemberPortalController extends ApiController
         $transactions = $query->paginate($request->integer('per_page', 50));
 
         return $this->respond(
-            AccountTransactionResource::collection($transactions)->response()->getData(true)
+            AccountTransactionResource::collection($transactions->items())->resolve(),
+            '',
+            200,
+            ['current_page' => $transactions->currentPage(), 'per_page' => $transactions->perPage(), 'total' => $transactions->total(), 'last_page' => $transactions->lastPage()]
         );
     }
 
@@ -131,7 +134,10 @@ class MemberPortalController extends ApiController
             ->paginate($request->integer('per_page', 20));
 
         return $this->respond(
-            LoanResource::collection($loans)->response()->getData(true)
+            LoanResource::collection($loans->items())->resolve(),
+            '',
+            200,
+            ['current_page' => $loans->currentPage(), 'per_page' => $loans->perPage(), 'total' => $loans->total(), 'last_page' => $loans->lastPage()]
         );
     }
 
@@ -161,7 +167,10 @@ class MemberPortalController extends ApiController
         $contributions = $query->paginate($request->integer('per_page', 50));
 
         return $this->respond(
-            ContributionResource::collection($contributions)->response()->getData(true)
+            ContributionResource::collection($contributions->items())->resolve(),
+            '',
+            200,
+            ['current_page' => $contributions->currentPage(), 'per_page' => $contributions->perPage(), 'total' => $contributions->total(), 'last_page' => $contributions->lastPage()]
         );
     }
 
@@ -209,15 +218,12 @@ class MemberPortalController extends ApiController
             ] : null,
         ]);
 
-        return $this->respond([
-            'data' => $data,
-            'meta' => [
-                'current_page' => $guarantees->currentPage(),
-                'last_page'    => $guarantees->lastPage(),
-                'per_page'     => $guarantees->perPage(),
-                'total'        => $guarantees->total(),
-            ],
-        ]);
+        return $this->respond(
+            $data->values()->all(),
+            '',
+            200,
+            ['current_page' => $guarantees->currentPage(), 'per_page' => $guarantees->perPage(), 'total' => $guarantees->total(), 'last_page' => $guarantees->lastPage()]
+        );
     }
 
     public function issues(Request $request): JsonResponse
@@ -236,7 +242,10 @@ class MemberPortalController extends ApiController
         $issues = $query->paginate($request->integer('per_page', 50));
 
         return $this->respond(
-            IssueResource::collection($issues)->response()->getData(true)
+            IssueResource::collection($issues->items())->resolve(),
+            '',
+            200,
+            ['current_page' => $issues->currentPage(), 'per_page' => $issues->perPage(), 'total' => $issues->total(), 'last_page' => $issues->lastPage()]
         );
     }
 
@@ -282,7 +291,10 @@ class MemberPortalController extends ApiController
             ->paginate($request->integer('per_page', 20));
 
         return $this->respond(
-            PettyCashAllocationResource::collection($allocations)->response()->getData(true)
+            PettyCashAllocationResource::collection($allocations->items())->resolve(),
+            '',
+            200,
+            ['current_page' => $allocations->currentPage(), 'per_page' => $allocations->perPage(), 'total' => $allocations->total(), 'last_page' => $allocations->lastPage()]
         );
     }
 
@@ -295,7 +307,10 @@ class MemberPortalController extends ApiController
             ->paginate($request->integer('per_page', 50));
 
         return $this->respond(
-            PettyCashRequestResource::collection($requests)->response()->getData(true)
+            PettyCashRequestResource::collection($requests->items())->resolve(),
+            '',
+            200,
+            ['current_page' => $requests->currentPage(), 'per_page' => $requests->perPage(), 'total' => $requests->total(), 'last_page' => $requests->lastPage()]
         );
     }
 
@@ -321,7 +336,10 @@ class MemberPortalController extends ApiController
         $transactions = $query->paginate($request->integer('per_page', 50));
 
         return $this->respond(
-            AccountTransactionResource::collection($transactions)->response()->getData(true)
+            AccountTransactionResource::collection($transactions->items())->resolve(),
+            '',
+            200,
+            ['current_page' => $transactions->currentPage(), 'per_page' => $transactions->perPage(), 'total' => $transactions->total(), 'last_page' => $transactions->lastPage()]
         );
     }
 

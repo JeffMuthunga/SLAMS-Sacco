@@ -235,41 +235,54 @@ export default function LoanDetailPage() {
       </div>
 
       {/* Guarantors */}
-      {loan.guarantees.length > 0 && (
+      {(loan.guarantees.length > 0 || ["applied", "guarantors_confirmed"].includes(loan.loan_status)) && (
         <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="font-semibold text-dark dark:text-white">Guarantors</h2>
-            {["applied", "guarantors_confirmed"].includes(loan.loan_status) &&
-              loan.guarantees.some((g) => g.approval_status === "rejected") && (
-                <button
-                  onClick={() => setShowAddGuarantor((v) => !v)}
-                  className="text-sm rounded-lg border border-gray-300 px-3 py-1.5 text-gray-700 hover:bg-gray-50"
-                >
-                  + Add Guarantor
-                </button>
-              )}
+            {["applied", "guarantors_confirmed"].includes(loan.loan_status) && (
+              <button
+                onClick={() => setShowAddGuarantor((v) => !v)}
+                className="text-sm rounded-lg border border-gray-300 px-3 py-1.5 text-gray-700 hover:bg-gray-50"
+              >
+                + Add Guarantor
+              </button>
+            )}
           </div>
-          <div className="flex flex-col gap-2">
-            {loan.guarantees.map((g) => (
-              <div key={g.id} className="flex items-center justify-between text-sm border-b pb-2 last:border-0">
-                <span>{g.member?.full_name ?? "—"} ({g.member?.member_number ?? "—"})</span>
-                <span className="font-mono">{fmt(g.guaranteed_amount)}</span>
-                <span className={
-                  g.is_accepted
-                    ? "text-green-600 font-medium"
-                    : g.approval_status === "rejected"
-                      ? "text-red-500 font-medium"
-                      : "text-yellow-600"
-                }>
-                  {g.is_accepted ? "✓ Accepted" : g.approval_status === "rejected" ? "✕ Declined" : "⏱ Pending"}
-                </span>
-              </div>
-            ))}
-          </div>
+          {loan.guarantees.length > 0 ? (
+            <div className="flex flex-col gap-2">
+              {loan.guarantees.map((g) => (
+                <div key={g.id} className="flex flex-col gap-1 border-b pb-2 last:border-0">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>{g.member?.full_name ?? "—"} ({g.member?.member_number ?? "—"})</span>
+                    <span className="font-mono">{fmt(g.guaranteed_amount)}</span>
+                    <span className={
+                      g.is_accepted
+                        ? "text-green-600 font-medium"
+                        : g.approval_status === "rejected"
+                          ? "text-red-500 font-medium"
+                          : "text-yellow-600"
+                    }>
+                      {g.is_accepted ? "✓ Accepted" : g.approval_status === "rejected" ? "✕ Declined" : "⏱ Pending"}
+                    </span>
+                  </div>
+                  {g.member && !g.member.has_portal_account && (
+                    <p className="text-xs text-amber-600">
+                      No portal account — this member cannot see the guarantee request.{" "}
+                      <Link href={`/admin/members/${g.member.id}`} className="underline">
+                        Create portal account
+                      </Link>
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-400">No guarantors added yet.</p>
+          )}
 
           {showAddGuarantor && (
             <div className="mt-3 border-t border-gray-200 pt-3 dark:border-gray-700 flex flex-col gap-3">
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Add Replacement Guarantor</p>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Add Guarantor</p>
               <div className="flex flex-wrap gap-2 items-end">
                 <div className="flex-1 min-w-[200px]">
                   <SelectInput
@@ -277,6 +290,7 @@ export default function LoanDetailPage() {
                     value={guarantorMemberOptions.find((o) => o.value === guarantorMemberId) ?? null}
                     onChange={(opt) => setGuarantorMemberId((opt as { value: string } | null)?.value ?? "")}
                     onInputChange={(val) => setGuarantorSearch(val)}
+                    filterOption={() => true}
                     placeholder="Search member…"
                   />
                 </div>

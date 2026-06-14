@@ -18,7 +18,7 @@ class OrgResource extends JsonResource
             'email'         => $this->email,
             'phone'         => $this->phone,
             'website'       => $this->website,
-            'logo_url'       => $this->logo_path ? Storage::url($this->logo_path) : null,
+            'logo_url'       => $this->logo_path ? url(Storage::url($this->logo_path)) : null,
             'primary_color'  => $this->primary_color,
             'secondary_color' => $this->secondary_color,
             'address'        => $this->address,

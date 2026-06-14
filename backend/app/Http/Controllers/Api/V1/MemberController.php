@@ -156,6 +156,21 @@ class MemberController extends ApiController
         );
     }
 
+    public function createPortalAccount(Request $request, Member $member): JsonResponse
+    {
+        abort_unless($member->org_id === $request->user()->org_id, 404);
+        abort_if($member->approval_status !== 'approved', 422, 'Member must be approved before creating a portal account.');
+        abort_unless($member->email, 422, 'Member does not have an email address.');
+        abort_if($member->user_id, 422, 'Member already has a portal account.');
+
+        $this->memberService->createPortalAccount($member);
+
+        return $this->respond(
+            new MemberResource($member->fresh()->load('kins')),
+            'Portal account created. Temporary password: password'
+        );
+    }
+
     public function uploadPhoto(Request $request, Member $member): JsonResponse
     {
         abort_unless($member->org_id === $request->user()->org_id, 404);

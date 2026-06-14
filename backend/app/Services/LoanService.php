@@ -351,6 +351,17 @@ class LoanService
             'Guarantors can only be added to applied or guarantors_confirmed loans.'
         );
 
+        $guarantorMember = \App\Models\Member::where('id', $data['member_id'])
+            ->where('org_id', $orgId)
+            ->first();
+
+        abort_unless($guarantorMember, 422, 'Guarantor member not found.');
+        abort_unless(
+            $guarantorMember->user_id,
+            422,
+            'This member does not have a portal account. Create a portal account for them first before nominating them as a guarantor.'
+        );
+
         $guarantee = LoanGuarantee::create([
             'org_id'            => $orgId,
             'loan_id'           => $loan->id,
@@ -465,7 +476,8 @@ class LoanService
     private function currentPeriodId(string $orgId): ?string
     {
         return Period::where('org_id', $orgId)
-            ->where('status', 'open')
+            ->where('is_opened', true)
+            ->where('is_closed', false)
             ->orderByDesc('start_date')
             ->value('id');
     }

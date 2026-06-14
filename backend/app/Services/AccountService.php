@@ -69,7 +69,8 @@ class AccountService
     private function currentPeriodId(string $orgId): ?string
     {
         return Period::where('org_id', $orgId)
-            ->where('status', 'open')
+            ->where('is_opened', true)
+            ->where('is_closed', false)
             ->orderByDesc('start_date')
             ->value('id');
     }

@@ -57,8 +57,10 @@ function GuarantorPickerRow({ onAdd }: { onAdd: (row: GuarantorRow) => void }) {
         <SelectInput
           options={options}
           value={selected}
+          inputValue={q}
           onChange={(opt) => setSelected(opt as { value: string; label: string } | null)}
           onInputChange={(val) => setQ(val)}
+          filterOption={() => true}
           placeholder="Search member by name or number…"
         />
       </div>
@@ -207,8 +209,10 @@ function ReplacementGuarantorRow({ loanId }: { loanId: string }) {
         <SelectInput
           options={options}
           value={selected}
+          inputValue={q}
           onChange={(opt) => setSelected(opt as { value: string; label: string } | null)}
           onInputChange={(val) => setQ(val)}
+          filterOption={() => true}
           placeholder="Search replacement guarantor…"
         />
       </div>

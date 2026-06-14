@@ -41,13 +41,26 @@ class NotificationService
 
     // ── Member notifications ───────────────────────────────────────────
 
-    public function memberApproved(Member $member): void
+    public function memberApproved(Member $member, ?string $tempPassword = null): void
     {
-        $name = $member->full_name;
-        $num  = $member->member_number;
+        $name      = $member->full_name;
+        $num       = $member->member_number;
+        $portalUrl = rtrim(config('app.frontend_url', env('FRONTEND_URL', 'http://localhost:3000')), '/') . '/login';
+
+        $credBlock = '';
+        if ($tempPassword && $member->email) {
+            $credBlock = "<p>Your member portal login credentials are:</p>
+                         <ul>
+                           <li><strong>Email:</strong> {$member->email}</li>
+                           <li><strong>Temporary Password:</strong> <code>{$tempPassword}</code></li>
+                         </ul>
+                         <p>Please <a href=\"{$portalUrl}\">log in</a> and change your password immediately.</p>";
+        }
+
         $body = "<p>Dear {$name},</p>
                  <p>Congratulations! Your membership application has been approved.</p>
                  <p>Your member number is: <strong>{$num}</strong></p>
+                 {$credBlock}
                  <p>You can now access SACCO services through the member portal.</p>";
 
         $sms = "Dear {$name}, your membership application has been approved. Member No: {$num}. Welcome to " . config('app.name', 'SLAMS SACCO') . "!";

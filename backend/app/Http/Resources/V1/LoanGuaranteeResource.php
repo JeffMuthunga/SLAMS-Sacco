@@ -16,6 +16,7 @@ class LoanGuaranteeResource extends JsonResource
                 'id'            => $this->member->id,
                 'full_name'     => $this->member->full_name,
                 'member_number' => $this->member->member_number,
+                'has_portal_account' => (bool) $this->member->user_id,
             ]),
             'guaranteed_amount'=> $this->guaranteed_amount,
             'is_accepted'      => $this->is_accepted,

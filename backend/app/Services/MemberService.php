@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class MemberService
@@ -119,7 +120,34 @@ class MemberService
             'performed_by'    => $by->id,
         ]);
 
-        $this->notifications->memberApproved($member);
+        $tempPassword = $this->createPortalAccount($member);
+
+        $this->notifications->memberApproved($member, $tempPassword);
+    }
+
+    public function createPortalAccount(Member $member): ?string
+    {
+        if (! $member->email || $member->user_id) {
+            return null;
+        }
+
+        $tempPassword = 'password';
+        $user = User::firstOrCreate(
+            ['email' => $member->email],
+            [
+                'name'     => $member->full_name,
+                'org_id'   => $member->org_id,
+                'password' => Hash::make($tempPassword),
+            ]
+        );
+
+        if (! $user->hasRole('member')) {
+            $user->assignRole('member');
+        }
+
+        $member->update(['user_id' => $user->id]);
+
+        return $tempPassword;
     }
 
     public function reject(Member $member, string $reason, User $by): void
