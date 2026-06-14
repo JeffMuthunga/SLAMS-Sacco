@@ -30,6 +30,8 @@ use App\Http\Resources\V1\CommodityRequestResource;
 use App\Http\Resources\V1\CommodityResource;
 use App\Http\Resources\V1\MemberShareResource;
 use App\Models\MemberShare;
+use App\Models\DividendEntry;
+use App\Http\Resources\V1\DividendEntryResource;
 use App\Services\CommodityService;
 use App\Services\IssueService;
 use App\Services\LoanService;
@@ -531,6 +533,19 @@ class MemberPortalController extends ApiController
         );
 
         return $this->respondCreated(new CommodityRequestResource($req), 'Commodity request submitted.');
+    }
+
+    public function dividends(Request $request): JsonResponse
+    {
+        $member = $this->resolveMember($request);
+
+        $entries = DividendEntry::where('org_id', $request->user()->org_id)
+            ->where('member_id', $member->id)
+            ->with('dividendRun.fiscalYear')
+            ->latest()
+            ->get();
+
+        return $this->respond(DividendEntryResource::collection($entries));
     }
 
     public function shares(Request $request): JsonResponse

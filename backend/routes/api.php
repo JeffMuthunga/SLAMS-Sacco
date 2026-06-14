@@ -144,6 +144,16 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('commodity-requests', CommodityRequestController::class)->only(['index', 'show', 'store']);
     });
 
+    // Dividend runs (manage_dividends)
+    Route::middleware(['auth:sanctum', 'permission:manage_dividends'])->prefix('dividend-runs')->group(function () {
+        Route::get('/',              [\App\Http\Controllers\Api\V1\DividendController::class, 'index']);
+        Route::post('/',             [\App\Http\Controllers\Api\V1\DividendController::class, 'store']);
+        Route::get('/{id}',          [\App\Http\Controllers\Api\V1\DividendController::class, 'show']);
+        Route::post('/{id}/approve', [\App\Http\Controllers\Api\V1\DividendController::class, 'approve']);
+        Route::post('/{id}/post',    [\App\Http\Controllers\Api\V1\DividendController::class, 'post']);
+        Route::delete('/{id}',       [\App\Http\Controllers\Api\V1\DividendController::class, 'destroy']);
+    });
+
     // Share Products (configurations, manage_shares)
     Route::middleware(['auth:sanctum', 'permission:manage_shares'])->prefix('configurations')->group(function () {
         Route::apiResource('share-products', \App\Http\Controllers\Api\V1\Configurations\ShareProductController::class);
@@ -203,5 +213,6 @@ Route::prefix('v1')->group(function () {
         Route::post('commodity-requests',      [MemberPortalController::class, 'createCommodityRequest']);
         Route::get('commodities',              [MemberPortalController::class, 'availableCommodities']);
         Route::get('shares',                   [MemberPortalController::class, 'shares']);
+        Route::get('dividends',                [MemberPortalController::class, 'dividends']);
     });
 });
