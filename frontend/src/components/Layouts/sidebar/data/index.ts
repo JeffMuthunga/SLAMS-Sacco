@@ -78,6 +78,7 @@ export const ADMIN_NAV_DATA: NavSection[] = [
         items: [
           { title: "Deposit Accounts", url: "/admin/accounts" },
           { title: "Contributions", url: "/admin/contributions" },
+          { title: "Member Shares", url: "/admin/shares" },
         ],
       },
       {
