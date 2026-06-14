@@ -260,3 +260,20 @@ export function useRecordRepayment() {
     },
   });
 }
+
+export function useAddLoanGuarantor(loanId: string) {
+  const qc = useQueryClient();
+  return useMutation<
+    { id: string; member: { id: string; full_name: string; member_number: string } | null; guaranteed_amount: string; is_accepted: boolean; is_active: boolean; approval_status: string },
+    Error,
+    { member_id: string; guaranteed_amount: string }
+  >({
+    mutationFn: async (payload) => {
+      const { data } = await api.post(`/loans/${loanId}/guarantors`, payload);
+      return data.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [...LOANS_KEY, loanId] });
+    },
+  });
+}

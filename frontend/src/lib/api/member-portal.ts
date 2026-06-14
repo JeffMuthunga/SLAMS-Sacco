@@ -59,6 +59,12 @@ export interface AccountsStatementResponse {
   meta: ApiMeta;
 }
 
+export interface MemberSearchResult {
+  id: string;
+  full_name: string;
+  member_number: string;
+}
+
 // ── Query keys ──────────────────────────────────────────────────────────
 
 export const ME_DASHBOARD_KEY  = ["me", "dashboard"]  as const;
@@ -69,6 +75,7 @@ export const ME_CONTRIBUTIONS_KEY = ["me", "contributions"] as const;
 export const ME_GUARANTEES_KEY = ["me", "guarantees"] as const;
 export const ME_ISSUES_KEY     = ["me", "issues"]     as const;
 export const ME_TRANSACTIONS_KEY = ["me", "transactions"] as const;
+export const ME_MEMBER_SEARCH_KEY = ["me", "members", "search"] as const;
 
 // ── Dashboard ────────────────────────────────────────────────────────────
 
@@ -255,6 +262,80 @@ export function useMemberTransactions(params?: {
       const { data } = await api.get<ApiEnvelope<AccountTransaction[]>>("/me/transactions", { params });
       return { data: data.data, meta: data.meta! };
     },
+    staleTime: 30_000,
+  });
+}
+
+// ── Loan application ──────────────────────────────────────────────────────
+
+export interface ApplyLoanPayload {
+  loan_product_id: string;
+  principal_amount: string;
+  repayment_period: number;
+  disburse_account_id?: string;
+  guarantors?: Array<{ member_id: string; guaranteed_amount: string }>;
+}
+
+export function useApplyLoan() {
+  const qc = useQueryClient();
+  return useMutation<Loan, Error, ApplyLoanPayload>({
+    mutationFn: async (payload) => {
+      const { data } = await api.post<ApiEnvelope<Loan>>("/me/loans", payload);
+      return data.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ME_LOANS_KEY });
+    },
+  });
+}
+
+export function useAddMemberLoanGuarantor(loanId: string) {
+  const qc = useQueryClient();
+  return useMutation<unknown, Error, { member_id: string; guaranteed_amount: string }>({
+    mutationFn: async (payload) => {
+      const { data } = await api.post(`/me/loans/${loanId}/guarantors`, payload);
+      return data.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ME_LOANS_KEY });
+    },
+  });
+}
+
+export function useAcceptGuarantee() {
+  const qc = useQueryClient();
+  return useMutation<unknown, Error, string>({
+    mutationFn: async (guaranteeId) => {
+      const { data } = await api.post(`/me/guarantees/${guaranteeId}/accept`);
+      return data.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ME_GUARANTEES_KEY });
+    },
+  });
+}
+
+export function useDeclineGuarantee() {
+  const qc = useQueryClient();
+  return useMutation<unknown, Error, { guaranteeId: string; reason?: string }>({
+    mutationFn: async ({ guaranteeId, reason }) => {
+      const { data } = await api.post(`/me/guarantees/${guaranteeId}/decline`, { reason });
+      return data.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ME_GUARANTEES_KEY });
+    },
+  });
+}
+
+export function useMemberSearch(q: string) {
+  return useQuery<MemberSearchResult[]>({
+    queryKey: [...ME_MEMBER_SEARCH_KEY, q],
+    queryFn: async () => {
+      const { data } = await api.get<ApiEnvelope<MemberSearchResult[]>>("/me/members/search", { params: { q } });
+      return data.data;
+    },
+    enabled: q.length >= 2,
     staleTime: 30_000,
   });
 }
