@@ -79,6 +79,7 @@ export const ADMIN_NAV_DATA: NavSection[] = [
           { title: "Deposit Accounts", url: "/admin/accounts" },
           { title: "Contributions", url: "/admin/contributions" },
           { title: "Member Shares", url: "/admin/shares" },
+          { title: "Dividends", url: "/admin/dividends" },
         ],
       },
       {
@@ -169,6 +170,7 @@ export const MEMBER_NAV_DATA: NavSection[] = [
         items: [
           { title: "Transactions A/C", url: "/member/account-statement/transactions" },
           { title: "Contributions", url: "/member/account-statement/contributions" },
+          { title: "Dividends", url: "/member/account-statement/dividends" },
         ],
       },
       {
