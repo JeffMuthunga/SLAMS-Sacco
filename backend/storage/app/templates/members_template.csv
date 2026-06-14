@@ -1,0 +1,2 @@
+full_name,id_number,id_type,email,phone,phone2,gender,date_of_birth,entry_date,employed,employer_name,monthly_salary,address,town
+John Doe,BWA000001,national_id,john@example.com,+26771000001,,M,1990-01-15,2024-01-01,false,,,Gaborone,Gaborone

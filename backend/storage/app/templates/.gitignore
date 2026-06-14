@@ -1,0 +1,3 @@
+# Allow templates directory and all CSV files to be tracked
+!.gitignore
+!*.csv
