@@ -64,7 +64,7 @@ function GuarantorPickerRow({ onAdd }: { onAdd: (row: GuarantorRow) => void }) {
         />
       </div>
       <div className="w-36">
-        <NumberInput value={amount} onChange={(v) => setAmount(v)} placeholder="Amount" />
+        <NumberInput value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Amount" />
       </div>
       <Button type="button" size="sm" variant="outline" onClick={handleAdd}>
         + Add
@@ -139,13 +139,13 @@ function ApplyLoanForm({ onClose }: { onClose: () => void }) {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Amount (KES) <span className="text-red-500">*</span>
             </label>
-            <NumberInput value={amount} onChange={setAmount} placeholder="e.g. 50000" />
+            <NumberInput value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="e.g. 50000" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Repayment Period (months) <span className="text-red-500">*</span>
             </label>
-            <NumberInput value={period} onChange={setPeriod} placeholder="e.g. 12" />
+            <NumberInput value={period} onChange={(e) => setPeriod(e.target.value)} placeholder="e.g. 12" />
           </div>
         </div>
 
@@ -214,7 +214,7 @@ function ReplacementGuarantorRow({ loanId }: { loanId: string }) {
         />
       </div>
       <div className="w-36">
-        <NumberInput value={amount} onChange={setAmount} placeholder="Amount" />
+        <NumberInput value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Amount" />
       </div>
       <Button type="button" size="sm" onClick={handleAdd} disabled={addGuarantor.isPending}>
         {addGuarantor.isPending ? "Adding…" : "Add"}

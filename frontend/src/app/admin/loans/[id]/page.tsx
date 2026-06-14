@@ -283,7 +283,7 @@ export default function LoanDetailPage() {
                 <div className="w-36">
                   <NumberInput
                     value={guarantorAmount}
-                    onChange={(v) => setGuarantorAmount(v)}
+                    onChange={(e) => setGuarantorAmount(e.target.value)}
                     placeholder="Amount"
                   />
                 </div>

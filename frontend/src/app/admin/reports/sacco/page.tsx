@@ -146,7 +146,8 @@ function LoansReport() {
   const { data: products = [] } = useLoanProducts();
 
   const STATUS_LABELS: Record<LoanStatus, string> = {
-    draft:"Draft",applied:"Applied",approved:"Approved",rejected:"Rejected",
+    draft:"Draft",applied:"Applied",guarantors_confirmed:"Guarantors Confirmed",
+    approved:"Approved",rejected:"Rejected",
     disbursed:"Disbursed",active:"Active",repaid:"Repaid",defaulted:"Defaulted",
   };
 
