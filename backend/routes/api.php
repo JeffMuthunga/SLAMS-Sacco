@@ -64,6 +64,7 @@ Route::prefix('v1')->group(function () {
         Route::post('loans/{loan}/disburse',     [LoanController::class, 'disburse']);
         Route::post('loans/{loan}/default',      [LoanController::class, 'markDefaulted']);
         Route::post('loans/{loan}/notes',        [LoanController::class, 'addNote']);
+        Route::post('loans/{loan}/guarantors',   [LoanController::class, 'addGuarantor']);
         Route::post('loans/{loan}/repayments/{repayment}/pay', [LoanRepaymentController::class, 'store']);
         Route::get('loans/{loan}/repayments',    [LoanRepaymentController::class, 'index']);
         Route::get('loan-repayments',            [LoanRepaymentController::class, 'index']);
@@ -159,6 +160,11 @@ Route::prefix('v1')->group(function () {
         Route::get('accounts/{accountId}/statement', [MemberPortalController::class, 'accountStatement']);
         Route::get('loans',          [MemberPortalController::class, 'loans']);
         Route::get('loans/{loanId}', [MemberPortalController::class, 'loanDetail']);
+        Route::post('loans',                                  [MemberPortalController::class, 'applyLoan']);
+        Route::post('loans/{loanId}/guarantors',              [MemberPortalController::class, 'addLoanGuarantor']);
+        Route::post('guarantees/{guaranteeId}/accept',        [MemberPortalController::class, 'acceptGuarantee']);
+        Route::post('guarantees/{guaranteeId}/decline',       [MemberPortalController::class, 'declineGuarantee']);
+        Route::get('members/search',                          [MemberPortalController::class, 'memberSearch']);
         Route::get('contributions',  [MemberPortalController::class, 'contributions']);
         Route::get('guarantees',     [MemberPortalController::class, 'guarantees']);
         Route::get('issues',         [MemberPortalController::class, 'issues']);
