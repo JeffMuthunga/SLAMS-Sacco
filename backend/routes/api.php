@@ -112,6 +112,17 @@ Route::prefix('v1')->group(function () {
 
         Route::apiResource('commodity-types', \App\Http\Controllers\Api\V1\Configurations\CommodityTypeController::class)->except(['show']);
         Route::apiResource('commodities',     \App\Http\Controllers\Api\V1\Configurations\CommodityController::class)->except(['show']);
+
+        // Roles
+        Route::get('roles',                  [\App\Http\Controllers\Api\V1\RoleController::class, 'index']);
+        Route::post('roles',                 [\App\Http\Controllers\Api\V1\RoleController::class, 'store']);
+        Route::put('roles/{id}/permissions', [\App\Http\Controllers\Api\V1\RoleController::class, 'updatePermissions']);
+        Route::delete('roles/{id}',          [\App\Http\Controllers\Api\V1\RoleController::class, 'destroy']);
+
+        // Admin users
+        Route::get('admin-users',            [\App\Http\Controllers\Api\V1\AdminUserController::class, 'index']);
+        Route::post('admin-users',           [\App\Http\Controllers\Api\V1\AdminUserController::class, 'store']);
+        Route::put('admin-users/{id}/role',  [\App\Http\Controllers\Api\V1\AdminUserController::class, 'updateRole']);
     });
 
     Route::middleware(['auth:sanctum', 'permission:manage_journals'])->group(function () {
