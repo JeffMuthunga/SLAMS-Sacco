@@ -145,6 +145,35 @@ class LoanController extends ApiController
         );
     }
 
+    public function addGuarantor(Request $request, Loan $loan): JsonResponse
+    {
+        abort_unless($loan->org_id === $request->user()->org_id, 404);
+
+        $request->validate([
+            'member_id'         => ['required', 'uuid', 'exists:members,id'],
+            'guaranteed_amount' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        $guarantee = $this->loanService->addGuarantor(
+            $loan,
+            $request->only('member_id', 'guaranteed_amount'),
+            $request->user()->org_id
+        );
+
+        return $this->respondCreated([
+            'id'               => $guarantee->id,
+            'member'           => $guarantee->member ? [
+                'id'            => $guarantee->member->id,
+                'full_name'     => $guarantee->member->full_name,
+                'member_number' => $guarantee->member->member_number,
+            ] : null,
+            'guaranteed_amount' => $guarantee->guaranteed_amount,
+            'is_accepted'       => $guarantee->is_accepted,
+            'is_active'         => $guarantee->is_active,
+            'approval_status'   => $guarantee->approval_status,
+        ], 'Guarantor added.');
+    }
+
     public function destroy(Request $request, Loan $loan): JsonResponse
     {
         abort_unless($loan->org_id === $request->user()->org_id, 404);
