@@ -109,6 +109,16 @@ class LoanService
 
     public function approve(Loan $loan, $user): void
     {
+        $product = $loan->loanProduct ?? $loan->load('loanProduct')->loanProduct;
+        if ($product && $product->requires_guarantor) {
+            $allAccepted = $loan->guarantees()
+                ->where('is_active', true)
+                ->where('is_accepted', false)
+                ->doesntExist();
+            $hasAny = $loan->guarantees()->where('is_active', true)->exists();
+            abort_if(!$allAccepted || !$hasAny, 422, 'All guarantors must confirm before this loan can be approved.');
+        }
+
         $loan->update([
             'loan_status'     => 'approved',
             'approval_status' => 'approved',
@@ -313,6 +323,50 @@ class LoanService
             'note'       => $note,
             'created_by' => $user->id,
         ]);
+    }
+
+    public function checkAndConfirmGuarantors(Loan $loan): void
+    {
+        $product = $loan->loanProduct ?? $loan->load('loanProduct')->loanProduct;
+        if (!$product || !$product->requires_guarantor) {
+            return;
+        }
+
+        $hasActive = $loan->guarantees()->where('is_active', true)->exists();
+        $allAccepted = $loan->guarantees()
+            ->where('is_active', true)
+            ->where('is_accepted', false)
+            ->doesntExist();
+
+        if ($hasActive && $allAccepted) {
+            $loan->update(['loan_status' => 'guarantors_confirmed']);
+        }
+    }
+
+    public function addGuarantor(Loan $loan, array $data, string $orgId): LoanGuarantee
+    {
+        abort_unless(
+            in_array($loan->loan_status, ['applied', 'guarantors_confirmed'], true),
+            422,
+            'Guarantors can only be added to applied or guarantors_confirmed loans.'
+        );
+
+        $guarantee = LoanGuarantee::create([
+            'org_id'            => $orgId,
+            'loan_id'           => $loan->id,
+            'member_id'         => $data['member_id'],
+            'guaranteed_amount' => $data['guaranteed_amount'],
+            'approval_status'   => 'pending',
+            'is_accepted'       => false,
+            'is_active'         => true,
+        ]);
+
+        // A new unconfirmed guarantor resets back to applied
+        if ($loan->loan_status === 'guarantors_confirmed') {
+            $loan->update(['loan_status' => 'applied']);
+        }
+
+        return $guarantee->load('member');
     }
 
     // ── Private helpers ─────────────────────────────────────────────────
