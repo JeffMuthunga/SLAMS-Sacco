@@ -11,8 +11,11 @@ use App\Http\Resources\V1\IssueResource;
 use App\Http\Resources\V1\PettyCashAllocationResource;
 use App\Http\Resources\V1\PettyCashRequestResource;
 use App\Http\Requests\Api\V1\Issue\StoreIssueRequest;
+use App\Http\Requests\Api\V1\MemberPortal\ApplyLoanRequest;
 use App\Models\DepositAccount;
+use App\Models\Loan;
 use App\Models\LoanGuarantee;
+use App\Models\Member;
 use App\Models\AccountTransaction;
 use App\Models\Contribution;
 use App\Models\Issue;
@@ -20,12 +23,16 @@ use App\Models\IssueComment;
 use App\Models\PettyCashAllocation;
 use App\Models\PettyCashRequest;
 use App\Services\IssueService;
+use App\Services\LoanService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class MemberPortalController extends ApiController
 {
-    public function __construct(private IssueService $issueService) {}
+    public function __construct(
+        private IssueService $issueService,
+        private LoanService $loanService,
+    ) {}
 
     private function resolveMember(Request $request): \App\Models\Member
     {
@@ -314,5 +321,126 @@ class MemberPortalController extends ApiController
         return $this->respond(
             AccountTransactionResource::collection($transactions)->response()->getData(true)
         );
+    }
+
+    public function applyLoan(ApplyLoanRequest $request): JsonResponse
+    {
+        $member  = $this->resolveMember($request);
+        $data    = $request->validated();
+        $data['member_id'] = $member->id;
+
+        $loan = $this->loanService->store($data, $request->user()->org_id, $request->user());
+
+        return $this->respondCreated(new LoanResource($loan), 'Loan application submitted.');
+    }
+
+    public function addLoanGuarantor(Request $request, string $loanId): JsonResponse
+    {
+        $member = $this->resolveMember($request);
+        $loan   = Loan::where('id', $loanId)
+            ->where('member_id', $member->id)
+            ->where('org_id', $request->user()->org_id)
+            ->firstOrFail();
+
+        $request->validate([
+            'member_id'         => ['required', 'uuid', 'exists:members,id'],
+            'guaranteed_amount' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        $guarantee = $this->loanService->addGuarantor($loan, $request->only('member_id', 'guaranteed_amount'), $request->user()->org_id);
+
+        return $this->respondCreated([
+            'id'               => $guarantee->id,
+            'member'           => $guarantee->member ? [
+                'id'            => $guarantee->member->id,
+                'full_name'     => $guarantee->member->full_name,
+                'member_number' => $guarantee->member->member_number,
+            ] : null,
+            'guaranteed_amount' => $guarantee->guaranteed_amount,
+            'is_accepted'       => $guarantee->is_accepted,
+            'is_active'         => $guarantee->is_active,
+            'approval_status'   => $guarantee->approval_status,
+        ], 'Guarantor added.');
+    }
+
+    public function acceptGuarantee(Request $request, string $guaranteeId): JsonResponse
+    {
+        $member    = $this->resolveMember($request);
+        $guarantee = LoanGuarantee::where('id', $guaranteeId)
+            ->where('member_id', $member->id)
+            ->firstOrFail();
+
+        abort_if(!$guarantee->is_active,   422, 'This guarantee is no longer active.');
+        abort_if($guarantee->is_accepted,  422, 'This guarantee has already been accepted.');
+
+        $guarantee->update([
+            'is_accepted'     => true,
+            'accepted_at'     => now(),
+            'approval_status' => 'approved',
+        ]);
+
+        $this->loanService->checkAndConfirmGuarantors($guarantee->loan);
+
+        return $this->respond([
+            'id'             => $guarantee->id,
+            'is_accepted'    => true,
+            'accepted_at'    => $guarantee->fresh()->accepted_at,
+            'approval_status'=> 'approved',
+        ], 'Guarantee accepted.');
+    }
+
+    public function declineGuarantee(Request $request, string $guaranteeId): JsonResponse
+    {
+        $member    = $this->resolveMember($request);
+        $guarantee = LoanGuarantee::where('id', $guaranteeId)
+            ->where('member_id', $member->id)
+            ->firstOrFail();
+
+        abort_if(!$guarantee->is_active,  422, 'This guarantee is no longer active.');
+        abort_if($guarantee->is_accepted, 422, 'This guarantee has already been accepted.');
+
+        $request->validate(['reason' => ['nullable', 'string', 'max:500']]);
+
+        $guarantee->update([
+            'is_active'       => false,
+            'approval_status' => 'rejected',
+        ]);
+
+        $loan = $guarantee->loan;
+        if ($loan && $loan->loan_status === 'guarantors_confirmed') {
+            $loan->update(['loan_status' => 'applied']);
+        }
+
+        return $this->respond([
+            'id'             => $guarantee->id,
+            'is_active'      => false,
+            'approval_status'=> 'rejected',
+        ], 'Guarantee declined.');
+    }
+
+    public function memberSearch(Request $request): JsonResponse
+    {
+        $request->validate(['q' => ['required', 'string', 'min:2', 'max:100']]);
+        $member  = $this->resolveMember($request);
+        $orgId   = $request->user()->org_id;
+        $q       = strtolower($request->input('q'));
+
+        $members = Member::where('org_id', $orgId)
+            ->where('id', '!=', $member->id)
+            ->where('approval_status', 'approved')
+            ->where('is_active', true)
+            ->where(function ($query) use ($q) {
+                $query->whereRaw('LOWER(full_name) LIKE ?', ["%{$q}%"])
+                      ->orWhereRaw('LOWER(member_number) LIKE ?', ["%{$q}%"]);
+            })
+            ->select('id', 'full_name', 'member_number')
+            ->limit(20)
+            ->get();
+
+        return $this->respond($members->map(fn($m) => [
+            'id'            => $m->id,
+            'full_name'     => $m->full_name,
+            'member_number' => $m->member_number,
+        ]));
     }
 }
