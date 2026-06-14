@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import type { ApiEnvelope, ApiMeta } from "@/lib/api";
 
-export type ExitType = "voluntary" | "death" | "expulsion" | "transfer";
+export type ExitType = "voluntary" | "death" | "expulsion" | "transfer" | "medical";
 export type ExitStatus = "pending" | "approved" | "rejected";
 
 export interface MemberExitMember {

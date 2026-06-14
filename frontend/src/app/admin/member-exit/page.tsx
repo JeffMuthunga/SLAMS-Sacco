@@ -24,6 +24,7 @@ import {
   type CreateMemberExitPayload,
 } from "@/lib/api/member-exit";
 import { useMembers } from "@/lib/api/members";
+import { extractApiError } from "@/lib/api";
 
 type Tab = "pending" | "approved" | "rejected";
 
@@ -38,6 +39,7 @@ const EXIT_TYPE_OPTIONS = [
   { value: "death", label: "Death" },
   { value: "expulsion", label: "Expulsion" },
   { value: "transfer", label: "Transfer" },
+  { value: "medical", label: "Medical Boarding" },
 ];
 
 const STATUS_COLOURS: Record<ExitStatus, string> = {
@@ -108,7 +110,7 @@ function CreateExitDialog({
           });
         },
         onError: (err: Error) =>
-          toast.error(err.message ?? "Failed to create exit request."),
+          toast.error(extractApiError(err)),
       }
     );
   }
@@ -233,7 +235,7 @@ function RejectDialog({
           setReason("");
         },
         onError: (err: Error) =>
-          toast.error(err.message ?? "Failed to reject."),
+          toast.error(extractApiError(err)),
       }
     );
   }
@@ -289,7 +291,7 @@ export default function MemberExitPage() {
       onSuccess: () =>
         toast.success("Exit request approved. Member deactivated."),
       onError: (err: Error) =>
-        toast.error(err.message ?? "Failed to approve."),
+        toast.error(extractApiError(err)),
     });
   }
 

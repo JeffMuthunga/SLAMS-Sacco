@@ -12,7 +12,7 @@ class StoreMemberExitRequest extends FormRequest
     {
         return [
             'member_id' => ['required', 'uuid', 'exists:members,id'],
-            'exit_type' => ['required', 'in:voluntary,death,expulsion,transfer'],
+            'exit_type' => ['required', 'in:voluntary,death,expulsion,transfer,medical'],
             'reason'    => ['nullable', 'string', 'max:2000'],
             'exit_date' => ['required', 'date'],
             'notes'     => ['nullable', 'string', 'max:2000'],
