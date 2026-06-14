@@ -43,6 +43,8 @@ export const ADMIN_NAV_DATA: NavSection[] = [
           { title: "Issue Categories", url: "/admin/configurations/issue-categories" },
           { title: "Commodity Types", url: "/admin/configurations/commodity-types" },
           { title: "Commodities", url: "/admin/configurations/commodities" },
+          { title: "Roles & Permissions", url: "/admin/configurations/roles" },
+          { title: "Admin Users",         url: "/admin/configurations/admin-users" },
         ],
       },
     ],
