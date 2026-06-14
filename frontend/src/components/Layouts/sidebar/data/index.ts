@@ -98,6 +98,7 @@ export const ADMIN_NAV_DATA: NavSection[] = [
         icon: Icons.Alphabet,
         items: [
           { title: "Member Exit", url: "/admin/member-exit" },
+          { title: "Import Data", url: "/admin/import" },
           { title: "Profile Settings", url: "/admin/profile" },
         ],
       },
