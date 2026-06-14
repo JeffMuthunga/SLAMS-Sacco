@@ -17,21 +17,24 @@ class SavingProduct extends Model
         'min_opening_balance', 'min_balance', 'max_balance',
         'min_deposit', 'max_deposit', 'min_withdrawal', 'max_withdrawal',
         'lock_in_months', 'withdrawal_frequency', 'is_active',
+        'is_mandatory', 'block_withdrawal_on_active_loan',
     ];
 
     protected function casts(): array
     {
         return [
-            'interest_rate' => 'decimal:4',
-            'min_opening_balance' => 'decimal:2',
-            'min_balance' => 'decimal:2',
-            'max_balance' => 'decimal:2',
-            'min_deposit' => 'decimal:2',
-            'max_deposit' => 'decimal:2',
-            'min_withdrawal' => 'decimal:2',
-            'max_withdrawal' => 'decimal:2',
-            'lock_in_months' => 'integer',
-            'is_active' => 'boolean',
+            'interest_rate'                   => 'decimal:4',
+            'min_opening_balance'             => 'decimal:2',
+            'min_balance'                     => 'decimal:2',
+            'max_balance'                     => 'decimal:2',
+            'min_deposit'                     => 'decimal:2',
+            'max_deposit'                     => 'decimal:2',
+            'min_withdrawal'                  => 'decimal:2',
+            'max_withdrawal'                  => 'decimal:2',
+            'lock_in_months'                  => 'integer',
+            'is_active'                       => 'boolean',
+            'is_mandatory'                    => 'boolean',
+            'block_withdrawal_on_active_loan' => 'boolean',
         ];
     }
 

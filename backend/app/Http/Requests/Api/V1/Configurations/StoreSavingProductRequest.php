@@ -27,6 +27,8 @@ class StoreSavingProductRequest extends FormRequest
             'lock_in_months'       => ['sometimes', 'integer', 'min:0'],
             'withdrawal_frequency' => ['sometimes', 'in:any,daily,weekly,monthly'],
             'is_active'            => ['sometimes', 'boolean'],
+            'is_mandatory'                    => ['sometimes', 'boolean'],
+            'block_withdrawal_on_active_loan' => ['sometimes', 'boolean'],
         ];
     }
 }
