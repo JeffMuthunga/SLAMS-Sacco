@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\AdminDashboardController;
 use App\Http\Controllers\Api\V1\AccountTransactionController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\PasswordResetController;
 use App\Http\Controllers\Api\V1\ContributionController;
 use App\Http\Controllers\Api\V1\JournalController;
 use App\Http\Controllers\Api\V1\LoanController;
@@ -20,8 +21,10 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::middleware('throttle:5,1')->group(function () {
-            Route::post('login',    [AuthController::class, 'login']);
-            Route::post('register', [AuthController::class, 'register']);
+            Route::post('login',            [AuthController::class, 'login']);
+            Route::post('register',         [AuthController::class, 'register']);
+            Route::post('forgot-password',  [PasswordResetController::class, 'forgotPassword']);
+            Route::post('reset-password',   [PasswordResetController::class, 'resetPassword']);
         });
 
         Route::middleware('auth:sanctum')->group(function () {
@@ -90,6 +93,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('activity-types',   \App\Http\Controllers\Api\V1\Configurations\ActivityTypeController::class);
         Route::apiResource('banks',            \App\Http\Controllers\Api\V1\Configurations\BankController::class);
         Route::apiResource('departments',      \App\Http\Controllers\Api\V1\Configurations\DepartmentController::class);
+        Route::apiResource('eligible-employers', \App\Http\Controllers\Api\V1\Configurations\EligibleEmployerController::class);
 
         Route::get('sacco-settings', [\App\Http\Controllers\Api\V1\Configurations\SaccoSettingsController::class, 'show']);
         Route::put('sacco-settings', [\App\Http\Controllers\Api\V1\Configurations\SaccoSettingsController::class, 'update']);
