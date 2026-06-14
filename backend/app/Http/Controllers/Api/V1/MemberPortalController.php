@@ -126,7 +126,7 @@ class MemberPortalController extends ApiController
         $member = $this->resolveMember($request);
 
         $loans = $member->loans()
-            ->with(['loanProduct', 'member'])
+            ->with(['loanProduct', 'member', 'guarantees.member'])
             ->orderByDesc('created_at')
             ->paginate($request->integer('per_page', 20));
 
