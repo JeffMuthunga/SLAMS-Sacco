@@ -171,6 +171,12 @@ export const MEMBER_NAV_DATA: NavSection[] = [
           { title: "Contributions", url: "/member/account-statement/contributions" },
         ],
       },
+      {
+        title: "My Shares",
+        url: "/member/shares",
+        icon: Icons.Table,
+        items: [],
+      },
     ],
   },
 ];
