@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { toast } from "sonner";
+import { PayOnlineModal } from "@/components/PayOnlineModal";
 import { useMemberLoans, useMemberLoan, useApplyLoan, useAddMemberLoanGuarantor, useMemberSearch, useMemberLoanProducts, type ApplyLoanPayload } from "@/lib/api/member-portal";
 import { extractApiError } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -277,6 +278,7 @@ function LoanCard({ loan, selected, onClick }: { loan: Loan; selected: boolean; 
 
 function LoanDetail({ loanId }: { loanId: string }) {
   const { data: loan, isLoading, error } = useMemberLoan(loanId);
+  const [payModal, setPayModal] = useState<{ amount: string; dueDate: string } | null>(null);
 
   if (isLoading) return <p className="text-sm text-gray-500">Loading…</p>;
   if (error)     return <p className="text-sm text-red-500">{extractApiError(error)}</p>;
@@ -286,6 +288,13 @@ function LoanDetail({ loanId }: { loanId: string }) {
 
   return (
     <div className="flex flex-col gap-4">
+      {payModal && (
+        <PayOnlineModal
+          amount={payModal.amount}
+          description={`Loan repayment due ${payModal.dueDate}`}
+          onClose={() => setPayModal(null)}
+        />
+      )}
       <div className="flex items-center gap-3">
         <span className="font-mono text-sm text-gray-500">{loan.account_number}</span>
         <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${cfg.className}`}>{cfg.label}</span>
@@ -341,6 +350,7 @@ function LoanDetail({ loanId }: { loanId: string }) {
                   <th className="pb-2 text-right text-gray-500">Total Paid</th>
                   <th className="pb-2 text-right text-gray-500">Balance</th>
                   <th className="pb-2 text-left text-gray-500">Status</th>
+                  <th className="pb-2"></th>
                 </tr>
               </thead>
               <tbody>
@@ -357,6 +367,19 @@ function LoanDetail({ loanId }: { loanId: string }) {
                       <td className="py-1.5 text-right">BWP {Number(r.balance).toLocaleString("en-BW", { minimumFractionDigits: 2 })}</td>
                       <td className={`py-1.5 capitalize font-medium ${statusCfg[r.repayment_status] ?? ""}`}>
                         {r.repayment_status}
+                      </td>
+                      <td className="py-1.5 pl-2">
+                        {["pending", "partial", "overdue"].includes(r.repayment_status) && (
+                          <button
+                            onClick={() => setPayModal({
+                              amount: String(r.balance),
+                              dueDate: new Date(r.due_date).toLocaleDateString("en-BW"),
+                            })}
+                            className="rounded-md bg-primary px-2.5 py-1 text-[11px] font-medium text-white hover:bg-opacity-90 whitespace-nowrap"
+                          >
+                            Pay Online
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useMemberContributions } from "@/lib/api/member-portal";
 import { extractApiError } from "@/lib/api";
 import type { ContributionStatus } from "@/lib/api/contributions";
+import { PayOnlineModal } from "@/components/PayOnlineModal";
 
 const STATUS_CFG: Record<ContributionStatus, { label: string; className: string }> = {
   pending: { label: "Pending", className: "bg-gray-100 text-gray-600" },
@@ -14,6 +15,7 @@ const STATUS_CFG: Record<ContributionStatus, { label: string; className: string 
 
 export default function MemberContributionsPage() {
   const [status, setStatus] = useState("");
+  const [payModal, setPayModal] = useState<{ amount: string; period: string } | null>(null);
   const { data, isLoading, error } = useMemberContributions({ status: status || undefined, per_page: 100 });
 
   const contributions = data?.data ?? [];
@@ -23,6 +25,13 @@ export default function MemberContributionsPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      {payModal && (
+        <PayOnlineModal
+          amount={payModal.amount}
+          description={`Monthly contribution — ${payModal.period}`}
+          onClose={() => setPayModal(null)}
+        />
+      )}
       <h1 className="text-2xl font-semibold text-dark dark:text-white">My Contributions</h1>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -68,6 +77,7 @@ export default function MemberContributionsPage() {
                   <th className="px-4 py-3 text-right text-xs text-gray-500">Paid</th>
                   <th className="px-4 py-3 text-left text-xs text-gray-500">Status</th>
                   <th className="px-4 py-3 text-left text-xs text-gray-500">Paid Date</th>
+                  <th className="px-4 py-3"></th>
                 </tr>
               </thead>
               <tbody>
@@ -90,6 +100,19 @@ export default function MemberContributionsPage() {
                       </td>
                       <td className="px-4 py-3 text-gray-500">
                         {c.paid_date ? new Date(c.paid_date).toLocaleDateString("en-BW") : "—"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {(c.status === "pending" || c.status === "partial") && (
+                          <button
+                            onClick={() => setPayModal({
+                              amount: String(Number(c.expected_amount) - Number(c.paid_amount)),
+                              period: c.period?.name ?? "",
+                            })}
+                            className="rounded-lg bg-primary px-3 py-1 text-xs font-medium text-white hover:bg-opacity-90 whitespace-nowrap"
+                          >
+                            Pay Online
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );
