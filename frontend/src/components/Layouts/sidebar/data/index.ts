@@ -19,6 +19,20 @@ export interface NavSection {
 
 export const ADMIN_NAV_DATA: NavSection[] = [
   {
+    label: "ACCESS CONTROL",
+    items: [
+      {
+        title: "Access Control",
+        icon: Icons.Authentication,
+        items: [
+          { title: "Roles & Permissions", url: "/admin/access-control/roles" },
+          { title: "Admin Users",         url: "/admin/access-control/admin-users" },
+          { title: "Audit Logs",          url: "/admin/access-control/audit-logs" },
+        ],
+      },
+    ],
+  },
+  {
     label: "CONFIGURATIONS",
     items: [
       {
@@ -43,8 +57,6 @@ export const ADMIN_NAV_DATA: NavSection[] = [
           { title: "Issue Categories", url: "/admin/configurations/issue-categories" },
           { title: "Commodity Types", url: "/admin/configurations/commodity-types" },
           { title: "Commodities", url: "/admin/configurations/commodities" },
-          { title: "Roles & Permissions", url: "/admin/configurations/roles" },
-          { title: "Admin Users",         url: "/admin/configurations/admin-users" },
         ],
       },
     ],

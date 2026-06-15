@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useMemberIssues, useCreateMemberIssue, useAddMemberIssueComment } from "@/lib/api/member-portal";
-import { useIssueCategories } from "@/lib/api/issues";
+import { useMemberIssues, useCreateMemberIssue, useAddMemberIssueComment, usePortalIssueCategories } from "@/lib/api/member-portal";
 import { extractApiError, extractFieldErrors } from "@/lib/api";
 import { toast } from "sonner";
 import type { Issue, IssuePriority, IssueStatus } from "@/lib/api/issues";
@@ -108,7 +107,7 @@ export default function MemberIssuesPage() {
   const [formErrors, setFormErrors] = useState<Record<string, string[]> | null>(null);
 
   const { data, isLoading, error } = useMemberIssues({ status: status || undefined, per_page: 50 });
-  const { data: categories = [] }  = useIssueCategories();
+  const { data: categories = [] }  = usePortalIssueCategories();
   const createMutation = useCreateMemberIssue();
 
   const issues = data?.data ?? [];

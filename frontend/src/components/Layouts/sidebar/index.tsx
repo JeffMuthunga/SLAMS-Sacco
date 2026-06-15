@@ -74,7 +74,7 @@ export function Sidebar({ navData = NAV_DATA }: { navData?: NavSection[] }) {
             style={gradientStyle}
           >
             {logoUrl ? (
-              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-white/20">
+              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-white/20">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={logoUrl}
@@ -83,12 +83,14 @@ export function Sidebar({ navData = NAV_DATA }: { navData?: NavSection[] }) {
                 />
               </div>
             ) : (
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20">
-                <span className="text-lg font-bold text-white">S</span>
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/20">
+                <span className="text-2xl font-bold text-white">
+                  {(orgName ?? "S")[0]}
+                </span>
               </div>
             )}
             <div className="min-w-0">
-              <p className="truncate text-sm font-bold text-white leading-tight">
+              <p className="truncate text-base font-bold text-white leading-tight">
                 {orgName ?? "SLAMS SACCO"}
               </p>
               <p className="text-xs text-white/70">Management System</p>

@@ -12,11 +12,15 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | SLAMS SACCO",
-    default: "SLAMS SACCO Management System",
+    template: "%s | Jwaneng SACCOS",
+    default: "Jwaneng SACCOS — Member & Management Portal",
   },
   description:
-    "SACCO management system — members, loans, contributions, accounting, and reporting.",
+    "Jwaneng Savings and Credit Cooperative Society — member portal, loans, contributions, shares, dividends and reporting.",
+  icons: {
+    icon: "/images/favicon.ico",
+    shortcut: "/images/favicon.ico",
+  },
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {

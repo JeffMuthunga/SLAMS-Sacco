@@ -18,12 +18,12 @@ class DatabaseSeeder extends Seeder
         $org = Org::firstOrCreate(
             ['is_default' => true],
             [
-                'name'          => 'Jwaneng SACCOS',
-                'full_name'     => 'Jwaneng Savings and Credit Cooperative Society',
-                'suffix'        => 'SACCOS',
-                'email'         => 'info@jwanengSACCOS.co.bw',
-                'country_code'  => 'BWA',
-                'currency_code' => 'BWP',
+                'name'          => 'K2an',
+                'full_name'     => 'K2an Savings and Credit Cooperative',
+                'suffix'        => 'SACCO',
+                'email'         => 'info@k2an.co.ke',
+                'country_code'  => 'KEN',
+                'currency_code' => 'KES',
                 'is_active'     => true,
             ]
         );
@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call(RbacSeeder::class);
         $this->call(ConfigurationsSeeder::class);
+        $this->call(DemoDataSeeder::class);
 
         // Demo logins (password: "password")
         $admin = User::firstOrCreate(

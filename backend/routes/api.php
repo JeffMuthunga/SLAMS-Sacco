@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\LoanRepaymentController;
 use App\Http\Controllers\Api\V1\MemberController;
 use App\Http\Controllers\Api\V1\MemberExitController;
 use App\Http\Controllers\Api\V1\MemberPortalController;
+use App\Http\Controllers\Api\V1\AuditLogController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\IssueController;
 use App\Http\Controllers\Api\V1\PettyCashAllocationController;
@@ -88,6 +89,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('currencies', \App\Http\Controllers\Api\V1\Configurations\CurrencyController::class)->except(['show']);
 
         Route::post('fiscal-years/{fiscal_year}/close', [\App\Http\Controllers\Api\V1\Configurations\FiscalYearController::class, 'close']);
+        Route::get('fiscal-years/{fiscal_year}/periods', [\App\Http\Controllers\Api\V1\Configurations\FiscalYearController::class, 'periods']);
         Route::apiResource('fiscal-years', \App\Http\Controllers\Api\V1\Configurations\FiscalYearController::class)->except(['show', 'destroy']);
 
         Route::patch('periods/{period}/status', [\App\Http\Controllers\Api\V1\Configurations\PeriodController::class, 'updateStatus']);
@@ -191,6 +193,7 @@ Route::prefix('v1')->group(function () {
     // Admin dashboard
     Route::middleware(['auth:sanctum', 'permission:manage_members'])->group(function () {
         Route::get('admin/dashboard', [AdminDashboardController::class, 'stats']);
+        Route::get('audit-logs', [AuditLogController::class, 'index']);
     });
 
     // Reports — accessible to any authenticated admin (permission: manage_members or above)
@@ -199,9 +202,12 @@ Route::prefix('v1')->group(function () {
         Route::get('loans',        [ReportController::class, 'loans']);
         Route::get('contributions',[ReportController::class, 'contributions']);
         Route::get('accounts',     [ReportController::class, 'accounts']);
-        Route::get('transactions', [ReportController::class, 'transactions']);
-        Route::get('issues',       [ReportController::class, 'issues']);
-        Route::get('petty-cash',   [ReportController::class, 'pettyCash']);
+        Route::get('transactions',    [ReportController::class, 'transactions']);
+        Route::get('issues',          [ReportController::class, 'issues']);
+        Route::get('petty-cash',      [ReportController::class, 'pettyCash']);
+        Route::get('loan-repayments', [ReportController::class, 'loanRepayments']);
+        Route::get('shares',          [ReportController::class, 'shares']);
+        Route::get('dividends',       [ReportController::class, 'dividends']);
     });
 
     // Member portal — scoped to the authenticated user's member record
@@ -220,7 +226,8 @@ Route::prefix('v1')->group(function () {
         Route::get('members/search',                          [MemberPortalController::class, 'memberSearch']);
         Route::get('contributions',  [MemberPortalController::class, 'contributions']);
         Route::get('guarantees',     [MemberPortalController::class, 'guarantees']);
-        Route::get('issues',         [MemberPortalController::class, 'issues']);
+        Route::get('issue-categories', [MemberPortalController::class, 'issueCategories']);
+        Route::get('issues',           [MemberPortalController::class, 'issues']);
         Route::post('issues',        [MemberPortalController::class, 'createIssue']);
         Route::post('issues/{issueId}/comments', [MemberPortalController::class, 'addIssueComment']);
         Route::get('transactions',   [MemberPortalController::class, 'allTransactions']);

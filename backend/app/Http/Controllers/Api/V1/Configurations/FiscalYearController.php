@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\ApiController;
 use App\Http\Requests\Api\V1\Configurations\StoreFiscalYearRequest;
 use App\Http\Requests\Api\V1\Configurations\UpdateFiscalYearRequest;
 use App\Http\Resources\V1\Configurations\FiscalYearResource;
+use App\Http\Resources\V1\Configurations\PeriodResource;
 use App\Models\FiscalYear;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -114,6 +115,19 @@ class FiscalYearController extends ApiController
         $year->load('periods');
 
         return $this->respond(new FiscalYearResource($year), 'Fiscal year updated successfully.');
+    }
+
+    public function periods(Request $request, string $fiscal_year): JsonResponse
+    {
+        $orgId = $request->user()->org_id;
+
+        $year = FiscalYear::where('org_id', $orgId)->findOrFail($fiscal_year);
+
+        $periods = $year->periods()
+            ->orderBy('start_date')
+            ->get();
+
+        return $this->respond(PeriodResource::collection($periods), 'Periods retrieved.');
     }
 
     public function close(Request $request, string $id): JsonResponse

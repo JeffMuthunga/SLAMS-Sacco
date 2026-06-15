@@ -13,8 +13,8 @@ class DividendRunResource extends JsonResource
             'id'             => $this->id,
             'fiscal_year_id' => $this->fiscal_year_id,
             'fiscal_year'    => $this->whenLoaded('fiscalYear', fn () => [
-                'id'          => $this->fiscalYear->id,
-                'fiscal_year' => $this->fiscalYear->fiscal_year,
+                'id'   => $this->fiscalYear->id,
+                'name' => $this->fiscalYear->name,
             ]),
             'rate'           => $this->rate,
             'status'         => $this->status,

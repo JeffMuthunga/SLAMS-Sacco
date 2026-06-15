@@ -1,7 +1,7 @@
 "use client";
 
 import { useMyDividends, type DividendEntry } from "@/lib/api/dividends";
-import DataTable from "@/components/DataTable";
+import { DataTable } from "@/components/DataTable";
 import type { ColumnDef } from "@tanstack/react-table";
 
 const fmt = (v: string) =>

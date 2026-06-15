@@ -16,7 +16,7 @@ export interface DividendEntry {
 export interface DividendRun {
   id: string;
   fiscal_year_id: string;
-  fiscal_year: { id: string; fiscal_year: string } | null;
+  fiscal_year: { id: string; name: string } | null;
   rate: string;
   status: "draft" | "approved" | "posted";
   total_dividend: string;

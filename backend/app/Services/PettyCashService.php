@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\PettyCashAllocation;
 use App\Models\PettyCashRequest;
+use App\Services\AuditLogger;
 use Illuminate\Support\Facades\DB;
 
 class PettyCashService
@@ -34,6 +35,13 @@ class PettyCashService
             'approved_at'     => now(),
         ]);
 
+        AuditLogger::log(
+            $allocation->org_id, 'petty_cash.allocation.approved',
+            "Petty cash allocation approved (P{$allocation->amount})",
+            $user->id, $allocation,
+            ['amount' => $allocation->amount],
+        );
+
         return $allocation;
     }
 
@@ -44,6 +52,12 @@ class PettyCashService
             'approved_by'     => $user->id,
             'approved_at'     => now(),
         ]);
+
+        AuditLogger::log(
+            $allocation->org_id, 'petty_cash.allocation.rejected',
+            "Petty cash allocation rejected (P{$allocation->amount})",
+            $user->id, $allocation,
+        );
 
         return $allocation;
     }
@@ -91,6 +105,13 @@ class PettyCashService
 
             $this->notifications->pettyCashRequestApproved($pcRequest->load(['allocation.allocatedTo', 'item']));
 
+            AuditLogger::log(
+                $pcRequest->org_id, 'petty_cash.request.approved',
+                "Petty cash request approved (P{$pcRequest->amount})",
+                $user->id, $pcRequest,
+                ['amount' => $pcRequest->amount],
+            );
+
             return $pcRequest;
         });
     }
@@ -104,6 +125,12 @@ class PettyCashService
         ]);
 
         $this->notifications->pettyCashRequestRejected($pcRequest->load(['allocation.allocatedTo', 'item']));
+
+        AuditLogger::log(
+            $pcRequest->org_id, 'petty_cash.request.rejected',
+            "Petty cash request rejected (P{$pcRequest->amount})",
+            $user->id, $pcRequest,
+        );
 
         return $pcRequest;
     }

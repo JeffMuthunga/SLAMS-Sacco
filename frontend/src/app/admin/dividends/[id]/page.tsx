@@ -9,7 +9,7 @@ import {
   type DividendEntry,
 } from "@/lib/api/dividends";
 import { extractApiError } from "@/lib/api";
-import DataTable from "@/components/DataTable";
+import { DataTable } from "@/components/DataTable";
 import { Button } from "@/components/ui/button";
 import type { ColumnDef } from "@tanstack/react-table";
 
@@ -96,7 +96,7 @@ export default function DividendRunDetailPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">
-            Dividend Run — {run.fiscal_year?.fiscal_year}
+            Dividend Run — {run.fiscal_year?.name}
           </h1>
           <p className="text-gray-500 text-sm">
             Rate: {(Number(run.rate) * 100).toFixed(2)}%

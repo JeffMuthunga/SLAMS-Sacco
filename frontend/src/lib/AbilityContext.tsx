@@ -11,6 +11,20 @@ import { AppAbility, defineAbilityFor } from "@/lib/ability";
 
 export { Can };
 
+export function RequireAbility({
+  action,
+  children,
+}: {
+  action: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Can I={action} a="all">
+      {() => <>{children}</>}
+    </Can>
+  );
+}
+
 export function useAbility(): AppAbility {
   return useCaslAbility<AppAbility>();
 }

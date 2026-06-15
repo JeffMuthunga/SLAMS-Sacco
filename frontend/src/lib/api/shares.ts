@@ -159,10 +159,10 @@ export function useMemberShares(params?: MemberSharesParams) {
   return useQuery<MemberSharesResponse>({
     queryKey: [...MEMBER_SHARES_KEY, params],
     queryFn: async () => {
-      const { data } = await api.get<ApiEnvelope<MemberShare[]>>("/member-shares", {
+      const { data } = await api.get<ApiEnvelope<{ data: MemberShare[]; meta: ApiMeta }>>("/member-shares", {
         params,
       });
-      return { data: data.data, meta: data.meta! };
+      return { data: data.data.data, meta: data.data.meta };
     },
     staleTime: 30_000,
   });

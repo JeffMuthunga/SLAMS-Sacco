@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\ApprovalLog;
 use App\Models\Member;
 use App\Models\User;
+use App\Services\AuditLogger;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -56,6 +57,13 @@ class MemberService
                     ['org_id' => $orgId]
                 ));
             }
+
+            AuditLogger::log(
+                $orgId, 'member.applied',
+                "Member application submitted: {$member->full_name} ({$member->member_number})",
+                null, $member,
+                ['member_number' => $member->member_number],
+            );
 
             return $member->load('kins');
         });
@@ -120,6 +128,13 @@ class MemberService
             'performed_by'    => $by->id,
         ]);
 
+        AuditLogger::log(
+            $member->org_id, 'member.approved',
+            "Member approved: {$member->full_name} ({$member->member_number})",
+            $by->id, $member,
+            ['from_status' => $old],
+        );
+
         $tempPassword = $this->createPortalAccount($member);
 
         $this->notifications->memberApproved($member, $tempPassword);
@@ -166,6 +181,13 @@ class MemberService
             'performed_by'    => $by->id,
             'notes'           => $reason,
         ]);
+
+        AuditLogger::log(
+            $member->org_id, 'member.rejected',
+            "Member rejected: {$member->full_name} ({$member->member_number})",
+            $by->id, $member,
+            ['reason' => $reason],
+        );
 
         $this->notifications->memberRejected($member, $reason);
     }

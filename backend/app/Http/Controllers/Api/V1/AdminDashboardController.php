@@ -37,7 +37,7 @@ class AdminDashboardController extends ApiController
         $openIssues = Issue::where('org_id', $orgId)->whereIn('status', ['open', 'in_progress'])->count();
 
         $recentLoans = Loan::where('org_id', $orgId)
-            ->with(['member:id,first_name,last_name,member_number', 'loanProduct:id,name'])
+            ->with(['member:id,full_name,member_number', 'loanProduct:id,name'])
             ->orderByDesc('applied_at')
             ->limit(5)
             ->get(['id', 'member_id', 'loan_product_id', 'principal_amount', 'loan_status', 'approval_status', 'applied_at']);
@@ -55,7 +55,7 @@ class AdminDashboardController extends ApiController
             ],
             'recent_loans' => $recentLoans->map(fn($loan) => [
                 'id'              => $loan->id,
-                'member_name'     => $loan->member ? trim($loan->member->first_name . ' ' . $loan->member->last_name) : '—',
+                'member_name'     => $loan->member?->full_name ?? '—',
                 'member_number'   => $loan->member?->member_number,
                 'product'         => $loan->loanProduct?->name,
                 'principal'       => $loan->principal_amount,

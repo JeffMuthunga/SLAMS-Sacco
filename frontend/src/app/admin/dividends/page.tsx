@@ -11,7 +11,7 @@ import {
 } from "@/lib/api/dividends";
 import { useFiscalYears } from "@/lib/api/configurations";
 import { extractApiError, extractFieldErrors } from "@/lib/api";
-import DataTable from "@/components/DataTable";
+import { DataTable } from "@/components/DataTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -77,7 +77,7 @@ export default function DividendRunsPage() {
     {
       id: "fiscal_year",
       header: "Fiscal Year",
-      cell: ({ row }) => row.original.fiscal_year?.fiscal_year ?? "—",
+      cell: ({ row }) => row.original.fiscal_year?.name ?? "—",
     },
     {
       accessorKey: "rate",
@@ -156,7 +156,7 @@ export default function DividendRunsPage() {
                 <option value="">Select fiscal year…</option>
                 {fiscalYears.map((fy) => (
                   <option key={fy.id} value={fy.id}>
-                    {fy.fiscal_year}
+                    {fy.name}
                   </option>
                 ))}
               </select>

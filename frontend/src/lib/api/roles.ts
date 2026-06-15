@@ -28,7 +28,7 @@ export function useRoles() {
   return useQuery<RolesData>({
     queryKey: ROLES_KEY,
     queryFn: async () => {
-      const { data } = await api.get<ApiEnvelope<RolesData>>("/roles");
+      const { data } = await api.get<ApiEnvelope<RolesData>>("/configurations/roles");
       return data.data;
     },
     staleTime: 60_000,
@@ -39,7 +39,7 @@ export function useCreateRole() {
   const qc = useQueryClient();
   return useMutation<AppRole, Error, { name: string; permissions: string[] }>({
     mutationFn: async (payload) => {
-      const { data } = await api.post<ApiEnvelope<AppRole>>("/roles", payload);
+      const { data } = await api.post<ApiEnvelope<AppRole>>("/configurations/roles", payload);
       return data.data;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ROLES_KEY }),
@@ -50,7 +50,7 @@ export function useUpdateRolePermissions() {
   const qc = useQueryClient();
   return useMutation<AppRole, Error, { id: number; permissions: string[] }>({
     mutationFn: async ({ id, permissions }) => {
-      const { data } = await api.put<ApiEnvelope<AppRole>>(`/roles/${id}/permissions`, { permissions });
+      const { data } = await api.put<ApiEnvelope<AppRole>>(`/configurations/roles/${id}/permissions`, { permissions });
       return data.data;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ROLES_KEY }),
@@ -60,7 +60,7 @@ export function useUpdateRolePermissions() {
 export function useDeleteRole() {
   const qc = useQueryClient();
   return useMutation<void, Error, number>({
-    mutationFn: async (id) => { await api.delete(`/roles/${id}`); },
+    mutationFn: async (id) => { await api.delete(`/configurations/roles/${id}`); },
     onSuccess: () => qc.invalidateQueries({ queryKey: ROLES_KEY }),
   });
 }
@@ -69,7 +69,7 @@ export function useAdminUsers() {
   return useQuery<AdminUser[]>({
     queryKey: ADMIN_USERS_KEY,
     queryFn: async () => {
-      const { data } = await api.get<ApiEnvelope<AdminUser[]>>("/admin-users");
+      const { data } = await api.get<ApiEnvelope<AdminUser[]>>("/configurations/admin-users");
       return data.data;
     },
     staleTime: 30_000,
@@ -80,7 +80,7 @@ export function useCreateAdminUser() {
   const qc = useQueryClient();
   return useMutation<AdminUser, Error, { name: string; email: string; role: string }>({
     mutationFn: async (payload) => {
-      const { data } = await api.post<ApiEnvelope<AdminUser>>("/admin-users", payload);
+      const { data } = await api.post<ApiEnvelope<AdminUser>>("/configurations/admin-users", payload);
       return data.data;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ADMIN_USERS_KEY }),
@@ -91,7 +91,7 @@ export function useUpdateAdminUserRole() {
   const qc = useQueryClient();
   return useMutation<AdminUser, Error, { id: string; role: string }>({
     mutationFn: async ({ id, role }) => {
-      const { data } = await api.put<ApiEnvelope<AdminUser>>(`/admin-users/${id}/role`, { role });
+      const { data } = await api.put<ApiEnvelope<AdminUser>>(`/configurations/admin-users/${id}/role`, { role });
       return data.data;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ADMIN_USERS_KEY }),

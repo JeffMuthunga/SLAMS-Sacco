@@ -4,7 +4,7 @@ import type { Member } from "./members";
 import type { DepositAccount, AccountTransaction } from "./accounts";
 import type { Loan } from "./loans";
 import type { Contribution } from "./contributions";
-import type { Issue, IssueComment } from "./issues";
+import type { Issue, IssueCategory, IssueComment } from "./issues";
 import type { PettyCashAllocation, PettyCashRequest } from "./petty-cash";
 import type { LoanProduct } from "./configurations";
 
@@ -348,6 +348,19 @@ export function useMemberLoanProducts() {
     queryKey: ME_LOAN_PRODUCTS_KEY,
     queryFn: async () => {
       const { data } = await api.get<ApiEnvelope<LoanProduct[]>>("/me/loan-products");
+      return data.data;
+    },
+    staleTime: 300_000,
+  });
+}
+
+export const ME_ISSUE_CATEGORIES_KEY = ["me", "issue-categories"] as const;
+
+export function usePortalIssueCategories() {
+  return useQuery<IssueCategory[]>({
+    queryKey: ME_ISSUE_CATEGORIES_KEY,
+    queryFn: async () => {
+      const { data } = await api.get<ApiEnvelope<IssueCategory[]>>("/me/issue-categories");
       return data.data;
     },
     staleTime: 300_000,

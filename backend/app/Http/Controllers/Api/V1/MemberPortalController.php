@@ -32,6 +32,7 @@ use App\Http\Resources\V1\MemberShareResource;
 use App\Models\MemberShare;
 use App\Models\DividendEntry;
 use App\Http\Resources\V1\DividendEntryResource;
+use App\Models\IssueCategory;
 use App\Services\CommodityService;
 use App\Services\IssueService;
 use App\Services\LoanService;
@@ -236,6 +237,15 @@ class MemberPortalController extends ApiController
             200,
             ['current_page' => $guarantees->currentPage(), 'per_page' => $guarantees->perPage(), 'total' => $guarantees->total(), 'last_page' => $guarantees->lastPage()]
         );
+    }
+
+    public function issueCategories(Request $request): JsonResponse
+    {
+        $categories = IssueCategory::where('org_id', $request->user()->org_id)
+            ->orderBy('name')
+            ->get(['id', 'name', 'description']);
+
+        return $this->respond($categories);
     }
 
     public function issues(Request $request): JsonResponse

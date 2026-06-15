@@ -17,12 +17,23 @@ import { extractApiError } from "@/lib/api";
 import { Can } from "@/lib/AbilityContext";
 import { useMemberShares, MemberShare } from "@/lib/api/shares";
 
-type Tab = "details" | "shares";
+type Tab = "details" | "shares" | "documents";
 
 const TABS: { key: Tab; label: string }[] = [
-  { key: "details", label: "Details" },
-  { key: "shares",  label: "Shares" },
+  { key: "details",   label: "Details" },
+  { key: "shares",    label: "Shares" },
+  { key: "documents", label: "Documents" },
 ];
+
+const JOINING_REQUIREMENTS = [
+  { key: "omang",        label: "Certified Copy of Omang (ID)" },
+  { key: "payslip",      label: "Latest Certified Copy of Payslip" },
+  { key: "employment",   label: "Confirmation / Contract of Employment" },
+  { key: "membership",   label: "Completed Membership Form" },
+  { key: "stop_order",   label: "Completed Savings Stop Order Form" },
+  { key: "kyc",          label: "Completed KYC Form" },
+  { key: "cdd",          label: "Completed Customer Due Diligence (CDD) Form" },
+] as const;
 
 const SHARE_STATUS_CFG: Record<MemberShare["status"], { label: string; className: string }> = {
   pending:  { label: "Pending",  className: "bg-yellow-100 text-yellow-700" },
@@ -42,6 +53,7 @@ export default function MemberDetailPage() {
   const portalAccountMutation = useCreatePortalAccount();
 
   const [tab, setTab] = useState<Tab>("details");
+  const [docFiles, setDocFiles] = useState<Record<string, File | null>>({});
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [rejectError, setRejectError] = useState("");
@@ -387,6 +399,55 @@ export default function MemberDetailPage() {
                   </tbody>
                 </table>
               </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Documents tab ───────────────────────────────────────────── */}
+      {tab === "documents" && (
+        <div className="rounded-xl border border-stroke bg-white p-6 shadow-sm dark:border-dark-3 dark:bg-gray-dark">
+          <h2 className="mb-1 text-base font-semibold text-dark dark:text-white">Joining Requirements</h2>
+          <p className="mb-5 text-xs text-gray-500">All documents below must be collected before membership is approved.</p>
+          <div className="flex flex-col divide-y divide-gray-100 dark:divide-dark-3">
+            {JOINING_REQUIREMENTS.map((req) => {
+              const file = docFiles[req.key] ?? null;
+              return (
+                <div key={req.key} className="flex items-center justify-between gap-4 py-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${file ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-400"}`}>
+                      {file ? "✓" : "–"}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-dark dark:text-white">{req.label}</p>
+                      {file && (
+                        <p className="truncate text-xs text-gray-500">{file.name}</p>
+                      )}
+                    </div>
+                  </div>
+                  <label className="shrink-0 cursor-pointer rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-dark-3 dark:text-gray-300 dark:hover:bg-gray-800">
+                    {file ? "Replace" : "Upload"}
+                    <input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      className="sr-only"
+                      onChange={(e) => {
+                        const selected = e.target.files?.[0] ?? null;
+                        setDocFiles((prev) => ({ ...prev, [req.key]: selected }));
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4 dark:border-dark-3">
+            <p className="text-xs text-gray-500">
+              {Object.values(docFiles).filter(Boolean).length} of {JOINING_REQUIREMENTS.length} documents uploaded
+            </p>
+            {Object.values(docFiles).filter(Boolean).length === JOINING_REQUIREMENTS.length && (
+              <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">All requirements met</span>
             )}
           </div>
         </div>

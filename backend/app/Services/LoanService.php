@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\AccountTransaction;
 use App\Models\DepositAccount;
 use App\Models\Loan;
+use App\Services\AuditLogger;
 use App\Models\LoanCollateral;
 use App\Models\LoanGuarantee;
 use App\Models\LoanNote;
@@ -103,6 +104,13 @@ class LoanService
                 ]);
             }
 
+            AuditLogger::log(
+                $orgId, 'loan.applied',
+                "Loan application submitted: {$loan->account_number}",
+                $user->id, $loan,
+                ['principal' => $loan->principal_amount, 'product_id' => $loan->loan_product_id],
+            );
+
             return $loan->load(['member', 'loanProduct', 'guarantees', 'collaterals']);
         });
     }
@@ -127,6 +135,12 @@ class LoanService
         ]);
 
         $loan->load('member');
+        AuditLogger::log(
+            $loan->org_id, 'loan.approved',
+            "Loan approved: {$loan->account_number} (P{$loan->principal_amount})",
+            $user->id, $loan,
+            ['principal' => $loan->principal_amount],
+        );
         $this->notifications->loanApproved($loan);
     }
 
@@ -147,6 +161,12 @@ class LoanService
         ]);
 
         $loan->load('member');
+        AuditLogger::log(
+            $loan->org_id, 'loan.rejected',
+            "Loan rejected: {$loan->account_number}",
+            $user->id, $loan,
+            ['reason' => $reason],
+        );
         $this->notifications->loanRejected($loan, $reason);
     }
 
@@ -198,6 +218,12 @@ class LoanService
             $this->generateRepaymentSchedule($loan, $disburseDate, $user);
 
             $fresh = $loan->fresh()->load(['member', 'loanProduct', 'repayments', 'guarantees', 'collaterals']);
+            AuditLogger::log(
+                $loan->org_id, 'loan.disbursed',
+                "Loan disbursed: {$loan->account_number} (P{$loan->principal_amount})",
+                $user->id, $loan,
+                ['principal' => $loan->principal_amount, 'disbursed_date' => $disburseDate],
+            );
             $this->notifications->loanDisbursed($fresh);
             return $fresh;
         });
@@ -290,6 +316,13 @@ class LoanService
                 ]);
             }
 
+            AuditLogger::log(
+                $loan->org_id, 'loan.repayment',
+                "Loan repayment recorded: {$loan->account_number} — P{$amount}",
+                $user->id, $loan,
+                ['amount' => $amount, 'instalment' => $schedule->id, 'status' => $isFullyPaid ? 'paid' : 'partial'],
+            );
+
             return $schedule->fresh();
         });
     }
@@ -312,6 +345,12 @@ class LoanService
             ->update(['repayment_status' => 'overdue']);
 
         $loan->load('member');
+        AuditLogger::log(
+            $loan->org_id, 'loan.defaulted',
+            "Loan marked as defaulted: {$loan->account_number}",
+            $user->id, $loan,
+            ['outstanding_balance' => $loan->outstanding_balance],
+        );
         $this->notifications->loanDefaulted($loan);
     }
 

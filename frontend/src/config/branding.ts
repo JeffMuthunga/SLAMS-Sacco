@@ -18,9 +18,9 @@ export interface BrandingConfig {
 }
 
 const DEFAULTS: BrandingConfig = {
-  orgName: "SACCO",
-  systemName: "SACCO Management System",
-  addressLines: ["Kenya"],
+  orgName: "K2an",
+  systemName: "K2an SACCO Management System",
+  addressLines: [],
   email: "",
   website: "",
   phone: "",

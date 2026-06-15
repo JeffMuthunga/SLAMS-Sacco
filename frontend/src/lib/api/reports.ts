@@ -23,6 +23,43 @@ export interface AccountsSummary { total: number; active: number; total_balance:
 export interface TransactionsSummary { total: number; total_credit: string; total_debit: string }
 export interface IssuesSummary { total: number; open: number; resolved: number; closed: number }
 export interface PettyCashSummary { total_allocated: string; total_spent: string; total_requested: string; approved_amount: string }
+export interface LoanRepaymentsSummary { total: number; overdue: number; total_due: string; total_paid: string; total_balance: string }
+export interface SharesSummary { total: number; total_shares: number; total_value: string }
+export interface DividendEntriesSummary { total: number; total_dividend: string }
+
+export interface LoanRepaymentRow {
+  id: string; due_date: string | null; paid_date: string | null;
+  principal_due: string; principal_paid: string;
+  interest_due: string; interest_paid: string;
+  total_due: string; total_paid: string; balance: string;
+  repayment_status: string;
+  loan_account: string | null; loan_product: string | null;
+  member_name: string | null; member_number: string | null;
+}
+
+export interface ShareRow {
+  id: string; member_name: string | null; member_number: string | null;
+  product_name: string | null; quantity: number;
+  price_per_share: string; total_amount: string;
+  purchase_date: string; status: string; notes: string | null;
+}
+
+export interface DividendRun {
+  id: string; fiscal_year: string | null; rate: string;
+  status: string; total_dividend: string; approved_at: string | null;
+}
+
+export interface DividendEntryRow {
+  id: string; member_name: string | null; member_number: string | null;
+  run_rate: string | null; fiscal_year: string | null;
+  share_balance: string; dividend_amount: string;
+  account_number: string | null; posted_at: string | null;
+}
+
+export interface DividendsReportResult {
+  runs: DividendRun[];
+  entries: { data: DividendEntryRow[]; meta: PageMeta & { summary: DividendEntriesSummary } };
+}
 
 export interface ReportResult<T, S> {
   data: T[];
@@ -73,6 +110,20 @@ export interface IssuesReportParams {
 
 export interface PettyCashReportParams {
   period_id?: string; approval_status?: string;
+}
+
+export interface LoanRepaymentsReportParams {
+  repayment_status?: string; loan_product_id?: string; member_id?: string;
+  due_from?: string; due_to?: string; overdue?: boolean; per_page?: number;
+}
+
+export interface SharesReportParams {
+  share_product_id?: string; status?: string;
+  from_date?: string; to_date?: string; per_page?: number;
+}
+
+export interface DividendsReportParams {
+  fiscal_year_id?: string; status?: string; dividend_run_id?: string;
 }
 
 // ── Hooks ─────────────────────────────────────────────────────────────
@@ -143,6 +194,42 @@ export function useReportIssues(params?: IssuesReportParams, enabled = true) {
     queryFn: async () => {
       const { data } = await api.get("/reports/issues", { params });
       return data;
+    },
+    staleTime: 30_000,
+    enabled,
+  });
+}
+
+export function useReportLoanRepayments(params?: LoanRepaymentsReportParams, enabled = true) {
+  return useQuery<ReportResult<LoanRepaymentRow, LoanRepaymentsSummary>>({
+    queryKey: ["reports", "loan-repayments", params],
+    queryFn: async () => {
+      const { data } = await api.get("/reports/loan-repayments", { params });
+      return data;
+    },
+    staleTime: 30_000,
+    enabled,
+  });
+}
+
+export function useReportShares(params?: SharesReportParams, enabled = true) {
+  return useQuery<ReportResult<ShareRow, SharesSummary>>({
+    queryKey: ["reports", "shares", params],
+    queryFn: async () => {
+      const { data } = await api.get("/reports/shares", { params });
+      return data;
+    },
+    staleTime: 30_000,
+    enabled,
+  });
+}
+
+export function useReportDividends(params?: DividendsReportParams, enabled = true) {
+  return useQuery<DividendsReportResult>({
+    queryKey: ["reports", "dividends", params],
+    queryFn: async () => {
+      const { data } = await api.get("/reports/dividends", { params });
+      return data.data;
     },
     staleTime: 30_000,
     enabled,

@@ -20,8 +20,18 @@ class DividendController extends ApiController
             ->latest()
             ->paginate($request->integer('per_page', 25));
 
+        $meta = [
+            'current_page' => $runs->currentPage(),
+            'last_page'    => $runs->lastPage(),
+            'per_page'     => $runs->perPage(),
+            'total'        => $runs->total(),
+        ];
+
         return $this->respond(
-            DividendRunResource::collection($runs)->response()->getData(true)
+            DividendRunResource::collection($runs->items()),
+            'Dividend runs retrieved.',
+            200,
+            $meta,
         );
     }
 

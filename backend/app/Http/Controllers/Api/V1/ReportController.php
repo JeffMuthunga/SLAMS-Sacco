@@ -12,6 +12,11 @@ use App\Http\Resources\V1\PettyCashAllocationResource;
 use App\Http\Resources\V1\PettyCashRequestResource;
 use App\Models\Member;
 use App\Models\Loan;
+use App\Models\LoanRepayment;
+use App\Models\MemberShare;
+use App\Models\DividendEntry;
+use App\Models\DividendRun;
+use App\Models\ShareProduct;
 use App\Models\Contribution;
 use App\Models\DepositAccount;
 use App\Models\AccountTransaction;
@@ -304,6 +309,193 @@ class ReportController extends ApiController
                 'total' => $total, 'open' => $open, 'resolved' => $resolved, 'closed' => $closed,
             ]])
         );
+    }
+
+    // ── Loan Repayments ───────────────────────────────────────────────────
+
+    public function loanRepayments(Request $request): JsonResponse
+    {
+        $query = LoanRepayment::whereHas('loan', fn ($q) =>
+            $q->where('org_id', $request->user()->org_id)
+        )->with(['loan.member', 'loan.loanProduct', 'period']);
+
+        if ($v = $request->query('repayment_status')) {
+            $query->where('repayment_status', $v);
+        }
+        if ($v = $request->query('loan_product_id')) {
+            $query->whereHas('loan', fn ($q) => $q->where('loan_product_id', $v));
+        }
+        if ($v = $request->query('member_id')) {
+            $query->whereHas('loan', fn ($q) => $q->where('member_id', $v));
+        }
+        if ($v = $request->query('due_from')) {
+            $query->whereDate('due_date', '>=', $v);
+        }
+        if ($v = $request->query('due_to')) {
+            $query->whereDate('due_date', '<=', $v);
+        }
+        if ($request->boolean('overdue')) {
+            $query->where('repayment_status', '!=', 'paid')
+                  ->whereDate('due_date', '<', now()->toDateString());
+        }
+
+        $total       = $query->count();
+        $totalDue    = $query->sum('total_due');
+        $totalPaid   = $query->sum('total_paid');
+        $overdueCount = (clone $query)->where('repayment_status', '!=', 'paid')
+                           ->whereDate('due_date', '<', now()->toDateString())->count();
+
+        $repayments = $query->orderBy('due_date')->paginate($this->perPage($request));
+
+        $data = $repayments->items();
+        $rows = array_map(function ($r) {
+            $loan   = $r->loan;
+            $member = $loan?->member;
+            $product = $loan?->loanProduct;
+            return [
+                'id'                => $r->id,
+                'due_date'          => $r->due_date?->toDateString(),
+                'paid_date'         => $r->paid_date?->toDateString(),
+                'principal_due'     => $r->principal_due,
+                'principal_paid'    => $r->principal_paid,
+                'interest_due'      => $r->interest_due,
+                'interest_paid'     => $r->interest_paid,
+                'total_due'         => $r->total_due,
+                'total_paid'        => $r->total_paid,
+                'balance'           => $r->balance,
+                'repayment_status'  => $r->repayment_status,
+                'loan_account'      => $loan?->account_number,
+                'loan_product'      => $product?->name,
+                'member_name'       => $member?->full_name,
+                'member_number'     => $member?->member_number,
+            ];
+        }, $data);
+
+        return $this->respond(
+            $rows, '', 200,
+            $this->pageMeta($repayments, ['summary' => [
+                'total'         => $total,
+                'overdue'       => $overdueCount,
+                'total_due'     => number_format((float)$totalDue, 2, '.', ''),
+                'total_paid'    => number_format((float)$totalPaid, 2, '.', ''),
+                'total_balance' => number_format((float)($totalDue - $totalPaid), 2, '.', ''),
+            ]])
+        );
+    }
+
+    // ── Shares ────────────────────────────────────────────────────────────
+
+    public function shares(Request $request): JsonResponse
+    {
+        $query = MemberShare::where('org_id', $request->user()->org_id)
+            ->with(['member', 'shareProduct']);
+
+        if ($v = $request->query('share_product_id')) {
+            $query->where('share_product_id', $v);
+        }
+        if ($v = $request->query('status')) {
+            $query->where('status', $v);
+        }
+        if ($v = $request->query('from_date')) {
+            $query->whereDate('purchase_date', '>=', $v);
+        }
+        if ($v = $request->query('to_date')) {
+            $query->whereDate('purchase_date', '<=', $v);
+        }
+
+        $total        = $query->count();
+        $totalShares  = $query->sum('quantity');
+        $totalValue   = $query->sum('total_amount');
+
+        $shares = $query->orderByDesc('purchase_date')->paginate($this->perPage($request));
+
+        $data = array_map(function ($s) {
+            return [
+                'id'             => $s->id,
+                'member_name'    => $s->member?->full_name,
+                'member_number'  => $s->member?->member_number,
+                'product_name'   => $s->shareProduct?->name,
+                'quantity'       => $s->quantity,
+                'price_per_share'=> $s->price_per_share,
+                'total_amount'   => $s->total_amount,
+                'purchase_date'  => $s->purchase_date,
+                'status'         => $s->status,
+                'notes'          => $s->notes,
+            ];
+        }, $shares->items());
+
+        return $this->respond(
+            $data, '', 200,
+            $this->pageMeta($shares, ['summary' => [
+                'total'        => $total,
+                'total_shares' => $totalShares,
+                'total_value'  => number_format((float)$totalValue, 2, '.', ''),
+            ]])
+        );
+    }
+
+    // ── Dividends ─────────────────────────────────────────────────────────
+
+    public function dividends(Request $request): JsonResponse
+    {
+        $orgId = $request->user()->org_id;
+
+        $runQuery = DividendRun::where('org_id', $orgId);
+        if ($v = $request->query('fiscal_year_id')) {
+            $runQuery->where('fiscal_year_id', $v);
+        }
+        if ($v = $request->query('status')) {
+            $runQuery->where('status', $v);
+        }
+
+        $runs = $runQuery->with('fiscalYear')->orderByDesc('created_at')->get();
+
+        $entryQuery = DividendEntry::where('org_id', $orgId)
+            ->with(['member', 'dividendRun.fiscalYear', 'creditedAccount']);
+
+        if ($v = $request->query('fiscal_year_id')) {
+            $entryQuery->whereHas('dividendRun', fn ($q) => $q->where('fiscal_year_id', $v));
+        }
+        if ($v = $request->query('dividend_run_id')) {
+            $entryQuery->where('dividend_run_id', $v);
+        }
+
+        $totalDividend = $entryQuery->sum('dividend_amount');
+        $entryCount    = $entryQuery->count();
+
+        $entries = $entryQuery->orderByDesc('posted_at')->paginate($this->perPage($request));
+
+        $entryData = array_map(function ($e) {
+            return [
+                'id'              => $e->id,
+                'member_name'     => $e->member?->full_name,
+                'member_number'   => $e->member?->member_number,
+                'run_rate'        => $e->dividendRun?->rate,
+                'fiscal_year'     => $e->dividendRun?->fiscalYear?->name,
+                'share_balance'   => $e->share_balance,
+                'dividend_amount' => $e->dividend_amount,
+                'account_number'  => $e->creditedAccount?->account_number,
+                'posted_at'       => $e->posted_at?->toDateString(),
+            ];
+        }, $entries->items());
+
+        return $this->respond([
+            'runs'    => $runs->map(fn ($r) => [
+                'id'             => $r->id,
+                'fiscal_year'    => $r->fiscalYear?->name,
+                'rate'           => $r->rate,
+                'status'         => $r->status,
+                'total_dividend' => $r->total_dividend,
+                'approved_at'    => $r->approved_at,
+            ])->values()->all(),
+            'entries' => [
+                'data' => $entryData,
+                'meta' => $this->pageMeta($entries, ['summary' => [
+                    'total'          => $entryCount,
+                    'total_dividend' => number_format((float)$totalDividend, 2, '.', ''),
+                ]]),
+            ],
+        ]);
     }
 
     // ── Petty Cash ────────────────────────────────────────────────────────
