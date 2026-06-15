@@ -199,6 +199,18 @@ export function useMemberIssues(params?: { status?: string; per_page?: number })
   });
 }
 
+export function useMemberIssue(id: string | null) {
+  return useQuery<Issue>({
+    queryKey: [...ME_ISSUES_KEY, id],
+    queryFn: async () => {
+      const { data } = await api.get<ApiEnvelope<Issue>>(`/me/issues/${id}`);
+      return data.data;
+    },
+    enabled: Boolean(id),
+    staleTime: 30_000,
+  });
+}
+
 export function useCreateMemberIssue() {
   const queryClient = useQueryClient();
   return useMutation<Issue, Error, { category_id: string; title: string; description?: string; priority?: string }>({
@@ -219,8 +231,9 @@ export function useAddMemberIssueComment() {
       const { data } = await api.post<ApiEnvelope<IssueComment>>(`/me/issues/${issueId}/comments`, { body });
       return data.data;
     },
-    onSuccess: () => {
+    onSuccess: (_data, { issueId }) => {
       queryClient.invalidateQueries({ queryKey: ME_ISSUES_KEY });
+      queryClient.invalidateQueries({ queryKey: [...ME_ISSUES_KEY, issueId] });
     },
   });
 }

@@ -227,9 +227,10 @@ Route::prefix('v1')->group(function () {
         Route::get('contributions',  [MemberPortalController::class, 'contributions']);
         Route::get('guarantees',     [MemberPortalController::class, 'guarantees']);
         Route::get('issue-categories', [MemberPortalController::class, 'issueCategories']);
-        Route::get('issues',           [MemberPortalController::class, 'issues']);
-        Route::post('issues',        [MemberPortalController::class, 'createIssue']);
-        Route::post('issues/{issueId}/comments', [MemberPortalController::class, 'addIssueComment']);
+        Route::get('issues',                      [MemberPortalController::class, 'issues']);
+        Route::get('issues/{issueId}',            [MemberPortalController::class, 'showIssue']);
+        Route::post('issues',                     [MemberPortalController::class, 'createIssue']);
+        Route::post('issues/{issueId}/comments',  [MemberPortalController::class, 'addIssueComment']);
         Route::get('transactions',   [MemberPortalController::class, 'allTransactions']);
         Route::get('petty-cash/allocations', [MemberPortalController::class, 'myAllocations']);
         Route::get('petty-cash/requests',    [MemberPortalController::class, 'myRequests']);

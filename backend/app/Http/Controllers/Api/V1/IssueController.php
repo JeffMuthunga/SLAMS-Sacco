@@ -101,9 +101,9 @@ class IssueController extends ApiController
     {
         abort_unless($issue->org_id === $request->user()->org_id, 404);
 
-        $request->validate(['body' => ['required', 'string', 'max:2000']]);
+        $validated = $request->validate(['body' => ['required', 'string', 'max:2000']]);
 
-        $comment = $this->issueService->addComment($issue, $request->validated('body'), $request->user());
+        $comment = $this->issueService->addComment($issue, $validated['body'], $request->user());
 
         return $this->respondCreated(
             new IssueCommentResource($comment->load('user')),

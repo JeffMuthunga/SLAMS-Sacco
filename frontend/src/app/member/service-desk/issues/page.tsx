@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useMemberIssues, useCreateMemberIssue, useAddMemberIssueComment, usePortalIssueCategories } from "@/lib/api/member-portal";
+import { useMemberIssues, useMemberIssue, useCreateMemberIssue, useAddMemberIssueComment, usePortalIssueCategories } from "@/lib/api/member-portal";
 import { extractApiError, extractFieldErrors } from "@/lib/api";
 import { toast } from "sonner";
 import type { Issue, IssuePriority, IssueStatus } from "@/lib/api/issues";
@@ -19,9 +19,14 @@ const STATUS_CFG: Record<IssueStatus, { label: string; className: string }> = {
   closed:      { label: "Closed",      className: "bg-gray-100 text-gray-600" },
 };
 
-function IssueDetail({ issue }: { issue: Issue }) {
+function IssueDetail({ issueId }: { issueId: string }) {
+  const { data: issue, isLoading } = useMemberIssue(issueId);
   const [comment, setComment] = useState("");
   const addComment = useAddMemberIssueComment();
+
+  if (isLoading || !issue) {
+    return <p className="text-sm text-gray-400">Loading…</p>;
+  }
 
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,7 +116,6 @@ export default function MemberIssuesPage() {
   const createMutation = useCreateMemberIssue();
 
   const issues = data?.data ?? [];
-  const selectedIssue = issues.find((i) => i.id === selectedId) ?? null;
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -236,9 +240,9 @@ export default function MemberIssuesPage() {
                 </div>
               </form>
             </div>
-          ) : selectedIssue ? (
+          ) : selectedId ? (
             <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-dark">
-              <IssueDetail issue={selectedIssue} />
+              <IssueDetail issueId={selectedId} />
             </div>
           ) : (
             <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-gray-200 dark:border-gray-700">

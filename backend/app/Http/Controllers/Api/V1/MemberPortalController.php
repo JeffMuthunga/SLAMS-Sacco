@@ -271,6 +271,19 @@ class MemberPortalController extends ApiController
         );
     }
 
+    public function showIssue(Request $request, string $issueId): JsonResponse
+    {
+        $member = $this->resolveMember($request);
+
+        $issue = Issue::where('org_id', $request->user()->org_id)
+            ->where('member_id', $member->id)
+            ->where('id', $issueId)
+            ->with(['category', 'reporter', 'assignee', 'comments.user'])
+            ->firstOrFail();
+
+        return $this->respond(new IssueResource($issue));
+    }
+
     public function createIssue(StoreIssueRequest $request): JsonResponse
     {
         $member = $this->resolveMember($request);
